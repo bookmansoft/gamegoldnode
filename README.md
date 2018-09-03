@@ -1,0 +1,2 @@
+# gamegoldnode
+Game Gold Node
