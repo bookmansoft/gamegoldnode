@@ -59,3 +59,9 @@ typings/
 
 # next.js build output
 .next
+
+.gamegold/testnet/chain.ldb/
+.gamegold/testnet/walletdb.ldb/
+.gamegold/testnet/hosts
+.gamegold/testnet/debug.log
+package-lock.json

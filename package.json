@@ -1,0 +1,23 @@
+{
+  "name": "gamegoldnode",
+  "version": "1.0.0",
+  "description": "Game Gold Node",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bookmansoft/gamegoldnode.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bookmansoft/gamegoldnode/issues"
+  },
+  "homepage": "https://github.com/bookmansoft/gamegoldnode#readme",
+  "dependencies": {
+    "gamegold": "1.0.1"
+  }
+}
