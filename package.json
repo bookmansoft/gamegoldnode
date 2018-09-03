@@ -18,6 +18,6 @@
   },
   "homepage": "https://github.com/bookmansoft/gamegoldnode#readme",
   "dependencies": {
-    "gamegold": "1.0.1"
+    "gamegold": "^1.0.2"
   }
 }
