@@ -1,10 +1,11 @@
 {
   "name": "gamegoldnode",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "description": "Game Gold Node",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "cli": "node bin/cli --network=testnet",
     "test": "mocha --reporter spec test/*.js"
   },
   "repository": {
