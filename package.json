@@ -1,6 +1,6 @@
 {
   "name": "gamegoldnode",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "description": "Game Gold Node",
   "main": "index.js",
   "scripts": {
@@ -19,6 +19,6 @@
   },
   "homepage": "https://github.com/bookmansoft/gamegoldnode#readme",
   "dependencies": {
-    "gamegold": "^1.0.5"
+    "gamegold": "^1.0.7"
   }
 }
