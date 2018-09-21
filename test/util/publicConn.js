@@ -1,4 +1,9 @@
 /**
+ * 开放式连接器
+ * 可以用于 node 环境下的服务端程序/单元测试，以 GET / POST / WS 等多种模式，访问远程全节点的开放式API
+ */
+
+/**
  * 取数组随机对象
  */
 Array.prototype.randObj = function(){

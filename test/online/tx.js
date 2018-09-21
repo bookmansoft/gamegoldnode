@@ -2,7 +2,7 @@
  * 单元测试：地址相关的 JSONP
  * Creted by liub 2018.9.11
  */
-let remote = require('../util/clientComm')()
+let remote = require('../util/publicConn')()
 let Indicator = require('../util/Indicator'); //标志位管理
 let {NotifyType, ReturnCode, CommMode} = require('../util/comm');
 

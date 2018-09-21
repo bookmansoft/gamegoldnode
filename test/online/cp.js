@@ -3,23 +3,27 @@
  */
 
 const uuid = require('uuid/v1')
-const gamegold = require('gamegold')
-const util = gamegold.util
-const remote = require('../util/remoteWallet')
-
-let env = {}; //在多个测试用例间传递中间结果的缓存变量
+const remote = require('../util/authConn')
 
 describe.skip('厂商管理流程', () => {
     it('创建一个厂商', async ()=>{
         await remote.execute('generate', [1]);
-        await util.waiting(1000);
+        await (async function(time){
+            return new Promise(resolve =>{
+                setTimeout(resolve, time);
+            });
+        })(1000);
         console.log('create前账户信息', await remote.execute('balance.all', []));
 
-        let ret = await remote.execute('cp.create', [uuid(), '127.0.0.1', '127.0.0.1']);
+        let ret = await remote.execute('cp.create', [uuid(), '127.0.0.1']);
         console.log(ret);
 
         await remote.execute('generate', [1]);
-        await util.waiting(1000);
+        await (async function(time){
+            return new Promise(resolve =>{
+                setTimeout(resolve, time);
+            });
+        })(1000);
         console.log('create后账户信息', await remote.execute('balance.all', []));
     });
 

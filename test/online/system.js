@@ -2,7 +2,7 @@
  * 单元测试：系统状态相关的 API
  * Creted by liub 2018.9.11
  */
-let remote = require('../util/clientComm')()
+let remote = require('../util/publicConn')()
 let {ReturnCodeName, CommMode, ReturnCode, NotifyType} = require('../util/comm'); //常量
 
 describe.skip('区块相关的JSONP', function() {
