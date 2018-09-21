@@ -6,7 +6,7 @@ let remote = require('../util/clientComm')()
 let {ReturnCodeName, CommMode, ReturnCode, NotifyType} = require('../util/comm'); //常量
 
 describe('区块相关的JSONP', function() {
-    it.only('获取近期区块列表', done => {
+    it('获取近期区块列表', done => {
         remote.mode(CommMode.get).fetch(
             {}, 
             /**
