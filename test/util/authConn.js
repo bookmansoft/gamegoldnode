@@ -20,7 +20,15 @@ async function $req(options) {
 
   const newOptions = { ...defaultOptions, ...options };
   newOptions.json = true;
-  newOptions.uri = `http://localhost:17332/`;
+
+  let conf = AuthConn.getTerminalConfig();
+  let _head = !!conf.head ? conf.head : 'http';
+  if(conf.type == 'main') {
+    newOptions.uri = `${_head}://${conf.ip}:7332/`;
+  }
+  else {
+    newOptions.uri = `${_head}://${conf.ip}:17332/`;
+  }
 
   if (
     newOptions.method === 'POST' ||
@@ -162,49 +170,35 @@ function ms() {
  * 终端配置管理
  */
 
-const defaultNetworkType = 'testnet';
+let defaultNetworkType = 'testnet';
 
 const main = {
-    apiKey: 'bookmansoft',        //远程服务器基本校验密码
-    cid:    'terminal001',        //终端编码，作为访问远程钱包时的终端标识
-    token:  '0340129aaa7a69ac10bfbf314b9b1ca8bdda5faecce1b6dab3e7c4178b99513392', //访问钱包时的令牌固定量，通过HMAC算法，将令牌随机量和令牌固定量合成为最终的访问令牌
+  type:   'main',
+  ip:     '127.0.0.1',          //远程服务器地址
+  head:   'http',               //远程服务器通讯协议，分为 http 和 https
+  id:     'primary',            //默认访问的钱包编号
+  apiKey: 'bookmansoft',        //远程服务器基本校验密码
+  cid:    'terminal001',        //终端编码，作为访问远程钱包时的终端标识
+  token:  '0340129aaa7a69ac10bfbf314b9b1ca8bdda5faecce1b6dab3e7c4178b99513392', //访问钱包时的令牌固定量，通过HMAC算法，将令牌随机量和令牌固定量合成为最终的访问令牌
 };
 
 const testnet = {
-    apiKey: 'bookmansoft',        //远程服务器基本校验密码
-    cid:    'terminal001',        //终端编码，作为访问远程钱包时的终端标识
-    token:  '0340129aaa7a69ac10bfbf314b9b1ca8bdda5faecce1b6dab3e7c4178b99513392', //访问钱包时的令牌固定量，通过HMAC算法，将令牌随机量和令牌固定量合成为最终的访问令牌
+  type:   'testnet',
+  ip:     '127.0.0.1',          //远程服务器地址
+  head:   'http',               //远程服务器通讯协议，分为 http 和 https
+  id:     'primary',            //默认访问的钱包编号
+  apiKey: 'bookmansoft',        //远程服务器基本校验密码
+  cid:    'terminal001',        //终端编码，作为访问远程钱包时的终端标识
+  token:  '0340129aaa7a69ac10bfbf314b9b1ca8bdda5faecce1b6dab3e7c4178b99513392', //访问钱包时的令牌固定量，通过HMAC算法，将令牌随机量和令牌固定量合成为最终的访问令牌
 };
 
-/**
- * 获取终端配置
- * @param {*} networkType 
- */
-function getTerminalConfig(networkType) {
-  networkType = networkType || defaultNetworkType;
-
-  switch(networkType) {
-      case 'main' : {
-          return main;
-      }
-
-      case 'testnet': {
-          return testnet;
-      }
-
-      default: {
-          return {};
-      }
-  }
+const AuthConnConfig = {
+  'main': main,
+  'testnet': testnet,
 }
 
-let tconfig = getTerminalConfig();
 
 const $params = {
-  apiKey: tconfig.apiKey, //远程服务器基本校验密码
-  cid: tconfig.cid, //终端编码，作为访问远程钱包时的终端标识
-  token: tconfig.token, //访问钱包时的令牌固定量，通过HMAC算法，将令牌随机量和令牌固定量合成为最终的访问令牌
-  id: 'primary', //默认访问的钱包编号
   random: null,
   randomTime: null,
 };
@@ -250,15 +244,16 @@ function fillOptions(options) {
   }
 
   let rnd = getRandom();
-  if ($params.token && rnd) {
-    options.body.token = signHMAC($params.token, rnd);
+  let _token = AuthConn.getTerminalConfig().token;
+  if (_token && rnd) {
+    options.body.token = signHMAC(_token, rnd);
   }
-  options.body.id = $params.id; //附加默认钱包编号
-  options.body.cid = $params.cid; //附加客户端编号
+  options.body.id = AuthConn.getTerminalConfig().id; //附加默认钱包编号
+  options.body.cid = AuthConn.getTerminalConfig().cid; //附加客户端编号
 
   let auth = {
     username: 'bitcoinrpc',
-    password: $params.apiKey || '',
+    password: AuthConn.getTerminalConfig().apiKey || '',
   };
   var base = new Base64();
   var result = base.encode(`${auth.username}:${auth.password}`);
@@ -274,7 +269,7 @@ async function queryToken() {
         method: 'POST',
         body: {
           method: 'token.random',
-          params: [$params.cid],
+          params: [AuthConn.getTerminalConfig().cid],
         },
       })
     );
@@ -305,6 +300,29 @@ class AuthConn
       console.error(`${method}数据请求错误`);
     }    
     return rt.result;
+  }
+
+  /**
+   * 获取终端配置
+   * @param {*} networkType 
+   */
+  static getTerminalConfig(networkType) {
+    networkType = networkType || defaultNetworkType;
+
+    return !!AuthConnConfig[networkType] ? AuthConnConfig[networkType] : {};
+  }
+
+  /**
+   * 设置终端配置
+   * @param {*} networkType 
+   * @param {*} info 
+   */
+  static setup(info) {
+    //设为默认网络类型
+    defaultNetworkType = info.type;
+
+    //设置默认网络类型的参数
+    AuthConnConfig[info.type] = info;
   }
 }
 
