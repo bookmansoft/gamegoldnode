@@ -3,7 +3,7 @@
  */
 
 const uuid = require('uuid/v1')
-const remote = require('../util/authConn')
+const remote = require('../../lib/authConn')
 
 describe.skip('厂商管理流程', () => {
     it('创建一个厂商', async ()=>{

@@ -3,7 +3,7 @@
  */
 
 //引入授权式连接器
-const remote = require('../util/authConn')
+const remote = require('../../lib/authConn')
 
 //设置授权式连接器的网络类型和对应参数，网络类型分为 testnet 和 main
 remote.setup({
