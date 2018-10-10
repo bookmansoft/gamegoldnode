@@ -85,12 +85,18 @@ npm link
 ```
 
 之后就可以使用简洁形式的行命令了：
-
 ```bash
-ggcmd rpc balance.all
+ggcmd balance.all
 ```
 
-注意如果是连接测试网，需要附加网络类型参数：
+相当于：
 ```bash
-ggcmd rpc balance.all --network=testnet
+npm run cli rpc balance.all
+```
+
+@note 简洁形式可以直接在后面添加形如 --netwrok=main 或者 -help 形式的参数，而 npm run 形式的指令无法添加这样的参数（会被 npm 而不是脚本捕获到）
+
+注意当前版本默认连接测试网，如果连接主网需要附加网络类型参数：
+```bash
+ggcmd balance.all --network=main
 ```
