@@ -8,6 +8,9 @@
     "cli": "node bin/cli --network=testnet",
     "test": "mocha --reporter spec test/*.js"
   },
+  "bin": {
+    "ggcmd": "./bin/cli"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bookmansoft/gamegoldnode.git"

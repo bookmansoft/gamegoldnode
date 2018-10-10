@@ -78,3 +78,19 @@ npm run cli rpc tx.send tb1qwlm83tk3cd6wmcf34x43unewkhp9scu6x9x3l7 1000
 ```
 @注意：金额单位为聪，不能太小，如果显示余额不足，则执行 npm run cli rpc generate 100 进行充值
 @地址可以使用 npm run cli rpc address.create 指令生成
+
+## 链接行命令
+```bash
+npm link
+```
+
+之后就可以使用简洁形式的行命令了：
+
+```bash
+ggcmd rpc balance.all
+```
+
+注意如果是连接测试网，需要附加网络类型参数：
+```bash
+ggcmd rpc balance.all --network=testnet
+```
