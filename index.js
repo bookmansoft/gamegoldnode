@@ -114,6 +114,10 @@ node.mempool.on('tx', addItem);
   await node.connect();
   node.startSync();
 
+  //开启挖矿
+  await node.rpc.execute({method:'miner.set',params:[true]});
+  // endregion
+
   //#region 建立代理服务
   gamegold.startproxy({
     node: node, 
