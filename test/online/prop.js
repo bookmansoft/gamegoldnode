@@ -5,7 +5,7 @@
 const uuid = require('uuid/v1')
 const gamegold = require('gamegold')
 const util = gamegold.util
-const remote = require('../../lib/consoleConn')
+const remote = require('../util/consoleConn')
 
 let env = {}; //在多个测试用例间传递中间结果的缓存变量
 

@@ -15,7 +15,7 @@ const contractStatus = {
 
 const gamegold = require('gamegold')
 const util = gamegold.util
-const remote = require('../../lib/consoleConn')
+const remote = require('../util/consoleConn')
 
 //一个有效的、含有一定余额的比特币地址，用于预言机检测
 let dt = {type:1, addr: '1EzwoHtiXB4iFwedPr49iywjZn2nnekhoj'};
