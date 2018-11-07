@@ -5,11 +5,16 @@
 const uuid = require('uuid/v1');
 const gamegold = require('gamegold')
 const util = gamegold.util
-const remote = require('../util/consoleConn')
+
+//引入工具包
+const toolkit = require('gamegoldtoolkit')
+//创建授权式连接器实例
+const remote = new toolkit.conn();
+remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览器环境中的 fetch 函数
 
 let env = {}; //在多个测试用例间传递中间结果的缓存变量
 
-describe.skip('道具拍卖流程', ()=>{
+describe('道具拍卖流程', ()=>{
     it('列表厂商', async ()=>{
         let ret = await remote.execute('cp.list', []);
         if(ret.length > 0) {
@@ -36,7 +41,7 @@ describe.skip('道具拍卖流程', ()=>{
     });
 
     it('拍卖一个道具', async () => {
-        await remote.execute('generate', [2]);
+        await remote.execute('miner.generate', [2]);
         await util.waiting(1000);
 
         let ret = await remote.execute('prop.list', []);

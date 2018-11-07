@@ -14,8 +14,13 @@ const contractStatus = {
 };
 
 const gamegold = require('gamegold')
-const util = gamegold.util
-const remote = require('../util/consoleConn')
+const util = gamegold.util;
+
+//引入工具包
+const toolkit = require('gamegoldtoolkit')
+//创建授权式连接器实例
+const remote = new toolkit.conn();
+remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览器环境中的 fetch 函数
 
 //一个有效的、含有一定余额的比特币地址，用于预言机检测
 let dt = {type:1, addr: '1EzwoHtiXB4iFwedPr49iywjZn2nnekhoj'};
@@ -23,7 +28,7 @@ dt.id = `${dt.type}.${dt.addr}`;
 
 let env = {}; //在多个测试用例间传递中间结果的缓存变量
 
-describe.skip('交易对业务流程', () => {
+describe('交易对业务流程', () => {
     it('创建并提交一个交易对合约', async () => {
         console.log('create前账户信息', await remote.execute('balance.all', []));
 
@@ -65,7 +70,7 @@ describe.skip('交易对业务流程', () => {
             console.log('execute后账户信息', await remote.execute('balance.all', []));
 
             await util.waiting(1000);
-            await remote.execute('generate', [1]);
+            await remote.execute('miner.generate', [1]);
 
             await util.waiting(1000);
             console.log('记账后的账户信息', await remote.execute('balance.all', []));
@@ -73,7 +78,7 @@ describe.skip('交易对业务流程', () => {
     });
 
     it('记账', async ()=>{
-        await remote.execute('generate', [2]);
+        await remote.execute('miner.generate', [2]);
         await util.waiting(1000);
         console.log('记账后的账户信息', await remote.execute('balance.all', []));
     });

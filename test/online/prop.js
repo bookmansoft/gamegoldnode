@@ -4,17 +4,22 @@
 
 const uuid = require('uuid/v1')
 const gamegold = require('gamegold')
-const util = gamegold.util
-const remote = require('../util/consoleConn')
+const util = gamegold.util;
+
+//引入工具包
+const toolkit = require('gamegoldtoolkit')
+//创建授权式连接器实例
+const remote = new toolkit.conn();
+remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览器环境中的 fetch 函数
 
 let env = {}; //在多个测试用例间传递中间结果的缓存变量
 
-describe.skip('道具管理流程', () => {
+describe('道具管理流程', () => {
     it('设定厂商和转移地址信息', async () => {
         let ret = await remote.execute('cp.list', []);
-        if(!!ret && ret.length>0) {
-            env.cid = ret[0].cid;
-            env.addr = ret[0].current.address;
+        if(!!ret && ret.list && ret.list.length>0) {
+            env.cid = ret.list[0].cid;
+            env.addr = ret.list[0].current.address;
             console.log(env);
         }
         else {
@@ -26,7 +31,7 @@ describe.skip('道具管理流程', () => {
         if(env.cid) {
             let ret = await remote.execute('prop.create', [env.cid, uuid(), 20000]);
             if(!!ret) {
-                env.hash = ret.hash;
+                env.hash = util.revHex(ret.hash);
             }
             await util.waiting(1000);
             console.log(env);
@@ -43,7 +48,7 @@ describe.skip('道具管理流程', () => {
                 env.hash = ret.hash;
             }
             await util.waiting(1000);
-            await remote.execute('generate', [1]);
+            await remote.execute('miner.generate', [1]);
             await util.waiting(1000);
             ret = await remote.execute('prop.list', []);
             for(let item of ret) {
@@ -62,7 +67,7 @@ describe.skip('道具管理流程', () => {
         if(env.prop) {
             await remote.execute('prop.found', [env.prop.hash]);
             await util.waiting(1000);
-            await remote.execute('generate', [1]);
+            await remote.execute('miner.generate', [1]);
             await util.waiting(1000);
             console.log(await remote.execute('prop.list', []));
         }
