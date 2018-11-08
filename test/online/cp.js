@@ -3,12 +3,15 @@
  */
 
 const uuid = require('uuid/v1')
-const toolkit = require('gamegoldtoolkit')
-const remote = new toolkit.conn();
 
-describe.skip('厂商管理流程', () => {
+//引入工具包
+const toolkit = require('gamegoldtoolkit')
+//创建授权式连接器实例
+const remote = new toolkit.conn();
+remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览器环境中的 fetch 函数
+
+describe('厂商管理流程', () => {
     it('创建一个厂商', async ()=>{
-        await remote.execute('generate', [1]);
         await (async function(time){
             return new Promise(resolve =>{
                 setTimeout(resolve, time);
@@ -19,7 +22,7 @@ describe.skip('厂商管理流程', () => {
         let ret = await remote.execute('cp.create', [uuid(), '127.0.0.1']);
         console.log(ret);
 
-        await remote.execute('generate', [1]);
+        await remote.execute('miner.generate', [1]);
         await (async function(time){
             return new Promise(resolve =>{
                 setTimeout(resolve, time);

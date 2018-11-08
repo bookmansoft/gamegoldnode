@@ -3,17 +3,17 @@
  * Creted by liub 2018.9.11
  */
 
-let remote = require('../util/publicConn')()
-let {ReturnCodeName, CommMode, ReturnCode, NotifyType} = require('../util/comm'); //常量
+//引入工具包
+const toolkit = require('gamegoldtoolkit')
+//创建授权式连接器实例
+const remote = new toolkit.conn();
+remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览器环境中的 fetch 函数
 
-describe.skip('订阅与退订', function() {
-    it('订阅区块消息', done => {
-        remote.watch(msg=>{
+describe('订阅与退订', function() {
+    it('订阅区块消息', async () => {
+        await remote.setmode(remote.CommMode.ws).watch(msg => {
             console.log(msg);
-        }, 'p2p/block').mode(CommMode.ws).fetch({method:'subscribe', params:['p2p/block']}, (err, msg) => {
-            remote.fetch({method:'unsubscribe', params:['p2p/block']}, (err, msg) => {
-                done();
-            });
-        });
+        }, 'p2p/block').execute('subscribe', ['p2p/block']);
+        await remote.execute('unsubscribe', ['p2p/block']);
     });
 });
