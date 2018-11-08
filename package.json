@@ -23,7 +23,7 @@
   "homepage": "https://github.com/bookmansoft/gamegoldnode#readme",
   "dependencies": {
     "create-hmac": "^1.1.7",
-    "gamegold": "^1.2.0",
+    "gamegold": "^1.2.1",
     "gamegoldtoolkit": "^1.2.5",
     "node-fetch": "^2.2.1"
   }
