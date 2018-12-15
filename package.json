@@ -1,6 +1,6 @@
 {
   "name": "gamegoldnode",
-  "version": "1.2.2",
+  "version": "1.2.16",
   "description": "Game Gold Node",
   "main": "index.js",
   "scripts": {
@@ -23,8 +23,8 @@
   "homepage": "https://github.com/bookmansoft/gamegoldnode#readme",
   "dependencies": {
     "create-hmac": "^1.1.7",
-    "gamegold": "^1.2.2",
-    "gamegoldtoolkit": "^1.2.8",
+    "gamegold": "^1.2.16",
+    "gamegoldtoolkit": "^1.5.10",
     "node-fetch": "^2.2.1"
   }
 }
