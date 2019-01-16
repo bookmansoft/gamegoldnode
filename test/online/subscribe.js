@@ -12,7 +12,7 @@ remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览�
 describe('订阅与退订', function() {
     it('订阅区块消息', async () => {
         await remote.setmode(remote.CommMode.ws).watch(msg => {
-            console.log(msg);
+            console.log('notify', msg);
         }, 'p2p/block').execute('subscribe', ['p2p/block']);
         await remote.execute('unsubscribe', ['p2p/block']);
     });
