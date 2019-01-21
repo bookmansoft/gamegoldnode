@@ -45,7 +45,7 @@ params.push(true);                //Whether to use witness programs.
 params.push(false);               //set true to create a watch-only wallet
 params.push(null);                //public key used for multisig wallet
 
-describe.only('多签钱包', function() {
+describe('多签钱包', function() {
     /**
      * 创建多签钱包后，需要通过独立渠道，将自身公钥传递给其他合伙人
      */
