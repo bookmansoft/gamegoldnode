@@ -115,7 +115,7 @@ node.mempool.on('tx', addItem);
   node.startSync();
 
   //开启挖矿
-  await node.rpc.execute({method:'miner.set',params:[true]});
+  await node.rpc.execute({method:'miner.set',params:[false]});
   // endregion
 
   //#region 建立代理服务
