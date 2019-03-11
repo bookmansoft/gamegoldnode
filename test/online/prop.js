@@ -13,7 +13,7 @@ remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览�
 let env = {}; //在多个测试用例间传递中间结果的缓存变量
 let oid = uuid();
 
-describe.skip('道具管理流程', () => {
+describe.only('道具管理流程', () => {
     //#region 开启长连模式
     before(async ()=>{
         remote.setmode(remote.CommMode.ws);
@@ -77,13 +77,13 @@ describe.skip('道具管理流程', () => {
     it('熔铸一个道具', async () => {
         if(env.pid) {
             await remote.execute('miner.generate', [1]);
-            await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(1000);
+            await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(2500);
 
             await remote.execute('prop.found', [env.pid]);
-            await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(1000);
+            await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(2500);
 
             await remote.execute('miner.generate', [1]);
-            await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(1000);
+            await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(2500);
 
             let ret = await remote.execute('prop.query', [[['oid', oid]]]);
             let count = 0;
