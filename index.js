@@ -105,6 +105,19 @@ node.mempool.on('tx', addItem);
     else {
       //当前已经建立了钱包数据库，可以做一些进一步的判断，例如钱包是否已备份等
     }
+
+    //订阅钱包事件
+    wdb.on('prop/receive', msg => {
+      console.log('prop/receive:', msg);
+    });
+
+    wdb.on('balance.account.client', msg => {
+      console.log('balance.account.client', msg);
+    });
+
+    wdb.on('balance.client', msg => {
+      console.log('balance.client', msg);
+    });
   }
   else {
     //当前节点不具备钱包插件
