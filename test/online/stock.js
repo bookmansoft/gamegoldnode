@@ -46,7 +46,7 @@ let customer = {
 //设为 false 来检测零确认机制，设为 true 则更为稳妥的使用上链数据
 let blockVerify = false;
 
-describe.only('凭证管理', () => {
+describe('凭证管理', () => {
     it('准备工作', async () => {
         //强制设置同步完成标志
         await remote.execute('miner.setsync', []);
