@@ -13,7 +13,7 @@ remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览�
 let env = {}; //在多个测试用例间传递中间结果的缓存变量
 let oid = uuid();
 
-describe.only('道具管理流程', () => {
+describe('道具管理流程', () => {
     //#region 开启长连模式
     before(async ()=>{
         remote.setmode(remote.CommMode.ws);
@@ -34,8 +34,8 @@ describe.only('道具管理流程', () => {
     it('设定厂商和转移地址信息', async () => {
         let ret = await remote.execute('cp.list', []);
         if(!!ret && ret.list && ret.list.length > 0) {
-            env.cid = ret.list[0].cid;
-            env.addr = ret.list[0].current.address;
+            env.cid = ret.list[ret.list.length-1].cid;
+            env.addr = ret.list[ret.list.length-1].current.address;
             console.log(env);
         } else {
             console.log('厂商列表为空');
