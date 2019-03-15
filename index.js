@@ -5,6 +5,7 @@
 process.title = 'gamegold';
 
 const gamegold = require('gamegold');
+const startproxy = require('./lib/proxy/startproxy');
 
 var util = gamegold.util;
 var logger = new gamegold.logger({ level: 'debug', console: true });
@@ -132,7 +133,7 @@ node.mempool.on('tx', addItem);
   // endregion
 
   //#region 建立代理服务
-  gamegold.startproxy({
+  startproxy({
     node: node, 
     pow: process.argv.indexOf('--pow') !== -1,
     ports: [7333, 17333, 17444, 27333, 27901],
