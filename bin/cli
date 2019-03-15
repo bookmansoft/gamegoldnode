@@ -191,7 +191,11 @@ class CLI
       throw e;
     }
   
-    this.log(result);
+    if(result.error) {
+      this.log(result.error.message);
+    } else {
+      this.log(result.result);
+    }
   }  
 }
 
