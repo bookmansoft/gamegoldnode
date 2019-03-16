@@ -13,15 +13,12 @@ const contractStatus = {
     Expired: 5,         //逾期失效状态
 };
 
-const gamegold = require('gamegold')
-const util = gamegold.util;
-
 //引入工具包
 const toolkit = require('gamegoldtoolkit')
 //创建授权式连接器实例
 const remote = new toolkit.conn();
 remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览器环境中的 fetch 函数
-
+  
 //一个有效的、含有一定余额的比特币地址，用于预言机检测
 let dt = {type:1, addr: '1EzwoHtiXB4iFwedPr49iywjZn2nnekhoj'};
 dt.id = `${dt.type}.${dt.addr}`;
@@ -36,7 +33,7 @@ describe('交易对业务流程', () => {
 
         //由于系统广泛使用了异步消息系统，每个消息的处理句柄虽然使用了async和await语法，但系统级的调用者使用Reflect.apply进行调用，从而失去了同步特性
         //因此业务提交后，等待一段时间再去获取数据（例如余额）才会比较准确
-        await util.waiting(1000);
+        await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
         console.log('create后账户信息', await remote.execute('balance.all', []));
     });
 
@@ -46,7 +43,8 @@ describe('交易对业务流程', () => {
             console.log(env.list[0]);
             let ret = await remote.execute('contract.promise', [env.list[0].id]);
 
-            await util.waiting(15000); //等待一段较长的时间，以便节点进行交易对的跨网确认
+            //等待一段较长的时间，以便节点进行交易对的跨网确认
+            await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(15000);
 
             console.log('promise后账户信息', await remote.execute('balance.all', []));
         }
@@ -66,20 +64,20 @@ describe('交易对业务流程', () => {
                 return;
             }
 
-            await util.waiting(1000);
+            await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
             console.log('execute后账户信息', await remote.execute('balance.all', []));
 
-            await util.waiting(1000);
+            await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
             await remote.execute('miner.generate', [1]);
 
-            await util.waiting(1000);
+            await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
             console.log('记账后的账户信息', await remote.execute('balance.all', []));
         }
     });
 
     it('记账', async ()=>{
         await remote.execute('miner.generate', [2]);
-        await util.waiting(1000);
+        await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
         console.log('记账后的账户信息', await remote.execute('balance.all', []));
     });
 });

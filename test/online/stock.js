@@ -56,11 +56,7 @@ describe('凭证管理', () => {
         if(ret.result[0].height < 100) {
             for(let i = ret.result[0].height; i < 101; i++) {
                 await remote.execute('miner.generate', [1]);
-                await (async function(time){
-                    return new Promise(resolve =>{
-                        setTimeout(resolve, time);
-                    });
-                })(500);
+                await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(100);
             }
         }
     });

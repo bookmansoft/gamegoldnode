@@ -10,6 +10,12 @@ const remote = new toolkit.conn();
 remote.setFetch(require('node-fetch')); //兼容性设置，提供模拟浏览器环境中的 fetch 函数
 
 describe('区块相关的JSONP', function() {
+    it('RESTFUL/GET 查询区块信息', async () => {
+        let ret = await remote.get('block/4d80d69a80967c6609fa2606e07fb7e3ad51f8338ce2f31651cb0acdd9250000');
+        console.log(ret);
+    });
+
+
     it('获取近期区块列表', async () => {
         let msg = await remote.get('blocks');
         if(!msg.error) {

@@ -20,8 +20,13 @@ describe('地址相关的JSONP', function() {
         console.log(ret);
     });
     
+    it('从订单中获取符合条件的地址集合', async () => {
+        let ret = await remote.execute('address.filter', [null, null, null]);
+        console.log(ret);
+    });
+
     it('获取指定地址相关历史信息', async () => {
-        let ret = await remote.setmode(remote.CommMode.ws).execute('getAddressHistory', [addr]);
+        let ret = await remote.setmode(remote.CommMode.ws).execute('getAddressHistory', [[addr]]);
         console.log(ret);
     });
 

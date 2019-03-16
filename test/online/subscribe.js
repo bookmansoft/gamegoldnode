@@ -12,8 +12,30 @@ remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览�
 describe('订阅与退订', function() {
     it('订阅区块消息', async () => {
         await remote.setmode(remote.CommMode.ws).watch(msg => {
-            console.log('notify', msg);
+            console.log(msg);
         }, 'p2p/block').execute('subscribe', ['p2p/block']);
         await remote.execute('unsubscribe', ['p2p/block']);
+    });
+
+    it('WS模式监听消息', async () => {
+        await remote.setmode(remote.CommMode.ws).login();
+        await remote.join();
+
+        //通过监听收到消息
+        remote.watch(msg => {
+            console.log('tx.client', msg);
+        }, 'tx.client').watch(msg => {
+            console.log('balance.account.client', msg);
+        }, 'balance.account.client').watch(msg => {
+            console.log('balance.client', msg);
+        }, 'balance.client');
+
+        //获得一个新的地址
+        let ret = await remote.execute('address.create', []);
+        let newaddr = ret.result.address;
+
+        //向该地址转账
+        await remote.execute('tx.send', [newaddr, 20000, 'bianque']);
+        await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(30000);
     });
 });

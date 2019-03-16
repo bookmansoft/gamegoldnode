@@ -34,8 +34,8 @@ describe('道具管理流程', () => {
     it('设定厂商和转移地址信息', async () => {
         let ret = await remote.execute('cp.list', []);
         if(!!ret && ret.list && ret.list.length > 0) {
-            env.cid = ret.list[ret.list.length-1].cid;
-            env.addr = ret.list[ret.list.length-1].current.address;
+            env.cid = ret.list[0].cid;
+            env.addr = ret.list[0].current.address;
             console.log(env);
         } else {
             console.log('厂商列表为空');
@@ -77,13 +77,13 @@ describe('道具管理流程', () => {
     it('熔铸一个道具', async () => {
         if(env.pid) {
             await remote.execute('miner.generate', [1]);
-            await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(2500);
+            await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(1000);
 
             await remote.execute('prop.found', [env.pid]);
-            await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(2500);
+            await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(1000);
 
             await remote.execute('miner.generate', [1]);
-            await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(2500);
+            await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(1000);
 
             let ret = await remote.execute('prop.query', [[['oid', oid]]]);
             let count = 0;
