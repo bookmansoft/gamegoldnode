@@ -49,7 +49,7 @@ describe('道具拍卖流程', ()=>{
 
     it('拍卖一个道具', async () => {
         await remote.execute('miner.generate.admin', [1]);
-        await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(10000);
+        await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
 
         if(env.props.length > 0) {
             await remote.execute('prop.sale', [env.props[0].pid, 30000]);
@@ -60,11 +60,12 @@ describe('道具拍卖流程', ()=>{
     });
 
     it('竞拍一个道具', async () => {
-        let sales = await remote.execute('prop.remoteQuery', [['pst', 2]]);
+        let sales = await remote.execute('prop.remoteQuery', [[['pst', 2]]]);
+        console.log(sales);
         if(sales.length > 0) {
             await remote.execute('prop.buy', [sales[0].pid, 30000]);
             await remote.execute('miner.generate.admin', [1]);
-            await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(10000);
+            await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
         } else {
             console.log('Empty Sale List');
         }
