@@ -48,13 +48,13 @@ prop.buy pid bidPrice
 1. 完成初始准备工作
 
 ```bash
-miner.setsync
+miner.setsync.admin
 
-miner.generate 100
+miner.generate.admin 100
 
 cp.create bookman http://127.0.0.1
 
-miner.generate 1
+miner.generate.admin 1
 ```
 
 2. 生成两个独立子账户，记录他们的有效地址
@@ -76,7 +76,7 @@ prop.query "[['oid','p1']]"
 
 # 系统将道具发送给 u1
 prop.send u1Addr pid
-miner.generate 1
+miner.generate.admin 1
 
 # u1 列表刚刚得到的道具
 prop.list 1 u1

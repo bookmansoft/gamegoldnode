@@ -76,13 +76,13 @@ describe('道具管理流程', () => {
 
     it('熔铸一个道具', async () => {
         if(env.pid) {
-            await remote.execute('miner.generate', [1]);
+            await remote.execute('miner.generate.admin', [1]);
             await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(1000);
 
             await remote.execute('prop.found', [env.pid]);
             await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(1000);
 
-            await remote.execute('miner.generate', [1]);
+            await remote.execute('miner.generate.admin', [1]);
             await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(1000);
 
             let ret = await remote.execute('prop.query', [[['oid', oid]]]);

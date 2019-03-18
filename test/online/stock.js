@@ -49,13 +49,13 @@ let blockVerify = false;
 describe('凭证管理', () => {
     it('准备工作', async () => {
         //强制设置同步完成标志
-        await remote.execute('miner.setsync', []);
+        await remote.execute('miner.setsync.admin', []);
 
         //检测块高度，必要时进行挖矿以确保创世区块成熟
         let ret = await remote.execute('block.tips', []);
         if(ret.result[0].height < 100) {
             for(let i = ret.result[0].height; i < 101; i++) {
-                await remote.execute('miner.generate', [1]);
+                await remote.execute('miner.generate.admin', [1]);
                 await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(100);
             }
         }
@@ -66,7 +66,7 @@ describe('凭证管理', () => {
         let ret = await remote.execute('cp.create', [cp.name, 'http://127.0.0.1']);
 
         //确保该CP数据上链
-        await remote.execute('miner.generate', [1]);
+        await remote.execute('miner.generate.admin', [1]);
         
         //查询并打印CP信息
         ret = await remote.execute('cp.byName', [cp.name]);
@@ -87,7 +87,7 @@ describe('凭证管理', () => {
         await remote.execute('tx.send', [bob.addr, 500000000]);
 
         if(blockVerify) {
-            await remote.execute('miner.generate', [1]);
+            await remote.execute('miner.generate.admin', [1]);
         }
 
         console.log(alice);
@@ -98,7 +98,7 @@ describe('凭证管理', () => {
         let ret = await remote.execute('stock.offer', [cp.id, 1000, 1000]);
         //console.log(ret.result);
         if(blockVerify) {
-            await remote.execute('miner.generate', [1]);
+            await remote.execute('miner.generate.admin', [1]);
         }
     });
 
@@ -106,7 +106,7 @@ describe('凭证管理', () => {
         let ret = await remote.execute('stock.purchase', [cp.id, 500, alice.name]);
         //console.log(ret.result);
         if(blockVerify) {
-            await remote.execute('miner.generate', [1]);
+            await remote.execute('miner.generate.admin', [1]);
         }
     });
 
@@ -114,7 +114,7 @@ describe('凭证管理', () => {
         let ret = await remote.execute('stock.send', [cp.id, 100, bob.addr, alice.name]);
         //console.log(ret.result);
         if(blockVerify) {
-            await remote.execute('miner.generate', [1]);
+            await remote.execute('miner.generate.admin', [1]);
         }
     });
 
@@ -122,7 +122,7 @@ describe('凭证管理', () => {
         let ret = await remote.execute('stock.bid', [cp.id, 200, 2000, alice.name]);
         //console.log(ret);
         if(blockVerify) {
-            await remote.execute('miner.generate', [1]);
+            await remote.execute('miner.generate.admin', [1]);
         }
     });
 
@@ -130,7 +130,7 @@ describe('凭证管理', () => {
         let ret = await remote.execute('stock.auction', [cp.id, alice.addr, 100, 2000]);
         //console.log(ret.result);
         if(blockVerify) {
-            await remote.execute('miner.generate', [1]);
+            await remote.execute('miner.generate.admin', [1]);
         }
     });
 
@@ -138,13 +138,13 @@ describe('凭证管理', () => {
         let ret = await remote.execute('order.pay', [cp.id, customer.name, customer.sn, 100000]);
         //console.log(ret.result);
         if(blockVerify) {
-            await remote.execute('miner.generate', [1]);
+            await remote.execute('miner.generate.admin', [1]);
         }
     });
 
     it('打印凭证列表，验证权益分配的有效性', async () => {
         if(blockVerify) {
-            await remote.execute('miner.generate', [1]);
+            await remote.execute('miner.generate.admin', [1]);
         }
 
         let ret = await remote.execute('stock.list', [['cid',cp.id]]);

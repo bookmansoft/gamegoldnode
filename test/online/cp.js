@@ -45,7 +45,7 @@ describe('厂商管理流程', () => {
         let ret = await remote.execute('cp.create', [uuid(), '127.0.0.1']);
         console.log(ret);
 
-        await remote.execute('miner.generate', [1]);
+        await remote.execute('miner.generate.admin', [1]);
         await (async function(time){
             return new Promise(resolve =>{
                 setTimeout(resolve, time);

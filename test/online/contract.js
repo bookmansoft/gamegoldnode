@@ -68,7 +68,7 @@ describe('交易对业务流程', () => {
             console.log('execute后账户信息', await remote.execute('balance.all', []));
 
             await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
-            await remote.execute('miner.generate', [1]);
+            await remote.execute('miner.generate.admin', [1]);
 
             await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
             console.log('记账后的账户信息', await remote.execute('balance.all', []));
@@ -76,7 +76,7 @@ describe('交易对业务流程', () => {
     });
 
     it('记账', async ()=>{
-        await remote.execute('miner.generate', [2]);
+        await remote.execute('miner.generate.admin', [2]);
         await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
         console.log('记账后的账户信息', await remote.execute('balance.all', []));
     });
