@@ -27,7 +27,7 @@ remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览�
 });
 
 describe('加解密', () => {
-    it.only('获取节点令牌', async () => {
+    it('获取节点令牌', async () => {
         let ret = await remote.execute('token.auth', ['1,2,3']);
         for(let item of ret.result) {
             //解密字段
