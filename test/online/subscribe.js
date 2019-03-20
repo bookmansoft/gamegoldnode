@@ -32,10 +32,10 @@ describe('订阅与退订', function() {
 
         //获得一个新的地址
         let ret = await remote.execute('address.create', []);
-        let newaddr = ret.result.address;
+        let newaddr = ret.address;
 
         //向该地址转账
-        await remote.execute('tx.send', [newaddr, 20000, 'bianque']);
-        await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(30000);
+        await remote.execute('tx.send', [newaddr, 20000]);
+        await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(3000);
     });
 });

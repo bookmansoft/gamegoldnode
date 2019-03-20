@@ -11,22 +11,22 @@ remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览�
 
 describe('交易相关的JSONP', function() {
     it('获取相关的交易信息', async () => {
-        let msg = await remote.execute('getDetailedTransaction', ['ef912e42d5538f4ef06271cdb66b47e05b28067000ecdf568a28c0ce26ebc19c']);
+        let msg = await remote.execute('getDetailedTransaction', ['6bb91e4dc6744265f0a8e165c7acf2a742b49f4af7e14e57daca8e1b115c3e8a']);
         console.log(msg);
     });
 
     it('获取相关的交易信息', async () => {
-        let msg = await remote.execute('getRawTransaction', ['ef912e42d5538f4ef06271cdb66b47e05b28067000ecdf568a28c0ce26ebc19c']);
+        let msg = await remote.execute('getRawTransaction', ['6bb91e4dc6744265f0a8e165c7acf2a742b49f4af7e14e57daca8e1b115c3e8a']);
         console.log(msg);
     });
 
     it('获取相关的交易信息', async () => {
-        let msg = await remote.execute('getTransaction', ['ef912e42d5538f4ef06271cdb66b47e05b28067000ecdf568a28c0ce26ebc19c']);
+        let msg = await remote.execute('getTransaction', ['6bb91e4dc6744265f0a8e165c7acf2a742b49f4af7e14e57daca8e1b115c3e8a']);
         console.log(msg);
     });
 
     it('从内存池查询交易信息', async () => {
-        let msg = await remote.setmode(remote.CommMode.ws).execute('getMempoolTransaction', ['802f945284eed5ea0dddf04b1d825677e3d9271267d3b18081cd2ca9406b0c79']);
+        let msg = await remote.setmode(remote.CommMode.ws).execute('getMempoolTransaction', ['6bb91e4dc6744265f0a8e165c7acf2a742b49f4af7e14e57daca8e1b115c3e8a']);
         console.log(msg);
     });
 });

@@ -154,13 +154,13 @@ describe('多签钱包', function() {
       await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
       //切换连接器的目标钱包编号
       remote.setup({type: 'testnet', id: env.Bob.id});
-      msg = await remote.execute('tx.sign', [msg.hex, true]); //签署并广播交易
+      msg = await remote.execute('tx.sign.admin', [msg.hex, true]); //签署并广播交易
       console.log('multi sig:', msg.ms);
 
       await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
       //切换连接器的目标钱包编号
       remote.setup({type: 'testnet', id: env.Carson.id});
-      msg = await remote.execute('tx.sign', [msg.hex, true]); //签署并广播交易
+      msg = await remote.execute('tx.sign.admin', [msg.hex, true]); //签署并广播交易
       console.log('multi sig:', msg.ms);
     });
 

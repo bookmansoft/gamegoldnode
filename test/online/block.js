@@ -31,18 +31,21 @@ describe('区块相关的JSONP', function() {
         console.log(msg);
     });
 
-    it('获取区块概要信息', async () => {
-        try {
-            let msg = await remote.setmode(remote.CommMode.ws).execute('getBlockOverview', ['d798755ecd93f9cbbbd4fa726972fc0b3c4a1656bdfc8ab4f1d02d1aaed2ed5b']);
-            console.log(msg);
-        } catch(e) {
-            console.log(e.message);
-        }
-    });
+    // it('获取区块概要信息', async () => {
+    //     try {
+    //         let msg = await remote.setmode(remote.CommMode.ws).execute('getBlockOverview', ['d798755ecd93f9cbbbd4fa726972fc0b3c4a1656bdfc8ab4f1d02d1aaed2ed5b']);
+    //         console.log(msg);
+    //     } catch(e) {
+    //         console.log(e.message);
+    //     }
+    // });
 
     it('获取区块原始信息', async () => {
         try {
-            let msg = await remote.setmode(remote.CommMode.ws).execute('getRawBlock', ['d798755ecd93f9cbbbd4fa726972fc0b3c4a1656bdfc8ab4f1d02d1aaed2ed5b']);
+            //设置长连模式
+            remote.setmode(remote.CommMode.ws);
+
+            let msg = await remote.execute('getRawBlock', ['d798755ecd93f9cbbbd4fa726972fc0b3c4a1656bdfc8ab4f1d02d1aaed2ed5b']);
             console.log(msg);
         } catch(e) {
             console.log(e.message);
@@ -51,7 +54,16 @@ describe('区块相关的JSONP', function() {
 
     it('获取系统概要信息', async () => {
         try {
-            let msg = await remote.setmode(remote.CommMode.ws).execute('getInfo', []);
+            //设置长连模式
+            remote.setmode(remote.CommMode.ws);
+
+            //执行登录, 以便访问敏感性接口
+            await remote.login();
+
+            //监听，以便收取节点推送消息 - 本测试中此举可选
+            await remote.join();
+
+            let msg = await remote.execute('sys.info', []);
             console.log(msg);
         } catch(e) {
             console.log(e.message);

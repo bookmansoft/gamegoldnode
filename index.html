@@ -298,7 +298,7 @@
 <li>游戏服务端访问对等网络：对于脱敏操作，可以直接明文通讯，如果出于对DDOS的担心，可以考虑一些流量控制方案</li>
 <li>游戏服务端和特约全节点（远程钱包）之间采用 HMAC 签名算法，确保两者相互认证和通讯数据不可篡改
 一、游戏服务端访问特约全节点（远程钱包）
-1、远程钱包必须为游戏服务端分配令牌编号和令牌固定量，可以通过本地制备指令 token.auth 屏显制备内容
+1、远程钱包必须为游戏服务端分配令牌编号和令牌固定量，可以通过本地制备指令 sys.createAuthToken 屏显制备内容
 2、每个游戏服务端配置被分配的令牌编号和令牌固定量，并以离线手动更新方式，和远程钱包的配置保持一致
 3、游戏服务端使用远程钱包RPC接口前，必须先发起命令获取自己的令牌随机量，来实现该随机量在服务端/远程钱包两端的同步
 4、游戏服务端将获取的令牌随机量、本地令牌固定量合成为访问令牌，将令牌编号、访问令牌附着在业务指令中一起上传
@@ -568,8 +568,8 @@ Produce -->  Exchange --> Sale     Found
     <span class="hljs-attr">"status"</span>: <span class="hljs-number">1</span>
   }
 ]</pre>
-</div></div><div data-title="token.auth" class="keyline-top section contain clearfix " data-reactid="87"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="88"><h3 id="tokenauth">token.auth</h3>
-<p>终端令牌制备指令： token.auth cpids
+</div></div><div data-title="sys.createAuthToken" class="keyline-top section contain clearfix " data-reactid="87"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="88"><h3 id="tokenauth">sys.createAuthToken</h3>
+<p>终端令牌制备指令： sys.createAuthToken cpids
 @note： cpids 为逗分字符串，可携带一条或多条CPID信息</p>
 <ul>
 <li>开放式连接器 N - 授权式连接器 Y - 控制台连接器 Y -</li>
@@ -1119,7 +1119,7 @@ ip是备用IP地址，支持IPV4和IPV6两种格式，在url无效的情况下�
 </ul>
 <p>@note gamegold.conf 位于 .gamegold\$networktype\ 目录下，对测试网而言 $networktype = testnet ， 对主网而言 $networktype = main</p>
 <p>6、在A窗口通过如下指令再次启动全节点</p>
-<p>7、在B窗口运行 token.auth [CPID逗分列表]，A窗口会屏显授权令牌，记录并离线分发给各CP</p>
+<p>7、在B窗口运行 sys.createAuthToken [CPID逗分列表]，A窗口会屏显授权令牌，记录并离线分发给各CP</p>
 </div></div><div data-title="游戏和特约全节点的交互" class="keyline-top section contain clearfix " data-reactid="142"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="143"><h2 id="游戏和特约全节点的交互">游戏和特约全节点的交互</h2>
 <p>注：详情请参考 GIP0005 - 认证和授权，以及 GIP0006 - 支付协议</p>
 <p>1、CP通过远程连接器，和特约全节点开展RPC通讯。CP需要将获取的授权令牌配置于它的远程连接器中，以控制台连接器为例：</p>

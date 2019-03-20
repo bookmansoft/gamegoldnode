@@ -55,7 +55,6 @@ describe('交易对业务流程', () => {
         if(env.list && env.list.length > 0) {
             if(env.list[0].transStatus == contractStatus.Confirmed) {
                 await remote.execute('contract.execute', [env.list[0].id, 2]); //假设接单者完成了真实的充值，则接单者可以顺利执行、获取对应的游戏金，否则执行失败
-    
             }
             else if(env.list[0].transStatus == contractStatus.Expired) {
                 await remote.execute('contract.execute', [env.list[0].id, 1]); //假设单据超时，则发单者可以顺利执行、获取对应的交易保证金，否则执行失败
