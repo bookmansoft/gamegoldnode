@@ -67,7 +67,7 @@ typings/
 package-lock.json
 .gamegold/testnet/hosts.json
 .vscode/
-.gamegold/testnet/spvchain.ldb/MANIFEST-000002
-.gamegold/testnet/spvchain.ldb/LOG
-.gamegold/testnet/spvchain.ldb/LOCK
-.gamegold/testnet/spvchain.ldb/CURRENT
+.gamegold/testnet/spvchain.ldb/
+.gamegold/main/chain.ldb/
+.gamegold/main/walletdb.ldb/
+.gamegold/main/hosts.json

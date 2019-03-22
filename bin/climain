@@ -16,7 +16,7 @@ class CLI
     this.config = new gamegold.config('gamegold');
     this.config.load({
       argv: true,
-      env: {'GAMEGOLD_NETWORK': 'testnet'},
+      env: {'GAMEGOLD_NETWORK': 'main'},
     });
     this.config.open('gamegold.conf');
   

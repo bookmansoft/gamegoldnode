@@ -1,16 +1,18 @@
 {
   "name": "gamegoldnode",
-  "version": "1.5.8",
+  "version": "1.5.10",
   "description": "Game Gold Node",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "spv": "node spv.js",
-    "cli": "node bin/cli --network=testnet",
+    "start": "cross-env GAMEGOLD_NETWORK=testnet node index.js",
+    "main": "cross-env GAMEGOLD_NETWORK=main node index.js",
+    "spv": "cross-env GAMEGOLD_NETWORK=testnet node spv.js",
+    "cli": "cross-env GAMEGOLD_NETWORK=testnet node bin/cli",
     "test": "mocha --reporter spec test/*.js"
   },
   "bin": {
-    "ggcmd": "./bin/cli"
+    "ggcmd": "./bin/cli",
+    "ggmain": "./bin/climain"
   },
   "repository": {
     "type": "git",
@@ -26,7 +28,7 @@
     "body-parser": "1.18.3",
     "create-hmac": "1.1.7",
     "express": "4.16.4",
-    "gamegold": "1.5.8",
+    "gamegold": "1.5.10",
     "gamegoldtoolkit": "1.6.2",
     "node-fetch": "2.3.0"
   }
