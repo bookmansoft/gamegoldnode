@@ -52,7 +52,7 @@ describe('厂商管理流程', () => {
     });
 
     it('列表现有厂商', async () => {
-        let ret = await remote.execute('cp.list', []);
+        let ret = await remote.execute('cp.query', []);
         console.log(ret);
     });
 });

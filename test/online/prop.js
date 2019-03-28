@@ -32,7 +32,7 @@ describe('道具管理流程', () => {
     //#endregion
 
     it('设定厂商和转移地址信息', async () => {
-        let ret = await remote.execute('cp.list', []);
+        let ret = await remote.execute('cp.query', []);
         if(!!ret && ret.list && ret.list.length > 0) {
             env.cid = ret.list[0].cid;
             env.addr = ret.list[0].current.address;

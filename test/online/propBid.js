@@ -21,7 +21,7 @@ let oid = uuid();
 
 describe('道具拍卖流程', ()=>{
     it('列表厂商', async ()=>{
-        let ret = await remote.execute('cp.list', []);
+        let ret = await remote.execute('cp.query', []);
         if(ret.list.length > 0) {
             env.cp = ret.list[0];
             console.log(env.cp.cid);

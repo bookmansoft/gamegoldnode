@@ -18,7 +18,7 @@ remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览�
 
 describe('授权式连接器测试', () => {
     it('打印厂商列表', async () => {
-        let ret = await remote.execute('cp.list', []);
+        let ret = await remote.execute('cp.query', []);
         if(!!ret && ret.length>0) {
             console.log(ret);
         }
