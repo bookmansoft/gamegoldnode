@@ -29,19 +29,19 @@ let cp = {
 
 //alice
 let alice = {
-    name: 'alice444',
+    name: 'alice',
     addr: '',
 };
 
 //bob
 let bob = {
-    name: 'bob444',
+    name: 'bob',
     addr: '',
 };
 
 //carl
 let carl = {
-  name: 'carl444',
+  name: 'carl',
   addr: '',
 };
 
@@ -106,7 +106,7 @@ describe('锁仓交易', () => {
     it('Bob转账给Alice，操作因为锁仓失败', async () => {
         //Bob账户名下只有一笔Alice锁仓转账的UTXO，在当前高度下是无法使用的，因此会归于失败
         let ret = await remote.execute('tx.send', [alice.addr, 10000, bob.name]);
-        assert(!ret.error);
+        assert(!!ret.error);
         console.log(ret.error);
     });
 
@@ -117,7 +117,7 @@ describe('锁仓交易', () => {
 
         //Bob从自己的账户向Alice再次转账，此时由于条件成熟，操作应该成功
         let ret = await remote.execute('tx.send', [alice.addr, 10000, bob.name]);        
-        assert(!!ret.error);
+        assert(!ret.error);
         console.log(ret.error);
     });
 
@@ -127,23 +127,24 @@ describe('锁仓交易', () => {
     it('Alice锁仓转账给Carl', async () => {
       //Alice锁仓转账给Bob，指定锁仓相对高度为2
       await remote.execute('tx.send', [carl.addr, 20000, alice.name, 'csb', 2]);
-    });
+  });
 
-    it('Carl转账给Alice，操作因为锁仓失败', async () => {
-        //Carl账户名下只有一笔Alice锁仓转账的UTXO，在当前高度下是无法使用的，因此会归于失败
-        let ret = await remote.execute('tx.send', [alice.addr, 10000, carl.name]);
-        assert(!ret.error);
-        console.log(ret.error);
-    });
+  it('Carl转账给Alice，操作因为锁仓失败', async () => {
+      //Carl账户名下只有一笔Alice锁仓转账的UTXO，在当前高度下是无法使用的，因此会归于失败
+      let ret = await remote.execute('tx.send', [alice.addr, 10000, carl.name]);
+      assert(!!ret.error);
+      console.log(ret.error);
+  });
 
-    it('在块高度提升后，Carl转账给Alice，操作成功', async () => {
-        //提升3个块高度
-        await remote.execute('miner.generate.admin', [3]);
-        await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(1000);
+  it('在块高度提升后，Carl转账给Alice，操作成功', async () => {
+      //提升3个块高度
+      await remote.execute('miner.generate.admin', [3]);
+      await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(1000);
 
-        //Bob从自己的账户向Alice再次转账，此时由于条件成熟，操作应该成功
-        let ret = await remote.execute('tx.send', [alice.addr, 10000, carl.name]);
-        assert(!!ret.error);
-        console.log(ret.error);
-    });
+      //Carl从自己的账户向Alice再次转账，此时由于条件成熟，操作应该成功
+      let ret = await remote.execute('tx.send', [alice.addr, 10000, carl.name]);
+      assert(!ret.error);
+      console.log(ret.error);
+  });
+
 });
