@@ -3,6 +3,7 @@
  */
 
 const uuid = require('uuid/v1')
+const assert = require('assert');
 
 //引入工具包
 const toolkit = require('gamegoldtoolkit')
@@ -43,9 +44,6 @@ let customer = {
     sn: uuid(),     //订单编号
 };
 
-//设为 false 来检测零确认机制，设为 true 则更为稳妥的使用上链数据
-let blockVerify = false;
-
 describe('凭证管理', () => {
     it('准备工作', async () => {
         //强制设置同步完成标志
@@ -61,6 +59,11 @@ describe('凭证管理', () => {
         }
     });
 
+    it('一级市场发行 - CP不存在', async () => {
+        let ret = await remote.execute('stock.offer', ['abc', 1000, 1000]);
+        assert(!!ret.error && ret.error.message == 'CP Not Exist');
+    });
+
     it('注册CP', async () => {
         //注册一个新的CP
         let ret = await remote.execute('cp.create', [cp.name, 'http://127.0.0.1']);
@@ -71,7 +74,6 @@ describe('凭证管理', () => {
         //查询并打印CP信息
         ret = await remote.execute('cp.byName', [cp.name]);
         cp.id = ret.result.cid;
-        //console.log(cp);
 
         //在该CP下注册用户子帐号, 记录其专属地址
         ret = await remote.execute('token.user', [cp.id, alice.name, null, alice.name]);
@@ -86,68 +88,110 @@ describe('凭证管理', () => {
         await remote.execute('tx.send', [alice.addr, 500000000]);
         await remote.execute('tx.send', [bob.addr, 500000000]);
 
-        if(blockVerify) {
-            await remote.execute('miner.generate.admin', [1]);
-        }
+        await remote.execute('miner.generate.admin', [1]);
 
         console.log(alice);
         console.log(bob);
     });
 
-    it('一级市场发行', async () => {
+    it('一级市场发行 - 非法账户', async () => {
+        let ret = await remote.execute('stock.offer', [cp.id, 1000, 1000, alice.name]);
+        assert(!!ret.error);
+        assert(!!ret.error && ret.error.message == 'illegal account');
+    });
+
+    it('一级市场发行 - 非法数量', async () => {
+        let ret = await remote.execute('stock.offer', [cp.id, 1.1e+6, 1000]);
+        assert(!!ret.error);
+        console.log(ret.error.message);
+
+        ret = await remote.execute('stock.offer', [cp.id, 99, 1000]);
+        assert(!!ret.error);
+        console.log(ret.error.message);
+
+        ret = await remote.execute('cp.byId', [cp.id]);
+        assert(ret.result.stock.sum === 0);
+    });
+
+    it('一级市场发行 - 非法金额', async () => {
+        let ret = await remote.execute('stock.offer', [cp.id, 1000, 0]);
+        assert(!!ret.error);
+        console.log(ret.error.message);
+
+        ret = await remote.execute('stock.offer', [cp.id, 1000, -1]);
+        assert(!!ret.error);
+        console.log(ret.error.message);
+
+        ret = await remote.execute('stock.offer', [cp.id, 100, 5000001]);
+        assert(!!ret.error);
+        console.log(ret.error.message);
+
+        ret = await remote.execute('cp.byId', [cp.id]);
+        assert(ret.result.stock.sum === 0);
+    });
+
+    it('一级市场发行 - 成功', async () => {
         let ret = await remote.execute('stock.offer', [cp.id, 1000, 1000]);
-        //console.log(ret.result);
-        if(blockVerify) {
-            await remote.execute('miner.generate.admin', [1]);
-        }
+        assert(!ret.error);
+
+        await remote.execute('miner.generate.admin', [1]);
+
+        ret = await remote.execute('cp.byId', [cp.id]);
+        // stock: { 
+        //   hHeight: 0,
+        //   hSum: 0,
+        //   hPrice: 0,
+        //   hBonus: 0,
+        //   hAds: 0,
+        //   sum: 0,
+        //   price: 0,
+        //   height: 0 
+        // }
+        assert(ret.result.stock.sum === 1000);
+        assert(ret.result.stock.price === 1000);
+    });
+
+    it('一级市场发行 - 冷却期内不能继续发行', async () => {
+        let ret = await remote.execute('stock.offer', [cp.id, 1000, 1000]);
+        assert(!ret.error); //由于当前机制问题，此处不会提示错误
+
+        await remote.execute('miner.generate.admin', [1]);
+
+        ret = await remote.execute('cp.byId', [cp.id]);
+        //注意数值没有发生变化
+        assert(ret.result.stock.sum === 1000); 
+        assert(ret.result.stock.price === 1000);
     });
 
     it('一级市场购买', async () => {
         let ret = await remote.execute('stock.purchase', [cp.id, 500, alice.name]);
-        //console.log(ret.result);
-        if(blockVerify) {
-            await remote.execute('miner.generate.admin', [1]);
-        }
+        console.log(ret.result);
     });
 
     it('无偿转让', async () => {
         let ret = await remote.execute('stock.send', [cp.id, 100, bob.addr, alice.name]);
-        //console.log(ret.result);
-        if(blockVerify) {
-            await remote.execute('miner.generate.admin', [1]);
-        }
+        console.log(ret.result);
     });
 
     it('二级市场拍卖', async () => {
         let ret = await remote.execute('stock.bid', [cp.id, 200, 2000, alice.name]);
-        //console.log(ret);
-        if(blockVerify) {
-            await remote.execute('miner.generate.admin', [1]);
-        }
+        console.log(ret);
     });
 
     it('二级市场购买', async () => {
         let ret = await remote.execute('stock.auction', [cp.id, alice.addr, 100, 2000]);
-        //console.log(ret.result);
-        if(blockVerify) {
-            await remote.execute('miner.generate.admin', [1]);
-        }
+        console.log(ret.result);
     });
 
     it('发起一个支付交易', async () => {
         let ret = await remote.execute('order.pay', [cp.id, customer.name, customer.sn, 100000]);
-        //console.log(ret.result);
-        if(blockVerify) {
-            await remote.execute('miner.generate.admin', [1]);
-        }
+        console.log(ret.result);
     });
 
     it('打印凭证列表，验证权益分配的有效性', async () => {
-        if(blockVerify) {
-            await remote.execute('miner.generate.admin', [1]);
-        }
+        await remote.execute('miner.generate.admin', [1]);
 
-        let ret = await remote.execute('stock.list', [['cid',cp.id]]);
+        let ret = await remote.execute('stock.list', [[['cid',cp.id]]]);
         for(let item of ret.result.list) {
             item.stock = JSON.stringify(item.stock);
             console.log(item);
