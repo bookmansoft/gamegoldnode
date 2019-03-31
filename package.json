@@ -1,6 +1,6 @@
 {
   "name": "gamegoldnode",
-  "version": "1.5.11",
+  "version": "1.5.12",
   "description": "Game Gold Node",
   "main": "index.js",
   "scripts": {
@@ -28,7 +28,7 @@
     "body-parser": "1.18.3",
     "create-hmac": "1.1.7",
     "express": "4.16.4",
-    "gamegold": "1.5.11",
+    "gamegold": "1.5.12",
     "gamegoldtoolkit": "1.6.2",
     "node-fetch": "2.3.0"
   }
