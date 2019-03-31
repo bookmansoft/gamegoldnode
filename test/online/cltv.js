@@ -94,7 +94,10 @@ describe('锁仓交易', () => {
         //为Alice转账
         await remote.execute('tx.send', [alice.addr, 500000000]);
     });
-    // 1- 测试绝对高度锁仓
+
+    /**
+     * 1- 测试绝对高度锁仓
+     */
     it('Alice锁仓转账给Bob', async () => {
         //Alice锁仓转账给Bob，指定生效高度为当前高度+2
         await remote.execute('tx.send', [bob.addr, 20000, alice.name, 'clb', curHeight + 2]);
@@ -118,28 +121,29 @@ describe('锁仓交易', () => {
         console.log(ret.error);
     });
 
-    // 2- 测试绝对高度锁仓
+    /**
+     * 2- 测试相对高度锁仓
+     */
     it('Alice锁仓转账给Carl', async () => {
       //Alice锁仓转账给Bob，指定锁仓相对高度为2
       await remote.execute('tx.send', [carl.addr, 20000, alice.name, 'csb', 2]);
-  });
+    });
 
-  it('Carl转账给Alice，操作因为锁仓失败', async () => {
-      //Carl账户名下只有一笔Alice锁仓转账的UTXO，在当前高度下是无法使用的，因此会归于失败
-      let ret = await remote.execute('tx.send', [alice.addr, 10000, carl.name]);
-      assert(!ret.error);
-      console.log(ret.error);
-  });
+    it('Carl转账给Alice，操作因为锁仓失败', async () => {
+        //Carl账户名下只有一笔Alice锁仓转账的UTXO，在当前高度下是无法使用的，因此会归于失败
+        let ret = await remote.execute('tx.send', [alice.addr, 10000, carl.name]);
+        assert(!ret.error);
+        console.log(ret.error);
+    });
 
-  it('在块高度提升后，Carl转账给Alice，操作成功', async () => {
-      //提升3个块高度
-      await remote.execute('miner.generate.admin', [3]);
-      await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(1000);
+    it('在块高度提升后，Carl转账给Alice，操作成功', async () => {
+        //提升3个块高度
+        await remote.execute('miner.generate.admin', [3]);
+        await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(1000);
 
-      //Bob从自己的账户向Alice再次转账，此时由于条件成熟，操作应该成功
-      let ret = await remote.execute('tx.send', [alice.addr, 10000, carl.name]);
-      assert(!!ret.error);
-      console.log(ret.error);
-  });
-
+        //Bob从自己的账户向Alice再次转账，此时由于条件成熟，操作应该成功
+        let ret = await remote.execute('tx.send', [alice.addr, 10000, carl.name]);
+        assert(!!ret.error);
+        console.log(ret.error);
+    });
 });
