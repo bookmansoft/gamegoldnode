@@ -197,10 +197,23 @@ describe('凭证管理', () => {
         assert(ret.result.list[0].sum === 200);
     });
 
-    it('一级市场发行 - 累计分成不足不能继续发行', async () => {
+    it('验证凭证分配的有效性', async () => {
         //挖矿以确保数据上链
         await remote.execute('miner.generate.admin', [1]);
 
+        let ret = await remote.execute('stock.list', [[['cid', cp.id]]]);
+        assert(ret.result.list.length == 2);
+        
+        for(let item of ret.result.list) {
+            if(item.stock.addr == alice.addr) {
+                assert(item.stock.sum === 300);
+            } else if(item.stock.addr == bob.addr) {
+                assert(item.stock.sum === 200);
+            }
+        }
+    });
+
+    it('一级市场发行 - 累计分成不足不能继续发行', async () => {
         let ret = await remote.execute('cp.byId', [cp.id]);
         assert(ret.result.stock.sum === 500); 
         assert(ret.result.stock.price === 1000);
@@ -266,18 +279,5 @@ describe('凭证管理', () => {
         assert(ret.result.stock.sum === 1000); 
         assert(ret.result.stock.price === 1000); 
         assert(ret.result.stock.hSum === 500);
-    });
-
-    it('验证权益分配的有效性', async () => {
-        let ret = await remote.execute('stock.list', [[['cid', cp.id]]]);
-        assert(re.result.list.length == 2);
-        
-        for(let item of ret.result.list) {
-            if(item.stock.addr == alice.addr) {
-                assert(item.stock.sum === 300);
-            } else if(item.stock.addr == bob.addr) {
-                assert(item.stock.sum === 200);
-            }
-        }
     });
 });
