@@ -8,6 +8,7 @@ const toolkit = require('gamegoldtoolkit')
 //创建授权式连接器实例
 const remote = new toolkit.conn();
 remote.setFetch(require('node-fetch')); //兼容性设置，提供模拟浏览器环境中的 fetch 函数
+const assert = require('assert')
 
 describe('区块相关的JSONP', function() {
     it('RESTFUL/GET 查询区块信息', async () => {
@@ -65,6 +66,31 @@ describe('区块相关的JSONP', function() {
 
             let msg = await remote.execute('sys.info', []);
             console.log(msg);
+        } catch(e) {
+            console.log(e.message);
+        }
+    });
+
+    it.only('测试长连下异步回调应答是否匹配', async () => {
+        try {
+            //设置长连模式
+            remote.setmode(remote.CommMode.ws);
+
+            //执行登录, 以便访问敏感性接口
+            await remote.login();
+
+            //监听，以便收取节点推送消息 - 本测试中此举可选
+            await remote.join();
+
+            await remote.execute('miner.setsync.admin', []);
+
+            for(let i = 0; i < 100; i++) {
+                let msg = await remote.execute('tx.list', []);
+                assert(msg[0].account);
+
+                msg = await remote.execute('balance.all', []);
+                assert(msg.confirmed);
+            }
         } catch(e) {
             console.log(e.message);
         }
