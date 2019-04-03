@@ -4,6 +4,16 @@
 
 const gamegold = require('gamegold');
 
+const accessWallet = gamegold.accessWallet;
+const Mnemonic = gamegold.hd.Mnemonic;
+const Config = gamegold.config;
+const encrypt = gamegold.util.encrypt;
+const decrypt = gamegold.util.decrypt;
+const crypto = require('crypto')
+
+//默认网络类型 支持环境变量设置(GAMEGOLD_NETWORK)和行命令(--network)等多种方式重定义
+const DefaultNetworktype = 'testnet';
+
 /**
  * 控制台应用，同时也也作为RPC客户端使用
  */
@@ -13,23 +23,34 @@ class CLI
    * 构造函数
    */
   constructor() {
-    this.config = new gamegold.config('gamegold');
+    this.config = new Config('gamegold');
     this.config.load({
       argv: true,
-      env: {'GAMEGOLD_NETWORK': 'testnet'},
+      env: true
     });
     this.config.open('gamegold.conf');
   
     this.argv = this.config.argv;
 
+    let networktype = this.config.str('network') || DefaultNetworktype;
+    if(!!networktype) {
+      this.config.env['GAMEGOLD_NETWORK'] = networktype;
+    }
+
     //通讯客户端组件，用于访问远程服务器
-    this.connector = new gamegold.accessWallet({
+    this.accessWallet = new accessWallet({
       rpcHost: this.config.str('http-remote-host'),
       apiKey: this.config.str('api-key'),
       network: this.config.str('network'),
       id: this.config.str('wallet-id', 'primary'),
+      //授权终端模式，限定访问cid对应的子账户
+      //cid: 'ter001',
+      //token: '035bf39368562ce0ef1ea5d67ad95dfb2938a39b30d9e7d210e4daf238643235b1',
+      //End
+      //Root模式，根据上行参数，以限定子账户/非限定模式进行访问
       cid: 'xxxxxxxx-game-gold-root-xxxxxxxxxxxx', //授权节点编号，用于访问远程钱包时的认证
       token: '03aee0ed00c6ad4819641c7201f4f44289564ac4e816918828703eecf49e382d08', //授权节点令牌固定量，用于访问远程钱包时的认证
+      //End
     });
     //@note 钱包作为插件运行时端口号为17332，作为节点时端口号为17334
 
@@ -37,23 +58,40 @@ class CLI
      * 命令行关键字对应函数映射表
      */
     this.nodeFunc = {
+      'help': this.help,
+      'encrypt': this.encrypt,
+      'decrypt': this.decrypt,
       'wallet.create': this.mkwallet,
       'wallet.select': this.selectwallet,
+      'mnemonic.create': this.createMnemonic,
+      'hmac.calc': this.hmacCalc,
       'listen': this.listen,
       'default': this.rpc
     };  
   }
 
-  async help(){
+  async help() {
     this.log('Commands:');
     this.log('  $ wallet.create [args]: create new wallet.');
     this.log('  $ wallet.select id: select a wallet and use it.');
-    this.log('  $ rpc [command] [args]: Execute RPC command.');
+    this.log('  $ mnemonic.create [args]: create new random mnemonic.');
+    this.log('  $ hmac.calc [cid token random]: create hmac calc.');
+    this.log('  $ command [args]: Execute RPC command.');
     this.log('  $ listen: Listen for events.');
-    this.log('Other Options:');
-    this.log('  --passphrase [passphrase]: For signing & account creation.');
-    this.log('  --account [account-name]: Account name.');
-  }  
+  }
+
+  async hmacCalc() {
+    let params = {};
+
+    params.cid = this.config.str(0);
+    params.token = this.config.str(1);
+    params.random = this.config.str(2);
+    const hmac = crypto.createHmac('sha256', params.random);
+    params.calc = hmac.update(params.token).digest('hex'); //计算并附加访问令牌
+
+    console.log(params);
+  }
+
 
   /**
    * 日志打印
@@ -69,8 +107,8 @@ class CLI
    * 销毁客户端组件
    */
   destroy() {
-    if (this.connector)
-      this.connector.destroy();
+    if (this.accessWallet)
+      this.accessWallet.destroy();
   
     return Promise.resolve();
   };
@@ -80,7 +118,7 @@ class CLI
    */
   async open() {
     let cmd = this.argv.shift();
-    if(!!this.nodeFunc[cmd]){
+    if(!!this.nodeFunc[cmd]) {
       await this.nodeFunc[cmd].apply(this);
     }
     else {
@@ -88,6 +126,41 @@ class CLI
       await this.nodeFunc['default'].apply(this);
     }
   };
+
+  /**
+   * 创建助记词
+   */
+  async createMnemonic() {
+    if(this.argv.length != 3) {
+      this.log('Command Format: mnemonic.create language bits passphrase');
+      this.log('  language  : "simplified chinese", "traditional chinese", english, french, italian, japanese, spanish');
+      this.log('  bits      : 128 | 256 | 512');
+      this.log('  passphrase: random string');
+      return;
+    }
+    const m1 = Mnemonic.fromOptions({
+      language: this.argv[0],
+      bits: parseInt(this.argv[1]),
+      passphrase: this.argv[2],
+    });
+    console.log(m1.toJSON());
+  }
+
+  encrypt() {
+    let key = this.config.str('aes-key');
+    let iv = this.config.str('aes-iv');
+    let content = this.config.str(0);
+
+    console.log(encrypt(key, iv, content));
+  }
+
+  decrypt() {
+    let key = this.config.str('aes-key');
+    let iv = this.config.str('aes-iv');
+    let content = this.config.str(0);
+
+    console.log(decrypt(key, iv, content));
+  }
 
   /**
    * 创建钱包的入口函数
@@ -105,61 +178,62 @@ class CLI
     options.watch = false;                  //set true to create a watch-only wallet
     options.key = null;                     //public key used for multisig wallet
 
-    let wallet = await this.connector.create(options);
-    this.connector.client.id = wallet.id;
+    let wallet = await this.accessWallet.create(options);
+    this.accessWallet.client.id = wallet.id;
     this.log(wallet);
   }
-
+  
   /**
    * 选取钱包的入口函数
    */
   async selectwallet() {
     //发起远程调用
-    let wallet = await this.connector.execute('wallet.select', [this.config.str([0, 'id'])]);
+    let jsonp = await this.accessWallet.execute('wallet.select', [this.config.str([0, 'id'])]);
+    let wallet = jsonp.result;
     //根据返回，设置新的当前钱包编号
-    this.connector.client.id = wallet.id;
+    this.accessWallet.client.id = wallet.id;
     this.log(wallet);
   }
 
   async listen(){
-    await this.connector.open();
+    await this.accessWallet.open();
   
-    this.connector.on('tx', (details) => {
+    this.accessWallet.on('tx', (details) => {
       this.log('TX:');
       this.log(details);
     });
   
-    this.connector.on('confirmed', (details) => {
+    this.accessWallet.on('confirmed', (details) => {
       this.log('TX confirmed:');
       this.log(details);
     });
   
-    this.connector.on('unconfirmed', (details) => {
+    this.accessWallet.on('unconfirmed', (details) => {
       this.log('TX unconfirmed:');
       this.log(details);
     });
   
-    this.connector.on('conflict', (details) => {
+    this.accessWallet.on('conflict', (details) => {
       this.log('TX conflict:');
       this.log(details);
     });
   
     //开启监听模式后，收到 'address' 事件的时序：
-    //1、钱包节点监控到主链上相应的变化后，向客户端下发 'wallet address' 事件
-    //2、ws client 收到服务端下发的 'wallet address' 事件后抛出 'address' 事件
-    //3、connector 中继抛出 'address' 事件
-    //4、此处捕获到 connector 抛出的 'address' 事件
-    this.connector.on('address', (receive) => {
+    //1、钱包节点监控到主链上相应的变化后，向客户端下发 'address.client' 事件
+    //2、ws client 收到服务端下发的 'address.client' 事件后抛出 'address' 事件
+    //3、accessWallet 中继抛出 'address' 事件
+    //4、此处捕获到 accessWallet 抛出的 'address' 事件
+    this.accessWallet.on('address', (receive) => {
       this.log('New addresses allocated:');
       this.log(receive);
     });
   
-    this.connector.on('balance', (balance) => {
+    this.accessWallet.on('balance', (balance) => {
       this.log('Balance:');
       this.log(balance);
     });
   
-    return await this.connector.onDisconnect();
+    return await this.accessWallet.onDisconnect();
   }
   
   /**
@@ -179,23 +253,21 @@ class CLI
       params.push(param);
     }
   
-    let result;
-    try {
-      result = await this.connector.execute(method, params);
-    } 
-    catch (e) {
-      if (e.type === 'RPCError') {
-        this.log(e.message);
+    let response = await this.accessWallet.execute(method, params);
+    // 内部不再抛出异常,出现错误由错误代码判断 
+    if(response.code!=0){
+      let error = response.error;
+      if (error.type === 'RPCError') {
+        this.log('Command Format:', error.message);
         return;
       }
-      throw e;
-    }
+      else{
+        this.log('Command execute error:', error.type, error.message);
+        return;
+      }
+    }      
   
-    if(result.error) {
-      this.log(result.error.message);
-    } else {
-      this.log(result.result);
-    }
+    this.log(response);
   }  
 }
 
