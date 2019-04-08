@@ -9,6 +9,16 @@ const toolkit = require('gamegoldtoolkit')
 //创建授权式连接器实例
 const remote = new toolkit.conn();
 remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览器环境中的 fetch 函数
+.setup({
+    type:   'testnet',
+    ip:     '127.0.0.1',          //远程服务器地址
+    head:   'http',               //远程服务器通讯协议，分为 http 和 https
+    id:     'primary',            //默认访问的钱包编号
+    apiKey: 'bookmansoft',        //远程服务器基本校验密码
+    cid:    'xxxxxxxx-game-gold-root-xxxxxxxxxxxx', //授权节点编号，用于访问远程钱包时的认证
+    token:  '03aee0ed00c6ad4819641c7201f4f44289564ac4e816918828703eecf49e382d08', //授权节点令牌固定量，用于访问远程钱包时的认证
+    structured: false,
+});
 
 let env = {}; //在多个测试用例间传递中间结果的缓存变量
 let oid = uuid();
@@ -32,7 +42,7 @@ describe('道具管理流程', () => {
     //#endregion
 
     it('设定厂商和转移地址信息', async () => {
-        let ret = await remote.execute('cp.query', []);
+        let ret = await remote.execute('cp.query', [[['cid','!=','xxxxxxxx-game-gold-boss-xxxxxxxxxxxx']]]);
         if(!!ret && ret.list && ret.list.length > 0) {
             env.cid = ret.list[0].cid;
             env.addr = ret.list[0].current.address;

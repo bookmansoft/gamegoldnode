@@ -17,7 +17,7 @@ remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览�
     id:     'primary',            //默认访问的钱包编号
     apiKey: 'bookmansoft',        //远程服务器基本校验密码
     cid:    'xxxxxxxx-game-gold-root-xxxxxxxxxxxx', //授权节点编号，用于访问远程钱包时的认证
-    token:  '02c6754571e0cf8949fb71906a501ba520b8e960c7eb35cb3931e362e5d25d2bc5', //授权节点令牌固定量，用于访问远程钱包时的认证
+    token:  '03aee0ed00c6ad4819641c7201f4f44289564ac4e816918828703eecf49e382d08', //授权节点令牌固定量，用于访问远程钱包时的认证
     structured: true,
 });
 
