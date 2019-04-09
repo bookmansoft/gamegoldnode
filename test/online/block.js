@@ -71,7 +71,7 @@ describe('区块相关的JSONP', function() {
         }
     });
 
-    it.only('测试长连下异步回调应答是否匹配', async () => {
+    it('测试长连下异步回调应答是否匹配', async () => {
         try {
             //设置长连模式
             remote.setmode(remote.CommMode.ws);

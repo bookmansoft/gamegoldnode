@@ -35,7 +35,8 @@ stock: {
 */
 
 describe('凭证管理', () => {
-    for(let i = 0; i < 10; i++) {
+    //重复多次测试
+    for(let i = 0; i < 1; i++) {
         //CP
         let cp = {
             name: uuid(),
@@ -44,12 +45,12 @@ describe('凭证管理', () => {
 
         //买家 alice
         let alice = {
-            name: 'alice',
+            name: uuid(),
             addr: '',
         };
         //卖家 bob
         let bob = {
-            name: 'bob',
+            name: uuid(),
             addr: '',
         };
 
@@ -98,12 +99,6 @@ describe('凭证管理', () => {
             bob.cid = cp.id;
             bob.addr = ret.result.data.addr;
     
-            //为用户转账
-            await remote.execute('tx.send', [alice.addr, 500000000]);
-            await remote.execute('tx.send', [bob.addr, 500000000]);
-    
-            await remote.execute('miner.generate.admin', [1]);
-    
             //console.log(alice);
             //console.log(bob);
             //console.log(cp);
@@ -116,10 +111,12 @@ describe('凭证管理', () => {
         });
     
         it('一级市场发行 - 非法数量', async () => {
+            //数量太多
             let ret = await remote.execute('stock.offer', [cp.id, 1.1e+6, 1000]);
             assert(!!ret.error);
             //console.log(ret.error.message);
     
+            //数量太少
             ret = await remote.execute('stock.offer', [cp.id, 99, 1000]);
             assert(!!ret.error);
             //console.log(ret.error.message);
@@ -129,14 +126,17 @@ describe('凭证管理', () => {
         });
     
         it('一级市场发行 - 非法金额', async () => {
+            //金额必须大于0
             let ret = await remote.execute('stock.offer', [cp.id, 1000, 0]);
             assert(!!ret.error);
             //console.log(ret.error.message);
     
+            //金额必须大于0
             ret = await remote.execute('stock.offer', [cp.id, 1000, -1]);
             assert(!!ret.error);
             //console.log(ret.error.message);
     
+            //金额不能大于 5000000
             ret = await remote.execute('stock.offer', [cp.id, 100, 5000001]);
             assert(!!ret.error);
             //console.log(ret.error.message);
@@ -146,6 +146,7 @@ describe('凭证管理', () => {
         });
     
         it('一级市场发行 - 成功', async () => {
+            //数量、价格符合标准，还要能够支付 5% 发行总额的手续费
             let ret = await remote.execute('stock.offer', [cp.id, 1000, 1000]);
             assert(!ret.error);
     
@@ -157,10 +158,25 @@ describe('凭证管理', () => {
         });
     
         it('一级市场购买', async () => {
-            //Alice 购买凭证
+            //Alice 购买凭证, 余额不足，失败
             let ret = await remote.execute('stock.purchase', [cp.id, 500, alice.name]);
+            assert(!!ret.error);
+
+            //为用户转账
+            await remote.execute('tx.send', [alice.addr, 500000000]);
+
+            //Alice 购买凭证
+            ret = await remote.execute('stock.purchase', [cp.id, 500, alice.name]);
             assert(!ret.error);
-    
+
+            //查询 Alice 的凭证余额
+            ret = await remote.execute('stock.list.wallet', [[['cid', cp.id], ['addr', alice.addr]]]);
+            assert(ret.result.list[0].sum === 500);
+            assert(ret.result.list[0].price === 1000);
+
+            //Alice 购买超过剩余总量的凭证，接口上没有报错，但操作最终失败了
+            ret = await remote.execute('stock.purchase', [cp.id, 600, alice.name]);
+
             //查询 Alice 的凭证余额
             ret = await remote.execute('stock.list.wallet', [[['cid', cp.id], ['addr', alice.addr]]]);
             assert(ret.result.list[0].sum === 500);
@@ -168,7 +184,15 @@ describe('凭证管理', () => {
         });
     
         it('无偿转让', async () => {
-            let ret = await remote.execute('stock.send', [cp.id, 100, bob.addr, alice.name]);
+            //转账总额超过凭证余额
+            let ret = await remote.execute('stock.send', [cp.id, 600, bob.addr, alice.name]);
+
+            //查询 Bob 的凭证余额，没有发生变化
+            ret = await remote.execute('stock.list.wallet', [[['cid', cp.id], ['addr', bob.addr]]]);
+            assert(ret.result.list.length === 0);
+
+            ret = await remote.execute('stock.send', [cp.id, 100, bob.addr, alice.name]);
+            assert(!ret.error);
     
             //查询 Alice 的凭证余额
             ret = await remote.execute('stock.list.wallet', [[['cid', cp.id], ['addr', alice.addr]]]);
@@ -190,9 +214,21 @@ describe('凭证管理', () => {
         });
     
         it('二级市场购买', async () => {
+            //Bob购买凭证，因为金额不足失败
             let ret = await remote.execute('stock.auction', [cp.id, alice.addr, 100, 2000, bob.name]);
+            assert(!!ret.error);
+
+            //查询 Bob 的凭证余额
+            ret = await remote.execute('stock.list.wallet', [[['cid', cp.id], ['addr', bob.addr]]]);
+            assert(ret.result.list[0].sum === 100);
+
+            //向Bob转账，以使其拥有足够的资金
+            await remote.execute('tx.send', [bob.addr, 500000000]);
+
+            //Bob购买凭证
+            ret = await remote.execute('stock.auction', [cp.id, alice.addr, 100, 2000, bob.name]);
             assert(!ret.error);
-    
+
             //查询 Bob 的凭证余额
             ret = await remote.execute('stock.list.wallet', [[['cid', cp.id], ['addr', bob.addr]]]);
             assert(ret.result.list[0].sum === 200);
