@@ -1,0 +1,57 @@
+{
+    // 使用 IntelliSense 了解相关属性。
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        // 单元测试
+        // @note 注意不同的测试模块不能同时处于开启状态
+        // @note 需要设定 mocha 的本地安装目录
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "mocha tests",
+            "program": "D:/Documents and Settings/Users/Administrator/AppData/Roaming/npm/node_modules/mocha/bin/_mocha",
+            "args": [
+                "-u",
+                "tdd",
+                "--timeout",
+                "999999",
+                "--colors",
+                "--recursive",
+                "-t",
+                "600000",
+                "-s",
+                "1000",
+                "${workspaceFolder}/test"
+            ],
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        // 测试主链全节点
+        {
+            "type": "node",
+            "request": "launch",
+            "outputCapture": "std",
+            "name": "main",
+            "program": "${workspaceFolder}/index",
+            "args": [
+                "--word=紧 成 剪 性 域 伐 济 等 阿 宪 圈 球",
+                "--phrase=bookmansoft"
+            ],
+            "env": {"GAMEGOLD_NETWORK": "testnet"},
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        // 测试Cli
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "cli",
+            "program": "${workspaceFolder}/bin/cli",
+            "args": [
+                "rpc",
+                "block.count",
+            ],
+            "internalConsoleOptions": "openOnSessionStart"
+        }
+    ]
+}
