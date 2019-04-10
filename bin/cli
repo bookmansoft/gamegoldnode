@@ -58,7 +58,7 @@ class CLI
      * 命令行关键字对应函数映射表
      */
     this.nodeFunc = {
-      'help': this.help,
+      '?': this.help,
       'encrypt': this.encrypt,
       'decrypt': this.decrypt,
       'wallet.create': this.mkwallet,
