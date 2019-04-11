@@ -2,11 +2,11 @@
  * 联机单元测试：本地全节点提供运行时环境
  */
 
-const uuid = require('uuid/v1')
+const uuid = require('uuid/v1');
 
 //引入工具包
-const assert = require('assert')
-const toolkit = require('gamegoldtoolkit')
+const assert = require('assert');
+const toolkit = require('gamegoldtoolkit');
 //创建授权式连接器实例
 const remote = new toolkit.conn();
 remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览器环境中的 fetch 函数
@@ -42,6 +42,12 @@ let bob = {
 //carl
 let carl = {
   name: 'carl',
+  addr: '',
+};
+
+//dave
+let dave = {
+  name: 'dave',
   addr: '',
 };
 
@@ -91,6 +97,10 @@ describe('锁仓交易', () => {
         carl.cid = cp.id;
         carl.addr = ret.result.data.addr;
 
+        ret = await remote.execute('token.user', [cp.id, dave.name, null, dave.name]);
+        dave.cid = cp.id;
+        dave.addr = ret.result.data.addr;
+
         //为Alice转账
         await remote.execute('tx.send', [alice.addr, 500000000]);
     });
@@ -101,6 +111,12 @@ describe('锁仓交易', () => {
     it('Alice锁仓转账给Bob', async () => {
         //Alice锁仓转账给Bob，指定生效高度为当前高度+2
         await remote.execute('tx.send', [bob.addr, 20000, alice.name, 'clb', curHeight + 2]);
+    });
+
+    it('Alice锁仓转账给Bob后,马上查询bob锁仓余额', async () => {      
+      let ret = await remote.execute('balance.all', [bob.name]);
+      assert(!ret.error);   
+      assert(ret.result.locked === 20000);
     });
 
     it('Bob转账给Alice，操作因为锁仓失败', async () => {
@@ -118,25 +134,31 @@ describe('锁仓交易', () => {
         //Bob从自己的账户向Alice再次转账，此时由于条件成熟，操作应该成功
         let ret = await remote.execute('tx.send', [alice.addr, 10000, bob.name]);        
         assert(!ret.error);
-        console.log(ret.error);
+        console.log(ret.result);
+    });
+
+    it('查询bob锁仓余额', async () => {      
+      let ret = await remote.execute('balance.all', [bob.name]);
+      assert(!ret.error);
+      assert(ret.result.locked === 0);
     });
 
     /**
      * 2- 测试相对高度锁仓
      */
     it('Alice锁仓转账给Carl', async () => {
-      //Alice锁仓转账给Bob，指定锁仓相对高度为2
+      //Alice锁仓转账给Carl，指定锁仓相对高度为2
       await remote.execute('tx.send', [carl.addr, 20000, alice.name, 'csb', 2]);
-  });
+    });
 
-  it('Carl转账给Alice，操作因为锁仓失败', async () => {
+    it('Carl转账给Alice，操作因为锁仓失败', async () => {
       //Carl账户名下只有一笔Alice锁仓转账的UTXO，在当前高度下是无法使用的，因此会归于失败
       let ret = await remote.execute('tx.send', [alice.addr, 10000, carl.name]);
       assert(!!ret.error);
       console.log(ret.error);
-  });
+    });
 
-  it('在块高度提升后，Carl转账给Alice，操作成功', async () => {
+    it('在块高度提升后，Carl转账给Alice，操作成功', async () => {
       //提升3个块高度
       await remote.execute('miner.generate.admin', [3]);
       await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(1000);
@@ -144,7 +166,34 @@ describe('锁仓交易', () => {
       //Carl从自己的账户向Alice再次转账，此时由于条件成熟，操作应该成功
       let ret = await remote.execute('tx.send', [alice.addr, 10000, carl.name]);
       assert(!ret.error);
-      console.log(ret.error);
-  });
+      console.log(ret.result);
+    });
 
+    /**
+     * 3- 测试绝对时间锁仓
+     */
+    it('Alice锁仓转账给Dave', async () => {
+      //Alice锁仓转账给Dave，指定锁仓绝对时间为现在之后20秒
+      let locktime = Math.floor(Date.now() / 1000) + 20;
+      await remote.execute('tx.send', [dave.addr, 20000, alice.name, 'clt', locktime]);
+    });
+
+    it('Dave转账给Alice，操作因为锁仓失败', async () => {
+      //Dave账户名下只有一笔Alice锁仓转账的UTXO，在当前高度/时间下是无法使用的，因此会归于失败
+      let ret = await remote.execute('tx.send', [alice.addr, 10000, dave.name]);
+      assert(!!ret.error);
+      console.log(ret.error);
+    });
+
+    it('在块高度提升后和时间要求满足后，Dave转账给Alice，操作成功', async () => {
+      //提升1个块高度
+      await remote.execute('miner.generate.admin', [1]);
+      //等待锁仓20秒
+      await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(20000);
+
+      //Dave从自己的账户向Alice再次转账，此时由于条件成熟，操作应该成功
+      let ret = await remote.execute('tx.send', [alice.addr, 10000, dave.name]);
+      assert(!ret.error);
+      console.log(ret.result);
+    });
 });
