@@ -163,7 +163,7 @@ describe('凭证管理', () => {
             assert(!!ret.error);
 
             //为用户转账
-            await remote.execute('tx.send', [alice.addr, 500000000]);
+            await remote.execute('tx.send', [alice.addr, 5000000000]);
 
             //Alice 购买凭证
             ret = await remote.execute('stock.purchase', [cp.id, 500, alice.name]);
@@ -278,11 +278,15 @@ describe('凭证管理', () => {
         });
     
         it('发起一个支付交易', async () => {
-            let ret = await remote.execute('order.pay', [cp.id, customer.name, customer.sn, 1000000000]);
+            let ret = await remote.execute('order.pay', [cp.id, customer.name, customer.sn, 1000000000, alice.name]);
             assert(!ret.error);
     
             //挖矿以确保数据上链
             await remote.execute('miner.generate.admin', [1]);
+
+            //查询Alice的交易流水
+            ret = await remote.execute('order.query.wallet', [[['cid', cp.id]], alice.name]);
+            assert(!ret.error && ret.result.list.length === 1);
         });
     
         it('一级市场发行 - 冷却期内不能继续发行', async () => {
