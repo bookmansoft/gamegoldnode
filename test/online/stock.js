@@ -162,11 +162,11 @@ describe('凭证管理', () => {
             //为用户转账
             await remote.execute('tx.send', [alice.addr, 5000000000]);
 
-            //Alice 购买凭证
+            //Alice 购买 500 凭证
             ret = await remote.execute('stock.purchase', [cp.id, 500, alice.name]);
             assert(!ret.error);
 
-            //查询 Alice 的凭证余额
+            //查询 Alice 的凭证余额 === 500
             ret = await remote.execute('stock.list.wallet', [[['cid', cp.id], ['addr', alice.addr]]]);
             assert(ret.result.list[0].sum === 500);
             assert(ret.result.list[0].price === 1000);
@@ -174,7 +174,7 @@ describe('凭证管理', () => {
             //Alice 购买超过剩余总量的凭证，接口上没有报错，但操作最终失败了
             ret = await remote.execute('stock.purchase', [cp.id, 600, alice.name]);
 
-            //查询 Alice 的凭证余额
+            //查询 Alice 的凭证余额 === 500
             ret = await remote.execute('stock.list.wallet', [[['cid', cp.id], ['addr', alice.addr]]]);
             assert(ret.result.list[0].sum === 500);
             assert(ret.result.list[0].price === 1000);
@@ -188,19 +188,21 @@ describe('凭证管理', () => {
             ret = await remote.execute('stock.list.wallet', [[['cid', cp.id], ['addr', bob.addr]]]);
             assert(ret.result.list.length === 0);
 
+            //alice 转给 bob 100
             ret = await remote.execute('stock.send', [cp.id, 100, bob.addr, alice.name]);
             assert(!ret.error);
     
-            //查询 Alice 的凭证余额
+            //查询 Alice 的凭证余额 === 400
             ret = await remote.execute('stock.list.wallet', [[['cid', cp.id], ['addr', alice.addr]]]);
             assert(ret.result.list[0].sum === 400);
     
-            //查询 Bob 的凭证余额
+            //查询 Bob 的凭证余额 === 100
             ret = await remote.execute('stock.list.wallet', [[['cid', cp.id], ['addr', bob.addr]]]);
             assert(ret.result.list[0].sum === 100);
         });
     
         it('二级市场拍卖', async () => {
+            //alice 挂牌 200 凭证
             let ret = await remote.execute('stock.bid', [cp.id, 200, 2000, alice.name]);
             assert(!ret.error);
     
@@ -222,11 +224,11 @@ describe('凭证管理', () => {
             //向Bob转账，以使其拥有足够的资金
             await remote.execute('tx.send', [bob.addr, 5000000000]);
 
-            //Bob购买凭证
+            //Bob购买凭证 100 
             ret = await remote.execute('stock.auction', [cp.id, alice.addr, 100, 2000, bob.name]);
             assert(!ret.error);
 
-            //查询 Bob 的凭证余额
+            //查询 Bob 的凭证余额 === 200
             ret = await remote.execute('stock.list.wallet', [[['cid', cp.id], ['addr', bob.addr]]]);
             assert(ret.result.list[0].sum === 200);
         });
@@ -238,10 +240,13 @@ describe('凭证管理', () => {
             let ret = await remote.execute('stock.list', [[['cid', cp.id]]]);
             assert(ret.result.list.length == 2);
             
+            //一共出售了 500 凭证
             for(let item of ret.result.list) {
                 if(item.stock.addr == alice.addr) {
+                    //alice 现在有 300
                     assert(item.stock.sum === 300);
                 } else if(item.stock.addr == bob.addr) {
+                    //bob 现在有 200
                     assert(item.stock.sum === 200);
                 }
             }
@@ -275,35 +280,39 @@ describe('凭证管理', () => {
         });
     
         it('发起支付交易，然后查询支付流水', async () => {
-            //发起一笔支付交易，使用bob的子账户支付 @note 此处sn使用了随机数，实际运用中建议使用自增长序列，以便后期增量查询
+            //发起一笔支付交易，使用bob的子账户支付
             let ret = await remote.execute('order.pay', [cp.id, bob.name, bob.sn(), 1000000000, bob.name]);
             assert(!ret.error);
-    
+            //@note 此处sn使用了随机数，实际运用中建议使用自增长序列，以便后期增量查询
+            //@note 上述支付将按照约定，分配给凭证持有方(alice bob)、媒体方(alice)
+
+            //再发起一笔支付交易，使用bob的子账户支付
             ret = await remote.execute('order.pay', [cp.id, bob.name, bob.sn(), 1000000000, bob.name]);
             assert(!ret.error);
+            //@note 上述支付将按照约定，分配给凭证持有方(alice bob)、媒体方(alice)
 
             //挖矿以确保数据上链
             await remote.execute('miner.generate.admin', [1]);
 
             await (async function(){return new Promise((resolve, reject)=>{setTimeout(()=>{resolve();}, 500);});})();
 
-            //查询bob的交易流水
+            //查询bob的交易流水 - 两笔
             ret = await remote.execute('order.query.wallet', [[['cid', cp.id]], bob.name]);
             assert(!ret.error && ret.result.list.length === 2);
         });
     
+        it('查看媒体分润', async () => {
+            //查询作为bob的推荐者，alice的媒体分成 - 两笔共 20 分得 15% = 3
+            let ret = await remote.execute('stock.record', [5, cp.id, 0, [['@total','price']]]);
+            assert(!ret.error);
+            assert(ret.result.price === 300000000, ret.result.price);
+        });
+
         it('查看凭证分润', async () => {
             //查询凭证分成
             let ret = await remote.execute('stock.record', [4, cp.id, 0, [['@total','price']]]);
             assert(!ret.error);
-            assert(ret.result.price === 400000000);
-        });
-
-        it('查看媒体分润', async () => {
-            //查询作为bob的推荐者，alice的媒体分成
-            let ret = await remote.execute('stock.record', [5, cp.id, 0, [['@total','price']]]);
-            assert(!ret.error);
-            assert(ret.result.price === 300000000);
+            assert(ret.result.price === 600000000, ret.result.price);
         });
 
         it('一级市场发行 - 冷却期内不能继续发行', async () => {
