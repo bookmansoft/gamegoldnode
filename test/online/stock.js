@@ -47,17 +47,13 @@ describe('凭证管理', () => {
         let alice = {
             name: uuid(),
             addr: '',
+            sn: ()=>{return uuid();},     //订单编号
         };
         //卖家 bob
         let bob = {
             name: uuid(),
             addr: '',
-        };
-
-        //消费者
-        let customer = {
-            name: 'p1',     //用户编号
-            sn: uuid(),     //订单编号
+            sn: ()=>{return uuid();},     //订单编号
         };
 
         it('准备工作', async () => {
@@ -80,8 +76,8 @@ describe('凭证管理', () => {
         });
     
         it('注册CP', async () => {
-            //注册一个新的CP
-            let ret = await remote.execute('cp.create', [cp.name, 'http://127.0.0.1']);
+            //注册一个新的CP, 指定 15% 的媒体分成
+            let ret = await remote.execute('cp.create', [cp.name, 'http://127.0.0.1', null, 'slg', 15]);
     
             //确保该CP数据上链
             await remote.execute('miner.generate.admin', [1]);
@@ -90,12 +86,13 @@ describe('凭证管理', () => {
             ret = await remote.execute('cp.byName', [cp.name]);
             cp.id = ret.result.cid;
     
-            //在该CP下注册用户子帐号, 记录其专属地址
+            //在CP下注册用户子帐号 alice , 记录其专属地址
             ret = await remote.execute('token.user', [cp.id, alice.name, null, alice.name]);
             alice.cid = cp.id;
             alice.addr = ret.result.data.addr;
     
-            ret = await remote.execute('token.user', [cp.id, bob.name, null, bob.name]);
+            //在CP下注册用户子帐号 bob, 记录其专属地址, 指定 alice 为其推荐者
+            ret = await remote.execute('token.user', [cp.id, bob.name, alice.addr, bob.name]);
             bob.cid = cp.id;
             bob.addr = ret.result.data.addr;
     
@@ -223,7 +220,7 @@ describe('凭证管理', () => {
             assert(ret.result.list[0].sum === 100);
 
             //向Bob转账，以使其拥有足够的资金
-            await remote.execute('tx.send', [bob.addr, 500000000]);
+            await remote.execute('tx.send', [bob.addr, 5000000000]);
 
             //Bob购买凭证
             ret = await remote.execute('stock.auction', [cp.id, alice.addr, 100, 2000, bob.name]);
@@ -277,18 +274,38 @@ describe('凭证管理', () => {
             await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(1000);
         });
     
-        it('发起一个支付交易', async () => {
-            let ret = await remote.execute('order.pay', [cp.id, customer.name, customer.sn, 1000000000, alice.name]);
+        it('发起支付交易，然后查询支付流水', async () => {
+            //发起一笔支付交易，使用bob的子账户支付 @note 此处sn使用了随机数，实际运用中建议使用自增长序列，以便后期增量查询
+            let ret = await remote.execute('order.pay', [cp.id, bob.name, bob.sn(), 1000000000, bob.name]);
             assert(!ret.error);
     
+            ret = await remote.execute('order.pay', [cp.id, bob.name, bob.sn(), 1000000000, bob.name]);
+            assert(!ret.error);
+
             //挖矿以确保数据上链
             await remote.execute('miner.generate.admin', [1]);
 
-            //查询Alice的交易流水
-            ret = await remote.execute('order.query.wallet', [[['cid', cp.id]], alice.name]);
-            assert(!ret.error && ret.result.list.length === 1);
+            await (async function(){return new Promise((resolve, reject)=>{setTimeout(()=>{resolve();}, 500);});})();
+
+            //查询bob的交易流水
+            ret = await remote.execute('order.query.wallet', [[['cid', cp.id]], bob.name]);
+            assert(!ret.error && ret.result.list.length === 2);
         });
     
+        it('查看凭证分润', async () => {
+            //查询凭证分成
+            let ret = await remote.execute('stock.record', [4, cp.id, 0, [['@total','price']]]);
+            assert(!ret.error);
+            assert(ret.result.price === 400000000);
+        });
+
+        it('查看媒体分润', async () => {
+            //查询作为bob的推荐者，alice的媒体分成
+            let ret = await remote.execute('stock.record', [5, cp.id, 0, [['@total','price']]]);
+            assert(!ret.error);
+            assert(ret.result.price === 300000000);
+        });
+
         it('一级市场发行 - 冷却期内不能继续发行', async () => {
             let ret = await remote.execute('stock.offer', [cp.id, 1000, 1000]);
             assert(!ret.error); //由于当前机制问题，此处不会提示错误
