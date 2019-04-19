@@ -274,8 +274,8 @@ describe('凭证管理', () => {
         });
     
         it('连挖20个区块，确保生成CP快照，确保交易分成顺利进行', async () => {
-            //在之前的测试中，连挖10个块尚不足以确保生成CP快照，改为20个后测试恢复正常
-            await remote.execute('miner.generate.admin', [20]); 
+            //在之前的测试中，连挖10个块尚不足以确保生成CP快照，改为30个后测试恢复正常
+            await remote.execute('miner.generate.admin', [30]); 
             await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(1000);
         });
     
@@ -294,8 +294,6 @@ describe('凭证管理', () => {
             //挖矿以确保数据上链
             await remote.execute('miner.generate.admin', [1]);
 
-            await (async function(){return new Promise((resolve, reject)=>{setTimeout(()=>{resolve();}, 500);});})();
-
             //查询bob的交易流水 - 两笔
             ret = await remote.execute('order.query.wallet', [[['cid', cp.id]], bob.name]);
             assert(!ret.error && ret.result.list.length === 2);
@@ -309,11 +307,10 @@ describe('凭证管理', () => {
         });
 
         it('查看凭证分润', async () => {
-            //查询凭证分成
+            //查询凭证分成, 包括 alice 的两笔 300000000 ， bob 的两笔 200000000 ， CP保留利润不计入其中
             let ret = await remote.execute('stock.record', [4, cp.id, 0, [['@total','price']]]);
             assert(!ret.error);
-            //assert(ret.result.price === 600000000, ret.result.price);
-            console.log(ret.result.price); //todo 因高度变化会引起快照变化，因此分润数值目前尚不能准确断言
+            assert(ret.result.price === 1000000000, ret.result.price);
         });
 
         it('一级市场发行 - 冷却期内不能继续发行', async () => {
