@@ -1,16 +1,20 @@
 /**
  * 联机单元测试：本地全节点提供运行时环境
  */
-
+const uuid = require('uuid/v1');
+const assert = require('assert');
 /**
  * 交易对合约的状态
  */
 const contractStatus = {
     None: 0,            //不存在的交易
     CreatedOnMem:2,     //于内存中创建
-    Promised: 3,        //签署状态
-    Confirmed: 4,       //验资通过状态
-    Expired: 5,         //逾期失效状态
+    Obsolete: 3,        //过时(无人承兑)--由于并无上链,实际并不存在    
+    Promised: 4,        //签署状态
+    Expired: 5,         //逾期失效状态(承兑超时)
+    Confirmed: 6,       //验资通过状态    
+    Exchanged: 7,       //兑换执行状态(乙方获得游戏金)
+    Backed: 8           //兑换退回状态(甲方获得游戏金)
 };
 
 //引入工具包
@@ -18,65 +22,219 @@ const toolkit = require('gamegoldtoolkit')
 //创建授权式连接器实例
 const remote = new toolkit.conn();
 remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览器环境中的 fetch 函数
-  
-//一个有效的、含有一定余额的比特币地址，用于预言机检测
-let dt = {type:1, addr: '1EzwoHtiXB4iFwedPr49iywjZn2nnekhoj'};
+.setup({
+    type:   'testnet',
+    ip:     '127.0.0.1',          //远程服务器地址
+    head:   'http',               //远程服务器通讯协议，分为 http 和 https
+    id:     'primary',            //默认访问的钱包编号
+    apiKey: 'bookmansoft',        //远程服务器基本校验密码
+    cid:    'xxxxxxxx-game-gold-root-xxxxxxxxxxxx', //授权节点编号，用于访问远程钱包时的认证
+    token:  '03aee0ed00c6ad4819641c7201f4f44289564ac4e816918828703eecf49e382d08', //授权节点令牌固定量，用于访问远程钱包时的认证
+    structured: true,
+});
+
+//为了能顺利用已有比特币余额的地址创建交易对,测试前必须注释相关代码--移到doc中去
+//1.consensus.js:
+/*
+exports.TRANSACTION_PERIOD = 2;
+*/
+//2.wallet.js
+/*
+await facade.checkSum
+*/
+
+//一个有效的、不含有余额的测试网比特币地址，用于预言机检测交易对失效
+let dt = {type:1, addr: 'mxW3x8USHPHUKwoSs1xxDodr1JSk8G6nKn'};
 dt.id = `${dt.type}.${dt.addr}`;
+
+//一个有效的、含有一定余额的测试网比特币地址，用于预言机检测交易对有效
+let dt_contained = {type:1, addr: 'mxdjCSvXDke6WCH8gU99biSDGEHFf4eDpZ'};
+dt_contained.id = `${dt_contained.type}.${dt_contained.addr}`;
+
+
+
+//CP
+let cp = {
+    name: uuid(),
+    id: '',
+};
+
+//alice
+let alice = {
+    name: 'alice-contract',
+    addr: '',
+};
+
+//bob
+let bob = {
+    name: 'bob-contract',
+    addr: '',
+};
 
 let env = {}; //在多个测试用例间传递中间结果的缓存变量
 
 describe('交易对业务流程', () => {
-    it('创建并提交一个交易对合约', async () => {
-        console.log('create前账户信息', await remote.execute('balance.all', []));
+    it('准备工作-保证创世区块成熟', async () => {
+        //强制设置同步完成标志
+        await remote.execute('miner.setsync.admin', []);
 
-        await remote.execute('contract.create', [dt.type, 300000000, 3000000, dt.addr]);
-
-        //由于系统广泛使用了异步消息系统，每个消息的处理句柄虽然使用了async和await语法，但系统级的调用者使用Reflect.apply进行调用，从而失去了同步特性
-        //因此业务提交后，等待一段时间再去获取数据（例如余额）才会比较准确
-        await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
-        console.log('create后账户信息', await remote.execute('balance.all', []));
+        //检测块高度，必要时进行挖矿以确保创世区块成熟
+        let ret = await remote.execute('block.count', []);
+        if(ret.result < 100) {
+            for(let i = ret.result[0].height; i < 101; i++) {
+                await remote.execute('miner.generate.admin', [1]);
+                await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(500);
+            }
+            ret = await remote.execute('block.count', []);
+        }
+        //记录当前高度
+        env.curHeight = ret.result;
     });
 
-    it('查询列表，选择并签署交易', async () => {
-        env.list = await remote.execute('contract.list', [1, 1, [dt.id]]);
-        if(env.list && env.list.length > 0) {
-            console.log(env.list[0]);
-            let ret = await remote.execute('contract.promise', [env.list[0].id]);
+    it('为Alice和Bob创建账号,并转一定金额游戏金给Alice,用来发布交易对', async () => {
+        //注册一个新的CP
+        let ret = await remote.execute('cp.create', [cp.name, 'http://127.0.0.1']);
+        //确保该CP数据上链
+        await remote.execute('miner.generate.admin', [1]);        
+        //查询并打印CP信息
+        ret = await remote.execute('cp.byName', [cp.name]);
+        cp.id = ret.result.cid;
 
-            //等待一段较长的时间，以便节点进行交易对的跨网确认
+        //在该CP下注册用户子帐号, 记录其专属地址
+        ret = await remote.execute('token.user', [cp.id, alice.name, null, alice.name]);
+        alice.cid = cp.id;
+        alice.addr = ret.result.data.addr;
+        
+        ret = await remote.execute('token.user', [cp.id, bob.name, null, bob.name]);
+        bob.cid = cp.id;
+        bob.addr = ret.result.data.addr;
+
+        //为Alice转账
+        await remote.execute('tx.send', [alice.addr, 1000000000]);
+
+        //确保该转账数据上链
+        await remote.execute('miner.generate.admin', [5]);
+        await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(20000);
+    });
+
+    describe('测试Alice发布交易对后无人承兑过期', () => {
+        it('Alice创建并提交一个交易对合约', async () => {
+            env.blanceBeforeCreate =  await remote.execute('balance.all', [alice.name]);
+            console.log('create前账户信息: ', env.blanceBeforeCreate);
+
+            await remote.execute('contract.create', [dt.type, 300000000, 300000, dt.addr, alice.name]);
+            //TODO: 判断状态        
+            //由于系统广泛使用了异步消息系统，每个消息的处理句柄虽然使用了async和await语法，但系统级的调用者使用Reflect.apply进行调用，从而失去了同步特性
+            //因此业务提交后，等待一段时间再去获取数据（例如余额）才会比较准确
+            await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
+            
+            const blanceAfterCreate = await remote.execute('balance.all', [alice.name]);          
+            console.log('create后账户信息', blanceAfterCreate);
+            //比对交易对创建前后余额,发布了交易对,金额应该减少了
+            assert(env.blanceBeforeCreate.result.unconfirmed > blanceAfterCreate.result.unconfirmed);
+        });
+
+        it('交易对无人承兑,', async () => {
+            // 挖150个块,使得交易对过期
+            for(let i = 0; i < 20; i++) {
+                await remote.execute('miner.generate.admin', [1]);
+                await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(200);
+            }
+            ret = await remote.execute('block.count', []);
+            //记录当前高度
+            env.curHeight = ret.result;
+
+            const blanceAfterObsolete = await remote.execute('balance.all', [alice.name]);
+            console.log('Obsolete后账户信息:', blanceAfterObsolete);
+            //比对交易对挖矿前后余额,由于已经超时,金额应该回到原账号
+            const blanceChange = env.blanceBeforeCreate.result.unconfirmed - blanceAfterObsolete.result.unconfirmed
+            console.log('Obsolete后账户变化:', blanceChange);
+            assert(blanceChange < 100000 );
+        });
+    });
+
+    describe('Bob承兑交易对后并无转入比特币,交易对过期', () => {
+        it('Alice创建并提交一个交易对合约,Bob签署交易', async () => {
+            await remote.execute('contract.create', [dt.type, 400000000, 400000, dt.addr, alice.name]);
+            //业务提交后，等待一段时间再去获取数据（例如余额）才会比较准确
+            await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
+            //承诺兑换
+            await remote.execute('contract.promise', [dt.id, bob.name]);
+            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(200);
+            //查询bob-contract的交易对
+            const ret = await remote.execute('contract.mine', [bob.name]);
+            // 判断ret状态            
+            assert (ret.result[0].transStatus === contractStatus.Promised);
+            
+        });
+
+        it('Bob未转入比特币,无法承兑,Alice可以拿回交易对中游戏金', async () => {
+            // 挖150个块,使得交易对过期
+            for(let i = 0; i < 20; i++) {
+                await remote.execute('miner.generate.admin', [1]);
+                await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(200);
+            }
+            ret = await remote.execute('block.count', []);
+            //记录当前高度
+            env.curHeight = ret.result;
+            //等待一段较长的时间，以便节点进行交易对的检查
+            await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(15000);
+            //Bob尝试兑换交易对,失败!
+            const bobExecute = await remote.execute('contract.execute', [dt.id, 2]);
+            assert(!!bobExecute.error);
+            //Alice尝试拿回交易对游戏金,成功
+            const aliceExecute = await remote.execute('contract.execute', [dt.id, 1]);
+            assert(!aliceExecute.error);
+            //兑换上链
+            await remote.execute('miner.generate.admin', [1]);
+            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+
+            const blanceAfterExecuted = await remote.execute('balance.all', [alice.name]);
+            console.log('Executed后Alice-contract账户余额:', blanceAfterExecuted);
+        });
+    });
+
+    describe('Bob承兑交易对后并转入比特币', () => {
+        it.skip('Alice创建并提交一个交易对合约,Bob签署交易', async () => {
+            await remote.execute('contract.create', [dt_contained.type, 500000000, 500000, dt_contained.addr, alice.name]);
+            //业务提交后，等待一段时间再去获取数据（例如余额）才会比较准确
+            await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
+            env.list = await remote.execute('contract.list', [1, 1, [dt_containedt.id]]);
+            if(env.list && env.list.length > 0) {
+                console.log(env.list[0]);
+                let ret = await remote.execute('contract.promise', [dt_containedt.id, bob.name]);
+                //判断ret状态
+                assert (ret.transStatus === contractStatus.Promised);
+            }
+        });
+
+        it.skip('Bob承兑,Alice无法拿回交易对中游戏金', async () => {
+            //兑换上链
+            await remote.execute('miner.generate.admin', [1]);
+            //等待一段较长的时间，以便节点进行交易对的检查
             await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(15000);
 
-            console.log('promise后账户信息', await remote.execute('balance.all', []));
-        }
-    });
+            //Alice尝试拿回交易对游戏金,失败!
+            const aliceExecute = await remote.execute('contract.execute', [dt_containedt.id, 1, alice.name]);
+            assert(!!aliceExecute.error);
 
-    it('查询列表，选择并执行交易', async () => {
-        env.list = await remote.execute('contract.mine', [1, 1, [dt.id]]);
-        if(env.list && env.list.length > 0) {
-            if(env.list[0].transStatus == contractStatus.Confirmed) {
-                await remote.execute('contract.execute', [env.list[0].id, 2]); //假设接单者完成了真实的充值，则接单者可以顺利执行、获取对应的游戏金，否则执行失败
-            }
-            else if(env.list[0].transStatus == contractStatus.Expired) {
-                await remote.execute('contract.execute', [env.list[0].id, 1]); //假设单据超时，则发单者可以顺利执行、获取对应的交易保证金，否则执行失败
-            }
-            else {
-                return;
-            }
-
-            await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
-            console.log('execute后账户信息', await remote.execute('balance.all', []));
-
-            await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
+            //Bob尝试兑换交易对,成功
+            const bobExecute = await remote.execute('contract.execute', [dt_containedt.id, 2, bob.name]);
+            assert(!bobExecute.error);
+            
+            //兑换上链
             await remote.execute('miner.generate.admin', [1]);
-
-            await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
-            console.log('记账后的账户信息', await remote.execute('balance.all', []));
-        }
+            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+        });
     });
+ 
 
-    it('记账', async ()=>{
-        await remote.execute('miner.generate.admin', [2]);
-        await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
-        console.log('记账后的账户信息', await remote.execute('balance.all', []));
-    });
+    describe('查询交易对状态', () => {
+        it('查询Alice交易对状态', async ()=>{
+           
+        });
+        it('查询Bob交易对状态', async ()=>{
+           
+        });
+    });    
 });
