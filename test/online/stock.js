@@ -300,17 +300,17 @@ describe('凭证管理', () => {
         });
     
         it('查看媒体分润', async () => {
-            //查询作为bob的推荐者，alice的媒体分成 - 两笔共 20 分得 15% = 3
+            //查询作为bob的推荐者，alice的媒体分成 - 两笔共 20 分得 15% = 3, 注意媒体分成是提前结算的
             let ret = await remote.execute('stock.record', [5, cp.id, 0, [['@total','price']]]);
             assert(!ret.error);
             assert(ret.result.price === 300000000, ret.result.price);
         });
 
         it('查看凭证分润', async () => {
-            //查询凭证分成, 包括 alice 的两笔 300000000 ， bob 的两笔 200000000 ， CP保留利润不计入其中
+            //查询凭证分成（权证30% 凭证70%）, 包括 alice 的两笔 357000000 ， bob 的两笔 238000000 ， CP保留利润不计入其中
             let ret = await remote.execute('stock.record', [4, cp.id, 0, [['@total','price']]]);
             assert(!ret.error);
-            assert(ret.result.price === 1000000000, ret.result.price);
+            assert(ret.result.price === 1190000000, ret.result.price);
         });
 
         it('一级市场发行 - 冷却期内不能继续发行', async () => {
