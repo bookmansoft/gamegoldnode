@@ -29,7 +29,7 @@
     "create-hmac": "1.1.7",
     "express": "4.16.4",
     "gamegold": "1.5.18",
-    "gamegoldtoolkit": "1.6.2",
+    "gamegoldtoolkit": "1.6.3",
     "node-fetch": "2.3.0"
   }
 }
