@@ -64,4 +64,15 @@ describe('区块相关的JSONP', function() {
         let msg = await remote.get('explorers');
         console.log(msg);
     });
+
+    it('WEB模式查询余额', async () => {
+        let ret = await remote.execute('balance.all', []);
+        console.log(ret);
+    });
+
+    it('WS模式查询余额', async () => {
+        await remote.setmode(remote.CommMode.ws).login();
+        let ret = await remote.execute('balance.all', []);
+        console.log(ret);
+    });
 });
