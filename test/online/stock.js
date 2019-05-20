@@ -351,9 +351,9 @@ describe('凭证管理', () => {
             assert(ret.result.stock.hPrice === 1000);
         });
     
-        it('连挖56个块，确保度过冷却期', async () => {
-            await remote.execute('miner.generate.admin', [56]);
-            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(1000);
+        it('连挖4032个块，确保度过冷却期', async () => {
+            await remote.execute('miner.generate.admin', [4032]);
+            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(1500);
         });
     
     
