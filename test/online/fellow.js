@@ -24,7 +24,7 @@ remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览�
 //在多个测试用例间传递中间结果的缓存变量
 let env = {
     name:uuid(),
-    pid: 'xxxxxxxx-game-gold-boss-tokenxxx0010',
+    pid: 'xxxxxxxx-game-gold-boss-tokenxxx0015',
 }; 
 
 describe('普通节点升级为超级节点', ()=>{
@@ -47,7 +47,7 @@ describe('普通节点升级为超级节点', ()=>{
         let ret = await remote.execute('cp.create', [env.name, 'http://127.0.0.1']);
         env.cid = ret.result.cid;
 
-        //确保该CP数据上链
+        //确保数据上链
         await remote.execute('miner.generate.admin', [1]);
         await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(500); //数据上链有一定的延迟
         
@@ -58,11 +58,6 @@ describe('普通节点升级为超级节点', ()=>{
 
         //为用户转账
         await remote.execute('tx.send', [env.useraddress, 500000000]);
-        await remote.execute('tx.send', [env.useraddress, 500000000]);
-        await remote.execute('tx.send', [env.useraddress, 500000000]);
-        await remote.execute('tx.send', [env.useraddress, 500000000]);
-        await remote.execute('tx.send', [env.useraddress, 500000000]);
-
         //确保数据上链
         await remote.execute('miner.generate.admin', [1]);
         await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000); //数据上链有一定的延迟
@@ -76,6 +71,7 @@ describe('普通节点升级为超级节点', ()=>{
     it('升级 1/2：拍卖一个道具', async () => {
         let ret = await remote.execute('prop.sale', [env.pid, 150000000]);
         assert(!ret.error);
+
         await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
     });
 
@@ -85,22 +81,42 @@ describe('普通节点升级为超级节点', ()=>{
 
         //确保数据上链
         await remote.execute('miner.generate.admin', [1]);
-        await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000); //数据上链有一定的延迟
+        await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
 
         ret = await remote.execute('prop.send', [env.useraddress, env.pid, env.username]);
         assert(!ret.error);
 
+        //确保数据上链
         await remote.execute('miner.generate.admin', [1]);
         await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
-        assert(!ret.error);
-
-        ret = await remote.execute('prop.query', [[['current.address', env.useraddress]]]);
-        console.log(ret.result.list);
     });
 
     it('成为超级节点，挖矿成功', async ()=>{
-        console.log(env);
-        let ret = await remote.execute('miner.generateto.admin', [1, env.useraddress]);
+        let ret = await remote.execute('balance.all', [env.username]);
+        env.current = ret.result.confirmed;
+
+        //第一种挖矿指令
+        ret = await remote.execute('miner.generateto.admin', [1, env.useraddress]);
         assert(!ret.error);
+
+        await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(3000);//数据上链有一定的延迟
+
+        //获取了正确的挖矿奖励
+        ret = await remote.execute('balance.all', [env.username]);
+        assert(ret.result.confirmed = env.current + 5000000000);
+
+        //第二种挖矿指令 1/2：设置挖矿地址
+        ret = await remote.execute('miner.setaddr.admin', [env.useraddress]);
+        assert(!ret.error);
+
+        //第二种挖矿指令 2/2：挖矿
+        ret = await remote.execute('miner.generate.admin', [1]);
+        assert(!ret.error);
+
+        await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(3000);//数据上链有一定的延迟
+
+        //获取了正确的挖矿奖励
+        ret = await remote.execute('balance.all', [env.username]);
+        assert(ret.result.confirmed = env.current + 10000000000);
     });
 });

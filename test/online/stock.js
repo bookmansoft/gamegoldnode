@@ -2,6 +2,29 @@
  * 联机单元测试：本地全节点提供运行时环境
  */
 
+/**
+ * 合约检测结果码
+ */
+const verifyCode = {
+    Failed: 0,                              //失败
+    Success: 1,                             //成功
+    StockOffering: 1001,                    //处于发行期，不能再次发售
+    StockCooling: 1002,                     //处于冷却期，不能再次发售
+    WrongPrice: 1003,                       //不当的价格
+    WrongFee: 1004,                         //不当的税费
+    WrongPublisher: 1005,                   //错误的发布者
+    WrongSum: 1006,                         //凭证数量不合理
+    WrongBonus: 1007,                       //累计奖励不足，不能再次发行
+    SnapNull: 1008,                         //凭证快照不存在
+    SignFailed: 1009,                       //签名错误
+    WrongHeight: 1010,                      //错误的高度值
+    WrongFormat: 1011,                      //错误的格式
+    StockAccountNotExist: 1012,             //凭证账户不存在
+    StockAccountNotEnoughSum: 1013,         //凭证账户余额不足
+    StockOfferExpired: 1014,                //凭证发行已过期
+    FundNotEnough: 1015,                    //资金不足
+};
+
 const uuid = require('uuid/v1')
 const assert = require('assert');
 
