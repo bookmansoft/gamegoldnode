@@ -1,5 +1,6 @@
 /**
  * 联机单元测试：ACL访问控制中，对操作员账号的管理流程
+ * @description 在实际运用中，中台负责设定并记录各个操作员的权限，然后在启动时通过 sys.groupPrefix / sys.groupSuffix 指令对全节点进行权限设置
  */
 
 const assert = require('assert')
@@ -12,6 +13,12 @@ const toolkit = require('gamegoldtoolkit')
 let aesKey = '$-._s1ZshKZ6WissH5gOs1ZshKZ6Wiss'; //32位长度
 let aesIv = '$-._aB9601152555'; //16位长度
 
+//中间环境变量
+let env = {
+    rootName: 'xxxxxxxx-game-gold-root-xxxxxxxxxxxx',
+    rootToken: '03aee0ed00c6ad4819641c7201f4f44289564ac4e816918828703eecf49e382d08',
+};
+
 //创建管理员使用的连接器，并设置相应的参数
 const remote = new toolkit.conn();
 remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览器环境中的 fetch 函数
@@ -21,6 +28,8 @@ remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览�
     head:   'http',               //远程服务器通讯协议，分为 http 和 https
     id:     'primary',            //默认访问的钱包编号
     apiKey: 'bookmansoft',        //远程服务器基本校验密码
+    cid: env.rootName, 
+    token: env.rootToken,
     structured: true,
 });
 
@@ -36,21 +45,13 @@ remoteOperator.setFetch(require('node-fetch'))  //兼容性设置，提供模拟
     structured: true,
 });
 
-//中间环境变量
-let env = {
-    rootName: 'xxxxxxxx-game-gold-root-xxxxxxxxxxxx',
-    rootToken: '03aee0ed00c6ad4819641c7201f4f44289564ac4e816918828703eecf49e382d08',
-    opName : uuid(), //生成随机的操作员账号
-};
-
 describe.only('操作员管理', () => {
     it('管理员为操作员分配令牌', async () => {
-        //用超级用户信息设置连接器
-        remote.setup({type: 'testnet', cid: env.rootName, token: env.rootToken});
+        env.opName = uuid(); //生成随机的操作员账号
 
-        //获取操作员的令牌
+        //获取操作员的令牌密文
         ret = await remote.execute('sys.createAuthToken', [env.opName]);
-        //解密得到最终的令牌
+        //解密得到令牌明文
         env.opToken = toolkit.decrypt(aesKey, aesIv, ret.result[0].encry);
 
         //用操作员信息设置连接器
