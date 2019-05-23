@@ -29,6 +29,9 @@
     "gamegoldtoolkit": "^1.6.5",
     "body-parser": "1.19.0",
     "express": "4.17.0",
-    "node-fetch": "2.3.0"
+    "node-fetch": "2.3.0",
+    "n64": "0.2.10",
+    "socket.io": "2.2.0",
+    "uuid": "3.3.2"
   }
 }
