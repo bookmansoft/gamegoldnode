@@ -1,5 +1,7 @@
 /**
  * 联机单元测试：本地全节点提供运行时环境
+ * @description
+ * 2019.05.26 凭证分成降至20%，且参照计划发行总量而非实际发行总量计算占比
  */
 
 /**
@@ -330,10 +332,10 @@ describe('凭证管理', () => {
         });
 
         it('查看凭证分润', async () => {
-            //查询凭证分成（扣除媒体分成后，权证30% 凭证30%）, 包括 alice 的两笔 153000000 ， bob 的两笔 102000000 ， CP保留利润不计入其中
+            //查询凭证分成（扣除媒体分成后，权证30% 凭证20%）, 包括 alice(300/1000) 的两笔 51000000 ， bob(200/1000) 的两笔 34000000 ， CP保留利润不计入其中
             let ret = await remote.execute('stock.record', [4, cp.id, 0, [['@total','price']]]);
             assert(!ret.error);
-            assert(ret.result.price === 510000000, ret.result.price);
+            assert(ret.result.price === 170000000, ret.result.price);
         });
 
         it('一级市场发行 - 冷却期内不能继续发行', async () => {
