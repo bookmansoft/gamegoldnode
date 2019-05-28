@@ -332,10 +332,10 @@ describe('凭证管理', () => {
         });
 
         it('查看凭证分润', async () => {
-            //查询凭证分成（扣除媒体分成后，权证30% 凭证20%）, 包括 alice(300/1000) 的两笔 51000000 ， bob(200/1000) 的两笔 34000000 ， CP保留利润不计入其中
+            //查询凭证分成（扣除媒体分成后）, 包括 alice(300/5000500) 的两笔， bob(200/5000500) 的两笔，合计 1700000000*500/5000500, CP保留利润不计入其中
             let ret = await remote.execute('stock.record', [4, cp.id, 0, [['@total','price']]]);
             assert(!ret.error);
-            assert(ret.result.price === 170000000, ret.result.price);
+            assert(ret.result.price === 169980, ret.result.price);
         });
 
         it('一级市场发行 - 冷却期内不能继续发行', async () => {
