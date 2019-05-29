@@ -147,17 +147,17 @@ class CLI
   }
 
   encrypt() {
-    let key = this.config.str('aes-key');
-    let iv = this.config.str('aes-iv');
     let content = this.config.str(0);
+    let key = this.config.str(1);
+    let iv = this.config.str(2);
 
     console.log(encrypt(key, iv, content));
   }
 
   decrypt() {
-    let key = this.config.str('aes-key');
-    let iv = this.config.str('aes-iv');
     let content = this.config.str(0);
+    let key = this.config.str(1);
+    let iv = this.config.str(2);
 
     console.log(decrypt(key, iv, content));
   }
