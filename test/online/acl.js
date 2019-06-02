@@ -57,6 +57,8 @@ monitor.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览�
 
 describe.only('操作员管理', () => {
     it('管理员为操作员分配令牌', async () => {
+        await remote.execute('miner.setsync.admin', [env.opName]);
+
         env.opName = uuid(); //生成随机的操作员账号
 
         //获取操作员的令牌密文
