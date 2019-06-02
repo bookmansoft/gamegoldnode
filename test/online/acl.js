@@ -9,10 +9,6 @@ const uuid = require('uuid/v1');
 //引入工具包
 const toolkit = require('gamegoldtoolkit')
 
-//AES密钥和向量
-let aesKey = '$-._s1ZshKZ6WissH5gOs1ZshKZ6Wiss'; //32位长度
-let aesIv = '$-._aB9601152555'; //16位长度
-
 //中间环境变量
 let env = {
     rootName: 'xxxxxxxx-game-gold-root-xxxxxxxxxxxx',
@@ -65,8 +61,11 @@ describe.only('操作员管理', () => {
 
         //获取操作员的令牌密文
         ret = await remote.execute('sys.createAuthToken', [env.opName]);
+
+        let {aeskey, aesiv} = remote.getAes();
+
         //解密得到令牌明文
-        env.opToken = toolkit.decrypt(aesKey, aesIv, ret.result[0].encry);
+        env.opToken = toolkit.decrypt(aeskey, aesiv, ret.result[0].encry);
 
         //用操作员信息设置连接器
         remoteOperator.setup({type: 'testnet', cid: env.opName, token: env.opToken});
