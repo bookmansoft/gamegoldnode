@@ -7,7 +7,7 @@ const assert = require('assert')
 const uuid = require('uuid/v1');
 
 //引入工具包
-const toolkit = require('gamegoldtoolkit')
+const toolkit = require('gamerpc')
 
 //中间环境变量
 let env = {
@@ -55,7 +55,7 @@ monitor.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览�
     structured: true,
 });
 
-describe.only('操作员管理', () => {
+describe('操作员管理', () => {
     it('管理员为操作员分配令牌', async () => {
         await remote.execute('miner.setsync.admin', [env.opName]);
 

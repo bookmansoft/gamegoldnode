@@ -5,7 +5,7 @@
 const uuid = require('uuid/v1')
 const assert = require('assert')
 //引入工具包
-const toolkit = require('gamegoldtoolkit')
+const toolkit = require('gamerpc')
 //创建授权式连接器实例
 const remote = new toolkit.conn();
 remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览器环境中的 fetch 函数
@@ -20,15 +20,20 @@ remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览�
     structured: false,
 });
 
-let env = {}; //在多个测试用例间传递中间结果的缓存变量
+//在多个测试用例间传递中间结果的缓存变量
+let env = {
+    name: uuid(),
+}; 
 let oid = uuid();
 
 describe('道具管理流程', () => {
     //#region 开启长连模式
     before(async ()=>{
         remote.setmode(remote.CommMode.ws);
-        await remote.login();
-        await remote.join();
+        remote.watchNotify(async ()=>{
+            await remote.login();
+            await remote.join();
+        }, 'onConnect');
 
         //监听消息，注意这几个消息都是默认下发的，不需要事先订阅
         remote.watch(msg => {
@@ -41,15 +46,20 @@ describe('道具管理流程', () => {
     });
     //#endregion
 
-    it('设定厂商和转移地址信息', async () => {
-        let ret = await remote.execute('cp.query', [[['cid','!=','xxxxxxxx-game-gold-boss-xxxxxxxxxxxx']]]);
-        if(!!ret && ret.list && ret.list.length > 0) {
-            env.cid = ret.list[0].cid;
-            env.addr = ret.list[0].current.address;
-            console.log(env);
-        } else {
-            console.log('厂商列表为空');
-        }
+    it('注册CP', async () => {
+        await remote.execute('miner.setsync.admin', []);
+
+        //注册一个新的CP, 指定 15% 的媒体分成
+        let ret = await remote.execute('cp.create', [env.name, 'http://127.0.0.1', null, 'slg', 15]);
+
+        //确保该CP数据上链
+        await remote.execute('miner.generate.admin', [1]);
+        
+        //查询并打印CP信息
+        ret = await remote.execute('cp.byName', [env.name]);
+        env.cid = ret.cid;
+        env.addr = ret.current.address;
+        console.log(env);
     });
 
     it('创建一个道具', async ()=>{

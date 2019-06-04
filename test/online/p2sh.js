@@ -4,7 +4,7 @@
  */
 
 //引入工具包
-const toolkit = require('gamegoldtoolkit')
+const toolkit = require('gamerpc')
 
 //创建授权式连接器实例
 const remote = new toolkit.conn();
