@@ -49,8 +49,7 @@
             "name": "cli",
             "program": "${workspaceFolder}/bin/cli",
             "args": [
-                "rpc",
-                "block.count",
+                "block.tips",
             ],
             "internalConsoleOptions": "openOnSessionStart"
         }

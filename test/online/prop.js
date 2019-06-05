@@ -29,11 +29,7 @@ let oid = uuid();
 describe('道具管理流程', () => {
     //#region 开启长连模式
     before(async ()=>{
-        remote.setmode(remote.CommMode.ws);
-        remote.watchNotify(async ()=>{
-            await remote.login();
-            await remote.join();
-        }, 'onConnect');
+        remote.setmode(remote.CommMode.ws, async () => { });
 
         //监听消息，注意这几个消息都是默认下发的，不需要事先订阅
         remote.watch(msg => {

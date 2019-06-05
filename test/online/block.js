@@ -56,14 +56,7 @@ describe('区块相关的JSONP', function() {
     it('获取系统概要信息', async () => {
         try {
             //设置长连模式
-            remote.setmode(remote.CommMode.ws);
-
-            //执行登录, 以便访问敏感性接口
-            await remote.login();
-
-            //监听，以便收取节点推送消息 - 本测试中此举可选
-            await remote.join();
-
+            remote.setmode(remote.CommMode.ws, async () => {});
             let msg = await remote.execute('sys.info', []);
             console.log(msg);
         } catch(e) {
@@ -74,13 +67,7 @@ describe('区块相关的JSONP', function() {
     it('测试长连下异步回调应答是否匹配', async () => {
         try {
             //设置长连模式
-            remote.setmode(remote.CommMode.ws);
-
-            //执行登录, 以便访问敏感性接口
-            await remote.login();
-
-            //监听，以便收取节点推送消息 - 本测试中此举可选
-            await remote.join();
+            remote.setmode(remote.CommMode.ws, async () => {});
 
             await remote.execute('miner.setsync.admin', []);
 

@@ -18,8 +18,7 @@ describe('订阅与退订', function() {
     });
 
     it('WS模式监听消息', async () => {
-        await remote.setmode(remote.CommMode.ws).login();
-        await remote.join();
+        await remote.setmode(remote.CommMode.ws, async () => {});
 
         //通过监听收到消息
         remote.watch(msg => {
