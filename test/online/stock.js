@@ -111,12 +111,12 @@ describe('凭证管理', () => {
             ret = await remote.execute('cp.byName', [cp.name]);
             cp.id = ret.result.cid;
     
-            //在CP下注册用户子帐号 alice , 记录其专属地址
+            //注册alice的子帐号, 记录对应特定CP的专属地址
             ret = await remote.execute('token.user', [cp.id, alice.name, null, alice.name]);
             alice.cid = cp.id;
             alice.addr = ret.result.data.addr;
     
-            //在CP下注册用户子帐号 bob, 记录其专属地址, 指定 alice 为其推荐者
+            //注册bob的子帐号, 记录对应特定CP的专属地址
             ret = await remote.execute('token.user', [cp.id, bob.name, alice.addr, bob.name]);
             bob.cid = cp.id;
             bob.addr = ret.result.data.addr;
