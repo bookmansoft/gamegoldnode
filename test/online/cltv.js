@@ -53,7 +53,7 @@ let dave = {
 
 let curHeight = 0;
 
-describe.skip('锁仓交易', () => {
+describe('锁仓交易', () => {
     it('准备工作', async () => {
         //强制设置同步完成标志
         await remote.execute('miner.setsync.admin', []);
@@ -174,8 +174,8 @@ describe.skip('锁仓交易', () => {
      * 3- 测试绝对时间锁仓
      */
     it('Alice锁仓转账给Dave', async () => {
-      //Alice锁仓转账给Dave，指定锁仓绝对时间为现在之后20秒
-      let locktime = Math.floor(Date.now() / 1000) + 20;
+      //Alice锁仓转账给Dave，指定锁仓绝对时间为现在之后10秒
+      let locktime = Math.floor(Date.now() / 1000) + 10;
       await remote.execute('tx.send', [dave.addr, 20000, alice.name, 'clt', locktime]);
     });
 
@@ -189,12 +189,19 @@ describe.skip('锁仓交易', () => {
     it('在块高度提升后和时间要求满足后，Dave转账给Alice，操作成功', async () => {
       //提升1个块高度
       await remote.execute('miner.generate.admin', [1]);
-      //等待锁仓20秒
-      await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(20000);
-
+      //等待锁仓10秒
+      await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(10000);
+      // 由于取得是中位时间(前11个块),需要连挖10个块,保证Dave的UTXO可用
+      for(let i = 0; i < 6; i++) {
+        await remote.execute('miner.generate.admin', [1]);
+        await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+      }
       //Dave从自己的账户向Alice再次转账，此时由于条件成熟，操作应该成功
       let ret = await remote.execute('tx.send', [alice.addr, 10000, dave.name]);
       assert(!ret.error);
       console.log(ret.result);
+      //确保交易上链
+      await remote.execute('miner.generate.admin', [1]);     
+      await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
     });
 });
