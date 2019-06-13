@@ -23,13 +23,13 @@ remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览�
 
 //CP
 let cp = {
-    name: "miner-"+ uuid().slice(0,30),
+    name: "miner-cp-"+ uuid().slice(0,27),
     id: '',
 };
 
 //alice
 let alice = {
-    name: 'alice-'+ uuid().slice(0,30),
+    name: 'miner-alice'+ uuid().slice(0,25),
     addr: '',
 };
 

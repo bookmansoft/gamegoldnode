@@ -23,37 +23,37 @@ remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览�
 
 //CP
 let cp = {
-    name: uuid(),
+    name: 'cltv-cp-'+ uuid().slice(0,28),
     id: '',
 };
 
 //alice
 let alice = {
-    name: 'alice',
+    name: 'cltv-alice-'+ uuid().slice(0,25),
     addr: '',
 };
 
 //bob
 let bob = {
-    name: 'bob',
+    name: 'cltv-bob-'+ uuid().slice(0,27),
     addr: '',
 };
 
 //carl
 let carl = {
-  name: 'carl',
+  name: 'cltv-carl-'+ uuid().slice(0,26),
   addr: '',
 };
 
 //dave
 let dave = {
-  name: 'dave',
+  name: 'cltv-dave-'+ uuid().slice(0,26),
   addr: '',
 };
 
 let curHeight = 0;
 
-describe('锁仓交易', () => {
+describe.skip('锁仓交易', () => {
     it('准备工作', async () => {
         //强制设置同步完成标志
         await remote.execute('miner.setsync.admin', []);
@@ -63,7 +63,7 @@ describe('锁仓交易', () => {
         if(ret.result[0].height < 100) {
             for(let i = ret.result[0].height; i < 101; i++) {
                 await remote.execute('miner.generate.admin', [1]);
-                await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(100);
+                await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(1500);
             }
 
             ret = await remote.execute('block.tips', []);
@@ -79,7 +79,8 @@ describe('锁仓交易', () => {
 
         //确保该CP数据上链
         await remote.execute('miner.generate.admin', [1]);
-        
+        await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+
         //查询并打印CP信息
         ret = await remote.execute('cp.byName', [cp.name]);
         cp.id = ret.result.cid;
@@ -129,7 +130,7 @@ describe('锁仓交易', () => {
     it('在块高度提升后，Bob转账给Alice，操作成功', async () => {
         //提升3个块高度
         await remote.execute('miner.generate.admin', [3]);
-        await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(1000);
+        await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(5000);
 
         //Bob从自己的账户向Alice再次转账，此时由于条件成熟，操作应该成功
         let ret = await remote.execute('tx.send', [alice.addr, 10000, bob.name]);        
@@ -161,7 +162,7 @@ describe('锁仓交易', () => {
     it('在块高度提升后，Carl转账给Alice，操作成功', async () => {
       //提升3个块高度
       await remote.execute('miner.generate.admin', [3]);
-      await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(1000);
+      await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(5000);
 
       //Carl从自己的账户向Alice再次转账，此时由于条件成熟，操作应该成功
       let ret = await remote.execute('tx.send', [alice.addr, 10000, carl.name]);

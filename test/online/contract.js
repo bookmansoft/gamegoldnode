@@ -55,19 +55,19 @@ dt_contained.id = `${dt_contained.type}.${dt_contained.addr}`;
 
 //CP
 let cp = {
-    name: uuid(),
+    name: 'contract-cp'+ uuid().slice(0,25),
     id: '',
 };
 
 //alice
 let alice = {
-    name: 'alice-contract',
+    name: 'contract-alice-'+ uuid().slice(0,21),
     addr: '',
 };
 
 //bob
 let bob = {
-    name: 'bob-contract',
+    name: 'contract-bob-'+ uuid().slice(0,23),
     addr: '',
 };
 
@@ -83,7 +83,7 @@ describe('交易对业务流程', () => {
         if(ret.result < 100) {
             for(let i = ret.result[0].height; i < 101; i++) {
                 await remote.execute('miner.generate.admin', [1]);
-                await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(500);
+                await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(1500);
             }
             ret = await remote.execute('block.count', []);
         }
@@ -95,7 +95,9 @@ describe('交易对业务流程', () => {
         //注册一个新的CP
         let ret = await remote.execute('cp.create', [cp.name, 'http://127.0.0.1']);
         //确保该CP数据上链
-        await remote.execute('miner.generate.admin', [1]);        
+        await remote.execute('miner.generate.admin', [1]);
+        await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+
         //查询并打印CP信息
         ret = await remote.execute('cp.byName', [cp.name]);
         cp.id = ret.result.cid;
@@ -117,13 +119,12 @@ describe('交易对业务流程', () => {
         await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(20000);
     });
 
-    describe('测试Alice发布交易对后无人承兑过期', () => {
+    describe.skip('测试Alice发布交易对后无人承兑过期', () => {
         it('Alice创建并提交一个交易对合约', async () => {
             env.blanceBeforeCreate =  await remote.execute('balance.all', [alice.name]);
             console.log('create前账户信息: ', env.blanceBeforeCreate);
 
             await remote.execute('contract.create', [dt.type, 300000000, 300000, dt.addr, alice.name]);
-            //TODO: 判断状态        
             //由于系统广泛使用了异步消息系统，每个消息的处理句柄虽然使用了async和await语法，但系统级的调用者使用Reflect.apply进行调用，从而失去了同步特性
             //因此业务提交后，等待一段时间再去获取数据（例如余额）才会比较准确
             await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
@@ -136,9 +137,10 @@ describe('交易对业务流程', () => {
 
         it('交易对无人承兑,', async () => {
             // 挖150个块,使得交易对过期
-            for(let i = 0; i < 20; i++) {
+            // 可以修改测试值,需要配合consensusjs的BLOCK_DAY测试
+            for(let i = 0; i < 150; i++) {
                 await remote.execute('miner.generate.admin', [1]);
-                await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(200);
+                await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
             }
             ret = await remote.execute('block.count', []);
             //记录当前高度
@@ -153,7 +155,7 @@ describe('交易对业务流程', () => {
         });
     });
 
-    describe('Bob承兑交易对后并无转入比特币,交易对过期', () => {
+    describe.skip('Bob承兑交易对后并无转入比特币,交易对过期', () => {
         it('Alice创建并提交一个交易对合约,Bob签署交易', async () => {
             await remote.execute('contract.create', [dt.type, 400000000, 400000, dt.addr, alice.name]);
             //业务提交后，等待一段时间再去获取数据（例如余额）才会比较准确
@@ -170,9 +172,10 @@ describe('交易对业务流程', () => {
 
         it('Bob未转入比特币,无法承兑,Alice可以拿回交易对中游戏金', async () => {
             // 挖150个块,使得交易对过期
-            for(let i = 0; i < 20; i++) {
+            // 可以修改测试值,需要配合consensusjs的BLOCK_DAY测试
+            for(let i = 0; i < 150; i++) {
                 await remote.execute('miner.generate.admin', [1]);
-                await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(200);
+                await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
             }
             ret = await remote.execute('block.count', []);
             //记录当前高度
@@ -194,32 +197,33 @@ describe('交易对业务流程', () => {
         });
     });
 
-    describe('Bob承兑交易对后并转入比特币', () => {
-        it.skip('Alice创建并提交一个交易对合约,Bob签署交易', async () => {
+    describe.skip('Bob承兑交易对后并转入比特币', () => {
+        it('Alice创建并提交一个交易对合约,Bob签署交易', async () => {
+            // 注意create交易会验证地址是否已经用过,测试可放开该条件限制,保证后续判断的正确
             await remote.execute('contract.create', [dt_contained.type, 500000000, 500000, dt_contained.addr, alice.name]);
             //业务提交后，等待一段时间再去获取数据（例如余额）才会比较准确
             await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
-            env.list = await remote.execute('contract.list', [1, 1, [dt_containedt.id]]);
+            env.list = await remote.execute('contract.list', [1, 1, [dt_contained.id]]);
             if(env.list && env.list.length > 0) {
                 console.log(env.list[0]);
-                let ret = await remote.execute('contract.promise', [dt_containedt.id, bob.name]);
+                let ret = await remote.execute('contract.promise', [dt_contained.id, bob.name]);
                 //判断ret状态
                 assert (ret.transStatus === contractStatus.Promised);
             }
         });
 
-        it.skip('Bob承兑,Alice无法拿回交易对中游戏金', async () => {
+        it('Bob承兑,Alice无法拿回交易对中游戏金', async () => {
             //兑换上链
             await remote.execute('miner.generate.admin', [1]);
             //等待一段较长的时间，以便节点进行交易对的检查
             await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(15000);
 
             //Alice尝试拿回交易对游戏金,失败!
-            const aliceExecute = await remote.execute('contract.execute', [dt_containedt.id, 1, alice.name]);
+            const aliceExecute = await remote.execute('contract.execute', [dt_contained.id, 1, alice.name]);
             assert(!!aliceExecute.error);
 
             //Bob尝试兑换交易对,成功
-            const bobExecute = await remote.execute('contract.execute', [dt_containedt.id, 2, bob.name]);
+            const bobExecute = await remote.execute('contract.execute', [dt_contained.id, 2, bob.name]);
             assert(!bobExecute.error);
             
             //兑换上链
@@ -229,7 +233,7 @@ describe('交易对业务流程', () => {
     });
  
 
-    describe('查询交易对状态', () => {
+    describe.skip('查询交易对状态', () => {
         it('查询Alice交易对状态', async ()=>{
            
         });

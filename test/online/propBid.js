@@ -17,7 +17,7 @@ const remote = new toolkit.conn();
 remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览器环境中的 fetch 函数
 
 let env = {}; //在多个测试用例间传递中间结果的缓存变量
-let oid = "propBid-oid-"+ uuid().slice(0,24);
+let oid = "propBid-oid"+ uuid().slice(0,25);
 
 describe('道具拍卖流程', ()=>{
     it('列表厂商', async ()=>{

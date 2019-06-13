@@ -70,7 +70,7 @@ describe('凭证管理', () => {
 
         //买家 alice
         let alice = {
-            name: "stock-alice-"+ uuid().slice(0,24),
+            name: "stock-alice"+ uuid().slice(0,25),
             addr: '',
             sn: ()=>{return "oid-alice-"+ uuid().slice(0,26);},     //订单编号
         };

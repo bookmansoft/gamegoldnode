@@ -21,13 +21,14 @@ remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览�
     structured: true,
 });
 
-//在多个测试用例间传递中间结果的缓存变量
-let env = {
-    name:"fellow-"+ uuid().slice(0,29),
-    pid: 'xxxxxxxx-game-gold-boss-tokenxxx0015',
-}; 
-
 describe('普通节点升级为超级节点', ()=>{
+    before(function() {
+        //在多个测试用例间传递中间结果的缓存变量
+        env = {
+        name:"fellow-"+ uuid().slice(0,29),
+        pid: 'xxxxxxxx-game-gold-boss-tokenxxx0015',
+        };      
+    });
     it('准备工作', async () => {
         //强制设置同步完成标志
         await remote.execute('miner.setsync.admin', []);
@@ -68,15 +69,15 @@ describe('普通节点升级为超级节点', ()=>{
         assert(ret.error);
     });
 
-    it('升级 1/2：拍卖一个道具', async () => {
+    it('普通节点地址升级为超级节点', async () => {
+        // 升级 1/2：拍卖一个道具
         let ret = await remote.execute('prop.sale', [env.pid, 150000000]);
         assert(!ret.error);
 
         await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
-    });
-
-    it('升级 2/2：参与竞拍', async () => {
-        let ret = await remote.execute('prop.buy', [env.pid, 200000000, env.username]);
+    
+        // '升级 2/2：参与竞拍'
+        ret = await remote.execute('prop.buy', [env.pid, 200000000, env.username]);
         assert(!ret.error);
 
         //确保数据上链
@@ -88,7 +89,7 @@ describe('普通节点升级为超级节点', ()=>{
 
         //确保数据上链
         await remote.execute('miner.generate.admin', [1]);
-        await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(2000);
+        await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(2000);        
     });
 
     it('成为超级节点，挖矿成功', async ()=>{
@@ -105,6 +106,11 @@ describe('普通节点升级为超级节点', ()=>{
         ret = await remote.execute('balance.all', [env.username]);
         assert(ret.result.confirmed = env.current + 5000000000);
 
+        //备份默认的挖矿地址
+        ret = await remote.execute('address.index', [1]);
+        assert(!ret.error);
+        const backupAddress = ret.result;
+
         //第二种挖矿指令 1/2：设置挖矿地址
         ret = await remote.execute('miner.setaddr.admin', [env.useraddress]);
         assert(!ret.error);
@@ -118,5 +124,9 @@ describe('普通节点升级为超级节点', ()=>{
         //获取了正确的挖矿奖励
         ret = await remote.execute('balance.all', [env.username]);
         assert(ret.result.confirmed = env.current + 10000000000);
+
+        //恢复默认挖矿地址
+        ret = await remote.execute('miner.setaddr.admin', [backupAddress]);
+        assert(!ret.error);
     });
 });
