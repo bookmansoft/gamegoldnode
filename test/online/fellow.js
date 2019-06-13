@@ -23,7 +23,7 @@ remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览�
 
 //在多个测试用例间传递中间结果的缓存变量
 let env = {
-    name:uuid(),
+    name:"fellow-"+ uuid().slice(0,29),
     pid: 'xxxxxxxx-game-gold-boss-tokenxxx0015',
 }; 
 
@@ -37,7 +37,7 @@ describe('普通节点升级为超级节点', ()=>{
         if(ret.result[0].height < 100) {
             for(let i = ret.result[0].height; i < 101; i++) {
                 await remote.execute('miner.generate.admin', [1]);
-                await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(100);
+                await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
             }
         }
     });
@@ -49,10 +49,10 @@ describe('普通节点升级为超级节点', ()=>{
 
         //确保数据上链
         await remote.execute('miner.generate.admin', [1]);
-        await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(500); //数据上链有一定的延迟
+        await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2500); //数据上链有一定的延迟
         
         //在CP下注册用户子帐号 alice , 记录其专属地址
-        env.username = uuid();
+        env.username = "fellow-alice-"+uuid().slice(0,23);
         ret = await remote.execute('token.user', [env.cid, env.username, 0, env.username]);
         env.useraddress = ret.result.data.addr;
 
@@ -81,14 +81,14 @@ describe('普通节点升级为超级节点', ()=>{
 
         //确保数据上链
         await remote.execute('miner.generate.admin', [1]);
-        await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
+        await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(2000);
 
         ret = await remote.execute('prop.send', [env.useraddress, env.pid, env.username]);
         assert(!ret.error);
 
         //确保数据上链
         await remote.execute('miner.generate.admin', [1]);
-        await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
+        await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(2000);
     });
 
     it('成为超级节点，挖矿成功', async ()=>{

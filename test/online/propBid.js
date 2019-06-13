@@ -17,7 +17,7 @@ const remote = new toolkit.conn();
 remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览器环境中的 fetch 函数
 
 let env = {}; //在多个测试用例间传递中间结果的缓存变量
-let oid = uuid();
+let oid = "propBid-oid-"+ uuid().slice(0,24);
 
 describe('道具拍卖流程', ()=>{
     it('列表厂商', async ()=>{
@@ -49,11 +49,11 @@ describe('道具拍卖流程', ()=>{
 
     it('拍卖一个道具', async () => {
         await remote.execute('miner.generate.admin', [1]);
-        await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
+        await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(2000);
 
         if(env.props.length > 0) {
             await remote.execute('prop.sale', [env.props[0].pid, 30000]);
-            await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
+            await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(2000);
         } else {
             console.log('Empty Prop List');
         }
@@ -65,7 +65,7 @@ describe('道具拍卖流程', ()=>{
         if(sales.length > 0) {
             await remote.execute('prop.buy', [sales[0].pid, 30000]);
             await remote.execute('miner.generate.admin', [1]);
-            await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(1000);
+            await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(2000);
         } else {
             console.log('Empty Sale List');
         }

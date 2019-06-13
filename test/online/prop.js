@@ -22,9 +22,9 @@ remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览�
 
 //在多个测试用例间传递中间结果的缓存变量
 let env = {
-    name: uuid(),
+    name: "prop-"+ uuid().slice(0,31),
 }; 
-let oid = uuid();
+let oid = "prop-oid-"+uuid().slice(0,27);
 
 describe('道具管理流程', () => {
     //#region 开启长连模式
@@ -50,7 +50,8 @@ describe('道具管理流程', () => {
 
         //确保该CP数据上链
         await remote.execute('miner.generate.admin', [1]);
-        
+        await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+
         //查询并打印CP信息
         ret = await remote.execute('cp.byName', [env.name]);
         env.cid = ret.cid;
@@ -93,13 +94,13 @@ describe('道具管理流程', () => {
     it('熔铸一个道具', async () => {
         if(env.pid) {
             await remote.execute('miner.generate.admin', [1]);
-            await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(1000);
+            await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(2000);
 
             await remote.execute('prop.found', [env.pid]);
-            await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(1000);
+            await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(2000);
 
             await remote.execute('miner.generate.admin', [1]);
-            await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(1000);
+            await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(2000);
 
             let ret = await remote.execute('prop.query', [[['oid', oid]]]);
             let count = 0;

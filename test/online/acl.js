@@ -59,7 +59,7 @@ describe('操作员管理', () => {
     it('管理员为操作员分配令牌', async () => {
         await remote.execute('miner.setsync.admin', [env.opName]);
 
-        env.opName = uuid(); //生成随机的操作员账号
+        env.opName = "oper-"+ uuid().slice(0,31); //生成随机的操作员账号
 
         //获取操作员的令牌密文
         ret = await remote.execute('sys.createAuthToken', [env.opName]);

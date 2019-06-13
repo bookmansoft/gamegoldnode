@@ -64,21 +64,21 @@ describe('凭证管理', () => {
     for(let i = 0; i < 1; i++) {
         //CP
         let cp = {
-            name: uuid(),
+            name: "stock-cp-"+ uuid().slice(0,27),
             id: '',
         };
 
         //买家 alice
         let alice = {
-            name: uuid(),
+            name: "stock-alice-"+ uuid().slice(0,24),
             addr: '',
-            sn: ()=>{return uuid();},     //订单编号
+            sn: ()=>{return "oid-alice-"+ uuid().slice(0,26);},     //订单编号
         };
         //卖家 bob
         let bob = {
-            name: uuid(),
+            name: "stock-bob-"+ uuid().slice(0,26),
             addr: '',
-            sn: ()=>{return uuid();},     //订单编号
+            sn: ()=>{return "oid-bob-"+ uuid().slice(0,28);},     //订单编号
         };
 
         it('准备工作', async () => {
@@ -90,7 +90,7 @@ describe('凭证管理', () => {
             if(ret.result[0].height < 100) {
                 for(let i = ret.result[0].height; i < 101; i++) {
                     await remote.execute('miner.generate.admin', [1]);
-                    await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(100);
+                    await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
                 }
             }
         });
@@ -106,7 +106,8 @@ describe('凭证管理', () => {
     
             //确保该CP数据上链
             await remote.execute('miner.generate.admin', [1]);
-            
+            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+
             //查询并打印CP信息
             ret = await remote.execute('cp.byName', [cp.name]);
             cp.id = ret.result.cid;
@@ -168,7 +169,8 @@ describe('凭证管理', () => {
             assert(!ret.error);
     
             await remote.execute('miner.generate.admin', [1]);
-    
+            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+
             ret = await remote.execute('cp.byId', [cp.id]);
             assert(ret.result.stock.sum === 1000);
             assert(ret.result.stock.price === 1000);
@@ -251,13 +253,14 @@ describe('凭证管理', () => {
 
             //查询 Bob 的凭证余额 === 200
             ret = await remote.execute('stock.list.wallet', [[['cid', cp.id], ['addr', bob.addr]]]);
-            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(1000);
+            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
             assert(ret.result.list[0].sum === 200);
         });
     
         it('验证凭证分配的有效性', async () => {
             //挖矿以确保数据上链
             await remote.execute('miner.generate.admin', [1]);
+            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
 
             let ret = await remote.execute('stock.record', [7, cp.id, 0]);
             assert(ret.result.list[0].price == 2000);
@@ -289,7 +292,8 @@ describe('凭证管理', () => {
     
             //挖矿以确保数据上链
             await remote.execute('miner.generate.admin', [1]);
-    
+            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+
             ret = await remote.execute('cp.byId', [cp.id]);
             //注意数值没有发生变化
             assert(ret.result.stock.sum === 500); 
@@ -301,7 +305,7 @@ describe('凭证管理', () => {
         it('连挖20个区块，确保生成CP快照，确保交易分成顺利进行', async () => {
             //在之前的测试中，连挖10个块尚不足以确保生成CP快照，改为30个后测试恢复正常
             await remote.execute('miner.generate.admin', [30]); 
-            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(1000);
+            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
         });
     
         it('发起支付交易，然后查询支付流水', async () => {
@@ -318,6 +322,7 @@ describe('凭证管理', () => {
 
             //挖矿以确保数据上链
             await remote.execute('miner.generate.admin', [1]);
+            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
 
             //查询bob的交易流水 - 两笔
             ret = await remote.execute('order.query.wallet', [[['cid', cp.id]], bob.name]);
@@ -344,7 +349,8 @@ describe('凭证管理', () => {
     
             //挖矿以确保数据上链
             await remote.execute('miner.generate.admin', [1]);
-    
+            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+
             ret = await remote.execute('cp.byId', [cp.id]);
             //注意数值没有发生变化
             assert(ret.result.stock.sum === 500); 
@@ -358,7 +364,7 @@ describe('凭证管理', () => {
          */
         it.skip('连挖4032个块，确保度过冷却期', async () => {
             await remote.execute('miner.generate.admin', [4032]);
-            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(1500);
+            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2500);
         });
     
     
@@ -368,7 +374,8 @@ describe('凭证管理', () => {
     
             //挖矿以确保数据上链
             await remote.execute('miner.generate.admin', [1]);
-    
+            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+
             ret = await remote.execute('cp.byId', [cp.id]);
             assert(ret.result.stock.sum === 1000); 
             assert(ret.result.stock.price === 1000); 

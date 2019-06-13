@@ -23,13 +23,13 @@ remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览�
 
 //CP
 let cp = {
-    name: uuid(),
+    name: "miner-"+ uuid().slice(0,30),
     id: '',
 };
 
 //alice
 let alice = {
-    name: 'alice',
+    name: 'alice-'+ uuid().slice(0,30),
     addr: '',
 };
 
@@ -43,18 +43,18 @@ describe('矿产证管理', () => {
         if(ret.result[0].height < 100) {
             for(let i = ret.result[0].height; i < 101; i++) {
                 await remote.execute('miner.generate.admin', [1]);
-                await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(100);
+                await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
             }
         }
     });
 
     it('建立账户', async () => {
         //注册一个新的CP
-        let ret = await remote.execute('cp.create', [cp.name, 'http://127.0.0.1']);
+        let ret = await remote.execute('cp.create', [cp.name, 'http://127.0.0.1']);        
 
-        //确保该CP数据上链
         await remote.execute('miner.generate.admin', [1]);
-        
+        //等待上块成功
+        await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(3000);
         //查询并打印CP信息
         ret = await remote.execute('cp.byName', [cp.name]);
         cp.id = ret.result.cid;
@@ -84,7 +84,7 @@ describe('矿产证管理', () => {
         await remote.execute('prop.send', [alice.addr, ret.result.list[0].pid]);
         //增加确认数
         await remote.execute('miner.generate.admin', [1]);
-        await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(1000);
+        await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
     });
 
     it('Alice挖矿成功', async () => {
@@ -93,7 +93,7 @@ describe('矿产证管理', () => {
     });
 
     it('验证Alice名下的矿产证', async () => {
-        let ret = await remote.execute('prop.list', [1, 'alice']);
+        let ret = await remote.execute('prop.list', [1, alice.name]);
         assert(!!ret.result && ret.result.list[0].pid === 'xxxxxxxx-game-gold-boss-tokenxxx0001');
     });
 });
