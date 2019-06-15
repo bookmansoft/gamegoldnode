@@ -1,6 +1,6 @@
 {
   "name": "gamegoldnode",
-  "version": "1.6.10",
+  "version": "1.6.11",
   "description": "Game Gold Node",
   "main": "index.js",
   "scripts": {
@@ -27,7 +27,7 @@
   "dependencies": {
     "body-parser": "1.19.0",
     "express": "4.17.0",
-    "gamegold": "^1.6.10",
+    "gamegold": "^1.6.11",
     "gamerpc": "^1.6.20",
     "n64": "0.2.10",
     "node-fetch": "2.3.0",
