@@ -59,7 +59,7 @@ stock: {
 }
 */
 
-describe('凭证管理', () => {
+describe.only('凭证管理', () => {
     //重复多次测试
     for(let i = 0; i < 1; i++) {
         //CP
@@ -288,7 +288,7 @@ describe('凭证管理', () => {
             assert(ret.result.stock.hPrice === 1000);
     
             ret = await remote.execute('stock.offer', [cp.id, 1000, 1000]);
-            assert(!ret.error); //由于当前机制问题，此处不会提示错误
+            assert(ret.error);
     
             //挖矿以确保数据上链
             await remote.execute('miner.generate.admin', [1]);
@@ -345,7 +345,7 @@ describe('凭证管理', () => {
 
         it('一级市场发行 - 冷却期内不能继续发行', async () => {
             let ret = await remote.execute('stock.offer', [cp.id, 1000, 1000]);
-            assert(!ret.error); //由于当前机制问题，此处不会提示错误
+            assert(ret.error);
     
             //挖矿以确保数据上链
             await remote.execute('miner.generate.admin', [1]);
