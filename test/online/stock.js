@@ -183,6 +183,7 @@ describe.only('凭证管理', () => {
 
             //为用户转账
             await remote.execute('tx.send', [alice.addr, 5000000000]);
+            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
 
             //Alice 购买 500 凭证
             ret = await remote.execute('stock.purchase', [cp.id, 500, alice.name]);
@@ -270,12 +271,12 @@ describe.only('凭证管理', () => {
             
             //一共出售了 500 凭证
             for(let item of ret.result.list) {
-                if(item.stock.addr == alice.addr) {
+                if(item.addr == alice.addr) {
                     //alice 现在有 300
-                    assert(item.stock.sum === 300);
-                } else if(item.stock.addr == bob.addr) {
+                    assert(item.sum === 300);
+                } else if(item.addr == bob.addr) {
                     //bob 现在有 200
-                    assert(item.stock.sum === 200);
+                    assert(item.sum === 200);
                 }
             }
         });
@@ -288,7 +289,7 @@ describe.only('凭证管理', () => {
             assert(ret.result.stock.hPrice === 1000);
     
             ret = await remote.execute('stock.offer', [cp.id, 1000, 1000]);
-            assert(ret.error);
+            assert(!!ret.error); //无法继续发行
     
             //挖矿以确保数据上链
             await remote.execute('miner.generate.admin', [1]);
@@ -345,7 +346,7 @@ describe.only('凭证管理', () => {
 
         it('一级市场发行 - 冷却期内不能继续发行', async () => {
             let ret = await remote.execute('stock.offer', [cp.id, 1000, 1000]);
-            assert(ret.error);
+            assert(!!ret.error); //冷却期内不能继续发行
     
             //挖矿以确保数据上链
             await remote.execute('miner.generate.admin', [1]);
