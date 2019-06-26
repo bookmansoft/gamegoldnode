@@ -284,7 +284,20 @@ class CLI
       }
     }      
   
-    this.log(response);
+    if(typeof response.result == 'undefined' || response.result == null) {
+      this.log(response);
+    } else if(!!route.openapi[method]){
+      // 如果是openapi直接返回的,没有带sig,也直接打印结果
+      this.log(response);
+    } else{
+      let priv = digest.hash256(Buffer.from(this.accessWallet.client.token));
+      let key = utils.generateKey(priv);
+      if(utils.verifyObj(response.result, response.sig, key.public)) {
+        this.log(response);
+      } else {
+        this.log('Sign Verify Failed');
+      }
+    }
   }  
 }
 
