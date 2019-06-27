@@ -4,9 +4,12 @@
 
 const gamegold = require('gamegold');
 
+const digest = gamegold.crypto.digest;
 const accessWallet = gamegold.accessWallet;
 const Mnemonic = gamegold.hd.Mnemonic;
 const Config = gamegold.config;
+const utils = gamegold.utils;
+const route = gamegold.route;
 const encrypt = gamegold.util.encrypt;
 const decrypt = gamegold.util.decrypt;
 const crypto = require('crypto')
@@ -161,7 +164,21 @@ class CLI
 
     console.log(decrypt(key, iv, content));
   }
+  /**
+   * 对数据进行签名，数据以字符串形式输入，对象需要序列化。缺省使用系统默认私钥
+   */
+  sign() {
+    let msg = this.config.str(0);
+    let priv = this.config.str(1);
+    let key = utils.generateKey(priv);
+    let sig = utils.signObj(msg, key.private);
 
+    console.log({
+      msg: msg,
+      sig: sig.toString('base64'),
+      pub: key.public
+    });
+  }
   /**
    * 创建钱包的入口函数
    */
@@ -267,7 +284,20 @@ class CLI
       }
     }      
   
-    this.log(response);
+    if(typeof response.result == 'undefined' || response.result == null) {
+      this.log(response);
+    } else if(!!route.openapi[method]){
+      // 如果是openapi直接返回的,没有带sig,也直接打印结果
+      this.log(response);
+    } else{
+      let priv = digest.hash256(Buffer.from(this.accessWallet.client.token));
+      let key = utils.generateKey(priv);
+      if(utils.verifyObj(response.result, response.sig, key.public)) {
+        this.log(response);
+      } else {
+        this.log('Sign Verify Failed');
+      }
+    }
   }  
 }
 

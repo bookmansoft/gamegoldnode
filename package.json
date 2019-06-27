@@ -1,6 +1,6 @@
 {
   "name": "gamegoldnode",
-  "version": "1.6.10",
+  "version": "1.6.15",
   "description": "Game Gold Node",
   "main": "index.js",
   "scripts": {
