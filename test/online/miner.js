@@ -44,8 +44,8 @@ let minerToken ={
 
 describe('矿产证管理', () => {
     it('查询矿产证列表', async () => {
-        //查询矿产证列表
-        let ret = await remote.execute('prop.remoteQuery', [[['cid', boosCp]]]);
+        //查询本地节点矿产证列表
+        let ret = await remote.execute('prop.list', [1, 'default']);
         
         assert(!ret.error);
         // 如果存在多于一个的矿产证,则取第一个登记在minerToken名下.
@@ -110,11 +110,9 @@ describe('矿产证管理', () => {
         if(!minerToken.has)
             return; 
 
-        //查询矿产证列表
-        let ret = await remote.execute('prop.remoteQuery', [[['cid', boosCp]]]);
-
         //转让矿产证
-        await remote.execute('prop.send', [alice.addr, ret.result.list[0].pid]);
+        await remote.execute('prop.send', [alice.addr, minerToken.pid]);
+        
         //增加确认数
         await remote.execute('miner.generate.admin', [1]);
         await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
