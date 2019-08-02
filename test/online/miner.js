@@ -33,7 +33,8 @@ let alice = {
     addr: '',
 };
 
-let boosCp = 'xxxxxxxx-game-gold-boss-xxxxxxxxxxxx';
+let boosCid = 'xxxxxxxx-game-gold-boss-xxxxxxxxxxxx';
+let bossOid = 'xxxxxxxx-game-gold-boss-tokenxxx0000';
 //记录当前测试使用的矿产证
 let minerToken ={
     pid: '',
@@ -45,11 +46,11 @@ let minerToken ={
 describe('矿产证管理', () => {
     it('查询矿产证列表', async () => {
         //查询本地节点矿产证列表
-        let ret = await remote.execute('prop.list', [1, 'default']);
+        let ret = await remote.execute('prop.list', [1, 'default', bossOid]);
         
         assert(!ret.error);
         // 如果存在多于一个的矿产证,则取第一个登记在minerToken名下.
-        if(ret.result.list.length > 0){
+        if(ret.result.list.length > 0 && ret.result.list[0].cid == boosCid){
             minerToken.pid = ret.result.list[0].pid;
             minerToken.address = ret.result.list[0].current.address;
             minerToken.has = true;
@@ -114,7 +115,8 @@ describe('矿产证管理', () => {
         await remote.execute('prop.send', [alice.addr, minerToken.pid]);
         
         //增加确认数
-        await remote.execute('miner.generate.admin', [1]);
+        let ret = await remote.execute('miner.generate.admin', [1]);
+        assert(!ret.error);
         await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
     });
 
@@ -124,19 +126,24 @@ describe('矿产证管理', () => {
 
         let ret = await remote.execute('miner.generateto.admin', [1, alice.addr]);
         assert(!ret.error);
+        await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
     });
 
     it('验证Alice名下的矿产证', async () => {
         if(!minerToken.has)
             return; 
 
-        let ret = await remote.execute('prop.list', [1, alice.name]);
+        let ret = await remote.execute('prop.list', [1, alice.name, bossOid]);
         assert(!!ret.result && ret.result.list[0].pid === minerToken.pid);        
     });
 
     it('向默认账号归还矿产证', async () => {
         if(!minerToken.has)
            return;       
+
+        //增加确认数
+        await remote.execute('miner.generate.admin', [1]);
+        await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
 
         //转让矿产证
         let ret = await remote.execute('prop.send', [minerToken.address, minerToken.pid, alice.name]);

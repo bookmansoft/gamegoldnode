@@ -21,7 +21,8 @@ remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览�
     structured: true,
 });
 // 超级节点Cpb编号,由它发行所有的矿产证
-let boosCp = 'xxxxxxxx-game-gold-boss-xxxxxxxxxxxx';
+let boosCid = 'xxxxxxxx-game-gold-boss-xxxxxxxxxxxx';
+let bossOid = 'xxxxxxxx-game-gold-boss-tokenxxx0000';
 
 //在多个测试用例间传递中间结果的缓存变量
 let env = {
@@ -33,11 +34,11 @@ let env = {
 describe('普通节点升级为超级节点', ()=>{
     before(async () => {
         //查询本地节点矿产证列表
-        let ret = await remote.execute('prop.list', [1, 'default']);
+        let ret = await remote.execute('prop.list', [1, 'default', bossOid]);
         
         assert(!ret.error);
         // 如果存在多于一个的矿产证,env.
-        if(ret.result.list.length > 0){
+        if(ret.result.list.length > 0 && ret.result.list[0].cid == boosCid){
             env.pid = ret.result.list[0].pid;
             env.address = ret.result.list[0].current.address;
             env.has = true;
