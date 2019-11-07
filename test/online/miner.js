@@ -33,7 +33,32 @@ let alice = {
     addr: '',
 };
 
+let boosCid = 'xxxxxxxx-game-gold-boss-xxxxxxxxxxxx';
+let bossOid = 'xxxxxxxx-game-gold-boss-tokenxxx0000';
+//记录当前测试使用的矿产证
+let minerToken ={
+    pid: '',
+    address: '',
+    has: false,     //如果不存在token,后续的测试也就无法进行了.
+};
+
+
 describe('矿产证管理', () => {
+    it('查询矿产证列表', async () => {
+        //查询本地节点矿产证列表
+        let ret = await remote.execute('prop.list', [1, 'default', bossOid]);
+        
+        assert(!ret.error);
+        // 如果存在多于一个的矿产证,则取第一个登记在minerToken名下.
+        if(ret.result.list.length > 0 && ret.result.list[0].cid == boosCid){
+            minerToken.pid = ret.result.list[0].pid;
+            minerToken.address = ret.result.list[0].current.address;
+            minerToken.has = true;
+
+            console.log(minerToken);
+        }
+    });
+
     it('准备工作', async () => {
         //强制设置同步完成标志
         await remote.execute('miner.setsync.admin', []);
@@ -49,6 +74,9 @@ describe('矿产证管理', () => {
     });
 
     it('建立账户', async () => {
+        if(!minerToken.has)
+            return; 
+
         //注册一个新的CP
         let ret = await remote.execute('cp.create', [cp.name, 'http://127.0.0.1']);        
 
@@ -71,29 +99,61 @@ describe('矿产证管理', () => {
     });
 
     it('Alice挖矿失败', async () => {
+        if(!minerToken.has)
+            return; 
+        
         let ret = await remote.execute('miner.generateto.admin', [1, alice.addr]);
         assert(!!ret.error);
         console.log(ret.error.message);
     });
 
     it('向Alice转让矿产证', async () => {
-        //查询矿产证列表
-        let ret = await remote.execute('prop.remoteQuery', [[['cid', 'xxxxxxxx-game-gold-boss-xxxxxxxxxxxx']]]);
+        if(!minerToken.has)
+            return; 
 
         //转让矿产证
-        await remote.execute('prop.send', [alice.addr, ret.result.list[0].pid]);
+        await remote.execute('prop.send', [alice.addr, minerToken.pid]);
+        
         //增加确认数
-        await remote.execute('miner.generate.admin', [1]);
+        let ret = await remote.execute('miner.generate.admin', [1]);
+        assert(!ret.error);
         await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
     });
 
     it('Alice挖矿成功', async () => {
+        if(!minerToken.has)
+            return; 
+
         let ret = await remote.execute('miner.generateto.admin', [1, alice.addr]);
         assert(!ret.error);
+        await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
     });
 
     it('验证Alice名下的矿产证', async () => {
-        let ret = await remote.execute('prop.list', [1, alice.name]);
-        assert(!!ret.result && ret.result.list[0].pid === 'xxxxxxxx-game-gold-boss-tokenxxx0001');
+        if(!minerToken.has)
+            return; 
+
+        let ret = await remote.execute('prop.list', [1, alice.name, bossOid]);
+        assert(!!ret.result && ret.result.list[0].pid === minerToken.pid);        
+    });
+
+    it('向默认账号归还矿产证', async () => {
+        if(!minerToken.has)
+           return;       
+
+        //增加确认数
+        await remote.execute('miner.generate.admin', [1]);
+        await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+
+        //转让矿产证
+        let ret = await remote.execute('prop.send', [minerToken.address, minerToken.pid, alice.name]);
+        assert(!ret.error);
+        //归还保证金
+        ret = await remote.execute('tx.send', [minerToken.address, 480000000, alice.name]);
+        assert(!ret.error);
+
+        //增加确认数
+        await remote.execute('miner.generate.admin', [1]);
+        await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
     });
 });

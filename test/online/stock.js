@@ -59,7 +59,7 @@ stock: {
 }
 */
 
-describe.only('凭证管理', () => {
+describe('凭证管理', () => {
     //重复多次测试
     for(let i = 0; i < 1; i++) {
         //CP
