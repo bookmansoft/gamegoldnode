@@ -53,7 +53,7 @@ let dave = {
 
 let curHeight = 0;
 
-describe('锁仓交易', () => {
+describe.skip('锁仓交易', () => {
     it('准备工作', async () => {
         //强制设置同步完成标志
         await remote.execute('miner.setsync.admin', []);

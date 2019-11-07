@@ -103,7 +103,7 @@ describe('厂商管理流程', () => {
         assert(cp.amountbefore - cp.amountafter > 100000000);
     });
 
-    it('查询厂商信息', async () => {
+    it.skip('查询厂商信息', async () => {
         let ret = await remote.execute('cp.query', [[['cid', cp.cid]]]);
         assert(ret.result.list.length == 0);
 
@@ -111,12 +111,12 @@ describe('厂商管理流程', () => {
         assert(ret.result.list.length == 0);
     });
 
-    it('信息记录上链', async () => {
+    it.skip('信息记录上链', async () => {
         await remote.execute('miner.generate.admin', [1]);
         await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2500); //数据上链有一定的延迟
     });
 
-    it('查询厂商信息', async () => {
+    it.skip('查询厂商信息', async () => {
         let ret = await remote.execute('cp.query', [[['cid', cp.cid]]]);
         assert(ret.result.list.length == 1);
 
@@ -124,14 +124,14 @@ describe('厂商管理流程', () => {
         assert(rt.result.list.length == 1);
     });
 
-    it('修改厂商名称 - 名称非法', async ()=>{
+    it.skip('修改厂商名称 - 名称非法', async ()=>{
         cp.newName = 'ac';
 
         let ret = await remote.execute('cp.change', [cp.cid, cp.newName, cp.url, cp.ip, null, cp.grate, cp.cls]);
         assert(ret.error);
     });
 
-    it('修改厂商分成比例 - 失败', async ()=>{
+    it.skip('修改厂商分成比例 - 失败', async ()=>{
         cp.newName = "cp-new-"+uuid().slice(0,29);    //修复名称
         cp.grate = 50;          //分成比例超限
 
@@ -139,14 +139,14 @@ describe('厂商管理流程', () => {
         assert(ret.error);
     });
 
-    it('修改厂商分成比例 - 成功', async ()=>{
+    it.skip('修改厂商分成比例 - 成功', async ()=>{
         cp.grate = 49;
 
         let ret = await remote.execute('cp.change', [cp.cid, cp.newName, cp.url, cp.ip, null, cp.grate, cp.cls]);
         assert(!ret.error);
     });
 
-    it('修改厂商分类 - 成功', async ()=>{
+    it.skip('修改厂商分类 - 成功', async ()=>{
         cp.cls = 'rpg';
 
         let ret = await remote.execute('cp.change', [cp.cid, cp.newName, cp.url, cp.ip, null, cp.grate, cp.cls]);
@@ -158,12 +158,12 @@ describe('厂商管理流程', () => {
         assert(ret.result.list.length == 0);
     });
 
-    it('信息记录上链', async () => {
+    it.skip('信息记录上链', async () => {
         await remote.execute('miner.generate.admin', [1]);
         await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
     });
 
-    it('查询厂商信息', async () => {
+    it.skip('查询厂商信息', async () => {
         //数据上链有一定的延迟，因此延迟一段时间后再查询
         await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2500); 
 

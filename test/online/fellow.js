@@ -118,7 +118,7 @@ describe('普通节点升级为超级节点', ()=>{
         await (async function(time){ return new Promise(resolve =>{ setTimeout(resolve, time);});})(2000);        
     });
 
-    it('成为超级节点，挖矿成功', async ()=>{
+    it.skip('成为超级节点，挖矿成功', async ()=>{
         if(!env.has)
             return;
 
@@ -150,7 +150,7 @@ describe('普通节点升级为超级节点', ()=>{
         assert(ret.result.confirmed = env.current + 10000000000);
     });    
     
-    it('向主节点返还矿产证', async ()=>{
+    it.skip('向主节点返还矿产证', async ()=>{
         if(!env.has)
             return;
 
