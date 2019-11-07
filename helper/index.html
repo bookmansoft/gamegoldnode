@@ -1,0 +1,2372 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv='X-UA-Compatible' content='IE=11' />
+    <title>Docbox</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <link href='css/base.css' rel='stylesheet' />
+    <link href='css/style.css' rel='stylesheet' />
+    <link href='css/railscasts.css' rel='stylesheet' />
+  </head>
+  <body>
+    <!--START--><div id='app'><div class="container unlimiter" data-reactroot="" data-reactid="1" data-react-checksum="849942503"><div class="fixed-top fixed-right space-left16" data-reactid="2"><div class="fill-light col6 pin-right" data-reactid="3"></div></div><div class="space-top5 scroll-styled overflow-auto pad1 width16 sidebar fixed-left fill-dark dark" data-reactid="4"><div class="pad0x small" data-reactid="5"><div class="small pad0x quiet space-top1" data-reactid="6">简介</div><a href="#游戏金api文档" class="line-height15 pad0x pad00y quiet block " data-reactid="7">游戏金API文档</a><div class="small pad0x quiet space-top1" data-reactid="8">连接器</div><a href="#连接器列表" class="line-height15 pad0x pad00y quiet block " data-reactid="9">连接器列表</a><div class="small pad0x quiet space-top1" data-reactid="10">认证和授权</div><a href="#gip0005-认证和授权" class="line-height15 pad0x pad00y quiet block " data-reactid="11">GIP0005 认证和授权</a><div class="small pad0x quiet space-top1" data-reactid="12">支付协议</div><a href="#gip0006-支付协议" class="line-height15 pad0x pad00y quiet block " data-reactid="13">GIP0006 支付协议</a><div class="small pad0x quiet space-top1" data-reactid="14">道具空投协议</div><a href="#gip0009-游戏道具的空投" class="line-height15 pad0x pad00y quiet block " data-reactid="15">GIP0009 游戏道具的空投</a><div class="small pad0x quiet space-top1" data-reactid="16">道具上链</div><a href="#gip0001-虚拟物品的发行和交易" class="line-height15 pad0x pad00y quiet block " data-reactid="17">GIP0001 虚拟物品的发行和交易</a><div class="small pad0x quiet space-top1" data-reactid="18">游戏商部署指南</div><a href="#部署特约全节点" class="line-height15 pad0x pad00y quiet block " data-reactid="19">部署特约全节点</a><a href="#游戏和特约全节点的交互" class="line-height15 pad0x pad00y quiet block " data-reactid="20">游戏和特约全节点的交互</a><a href="#rpc通讯指令列表" class="line-height15 pad0x pad00y quiet block " data-reactid="21">RPC通讯指令列表</a><div class="small pad0x quiet space-top1" data-reactid="22">小程序多帐号体系</div><a href="#gamegold-多账户体系整改方案" class="line-height15 pad0x pad00y quiet block " data-reactid="23">Gamegold 多账户体系整改方案</a><div class="small pad0x quiet space-top1" data-reactid="24">RPC - 钱包</div><a href="#钱包相关的api" class="line-height15 pad0x pad00y quiet block " data-reactid="25">钱包相关的API</a><div class="small pad0x quiet space-top1" data-reactid="26">区块链浏览器 - 区块</div><a href="#和区块数据相关的接口" class="line-height15 pad0x pad00y quiet block " data-reactid="27">和区块数据相关的接口</a><div class="small pad0x quiet space-top1" data-reactid="28">区块链浏览器 - 地址</div><a href="#和地址相关的接口" class="line-height15 pad0x pad00y quiet block " data-reactid="29">和地址相关的接口</a><div class="small pad0x quiet space-top1" data-reactid="30">区块链浏览器 - 交易</div><a href="#和交易相关的接口" class="line-height15 pad0x pad00y quiet block " data-reactid="31">和交易相关的接口</a><div class="small pad0x quiet space-top1" data-reactid="32">区块链浏览器 - 域名</div><a href="#域名查询类接口" class="line-height15 pad0x pad00y quiet block " data-reactid="33">域名查询类接口</a><div class="small pad0x quiet space-top1" data-reactid="34">区块链浏览器 - 辅助</div><a href="#系统状态查询类接口" class="line-height15 pad0x pad00y quiet block " data-reactid="35">系统状态查询类接口</a></div></div><div class="space-left16" data-reactid="36"><div class="" data-reactid="37"><div class="clearfix" data-reactid="38"><div data-title="游戏金API文档" class="keyline-top section contain clearfix " data-reactid="39"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="40"><h2 id="游戏金api文档">游戏金API文档</h2>
+<p>欢迎来到游戏金公链API文档站！</p>
+<p>本站文档采用Markdown格式书写，并通过<a href="https://github.com/tmcw/docbox">docbox</a>转化而来
+支持 <strong>bold</strong>, <em>emphasis</em>, <del>strikethrough</del> <code>code</code> 等Markdown格式.</p>
+</div></div><div data-title="连接器列表" class="keyline-top section contain clearfix " data-reactid="41"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="42"><h2 id="连接器列表">连接器列表</h2>
+<p>连接器是指协助业务点执行连接公链、发起业务请求并获取应答的流程的辅助类，目前有如下不同类型的连接器</p>
+<ul>
+<li>开放式连接器</li>
+<li>授权式连接器</li>
+<li>控制台连接器</li>
+</ul>
+</div></div><div data-title="开放式连接器" class="keyline-top section contain clearfix " data-reactid="43"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="44"><h3 id="开放式连接器">开放式连接器</h3>
+<p>用于基于浏览器的应用，在未经全节点授权的情况下，访问部分脱敏API
+开放式连接器采用 Restful 语法，通过 GET 或 POST 访问API并获得JSON格式的应答
+开放式连接器受流量控制影响，每分钟最多100次访问</p>
+<p>可以使用 curl 或者 Postman 等工具进行API调用测试。GET API可直接用浏览器调用， POST API可以通过浏览器插件调用</p>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="45"><h4 id="example-request">Example request</h4>
+<div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>http://localhost:17332/public/block/height/:height</div>
+    </div>
+<pre class='hljs'>curl http://localhost:17332/public/block/height/:height</pre>
+<div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>POST</div>
+      <div class='pad0 code small endpoint-url'>http://localhost:17332/public/block/height/:height</div>
+    </div>
+<pre class='hljs'>curl -X POST http://localhost:17332/public/block/height/{height}</pre>
+<h4 id="example-response">Example response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"hash"</span>: <span class="hljs-string">"14f73dfc67b3dc7939de6514b6ce230934a5b42cbeadf44038ed276c6390cdab"</span>,
+  <span class="hljs-attr">"confirmations"</span>: <span class="hljs-number">3213</span>,
+  <span class="hljs-attr">"strippedsize"</span>: <span class="hljs-number">651</span>,
+  <span class="hljs-attr">"size"</span>: <span class="hljs-number">687</span>,
+  <span class="hljs-attr">"weight"</span>: <span class="hljs-number">2640</span>,
+  <span class="hljs-attr">"height"</span>: <span class="hljs-number">100</span>,
+  <span class="hljs-attr">"version"</span>: <span class="hljs-number">536870912</span>,
+  <span class="hljs-attr">"versionHex"</span>: <span class="hljs-string">"20000000"</span>,
+  <span class="hljs-attr">"merkleroot"</span>: <span class="hljs-string">"059729c129799cf09ec07f2cf596149d59a5986251cb1143768f54de5ee30579"</span>,
+  <span class="hljs-attr">"coinbase"</span>: <span class="hljs-string">"0164116d696e65642062792067616d65676f6c6404c2a3b0f5080000000000000000"</span>,
+  <span class="hljs-attr">"tx"</span>: [
+    <span class="hljs-string">"059729c129799cf09ec07f2cf596149d59a5986251cb1143768f54de5ee30579"</span>
+  ],
+  <span class="hljs-attr">"time"</span>: <span class="hljs-number">1532999312</span>,
+  <span class="hljs-attr">"mediantime"</span>: <span class="hljs-number">1532996312</span>,
+  <span class="hljs-attr">"bits"</span>: <span class="hljs-number">545259519</span>,
+  <span class="hljs-attr">"difficulty"</span>: <span class="hljs-number">4.6565423739069247e-10</span>,
+  <span class="hljs-attr">"chainwork"</span>: <span class="hljs-string">"00000000000000000000000000000000000000000000000000000000000000ca"</span>,
+  <span class="hljs-attr">"previousblockhash"</span>: <span class="hljs-string">"35f512ff035b788976714b2cbc925d990968fe1621fb40c917544dfd1b9bf33c"</span>,
+  <span class="hljs-attr">"nextblockhash"</span>: <span class="hljs-string">"47b85cea3ba29563171cb3d6a0e4f5c24d4e76d84e8fb2d9b4417258ffbb9744"</span>
+}</pre>
+</div></div><div data-title="授权式连接器" class="keyline-top section contain clearfix " data-reactid="46"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="47"><h3 id="授权式连接器">授权式连接器</h3>
+<p>用于基于浏览器的游戏客户端，或没有集成核心库的游戏服务端，向SPV节点/全节点发起API调用
+授权式连接器受流量控制影响，每分钟最多1000次访问
+详细案例请查阅 gamegoldmanager 项目中的 remoting 对象封装</p>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="48"><h4 id="example-request-1">Example request</h4>
+</div></div><div data-title="控制台连接器" class="keyline-top section contain clearfix " data-reactid="49"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="50"><h3 id="控制台连接器">控制台连接器</h3>
+<p>用于集成了核心库（GameGold Core）的控制台或游戏服务端，向SPV节点/全节点发起API调用
+本连接器使用了核心库提供的 accessWallet 类</p>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="51"><h4 id="example-request-2">Example request</h4>
+</div></div><div data-title="GIP0005 认证和授权" class="keyline-top section contain clearfix " data-reactid="52"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="53"><h2 id="gip0005-认证和授权">GIP0005 认证和授权</h2>
+<p>GIP0005 定义了玩家如何利用自己的钱包，向游戏传递互信的协议和流程，包括：
+1、认证：玩家钱包向游戏签发证书，游戏可以离线验证该证书，并获得玩家的可信信息
+2、授权：游戏根据证书信息，将链上资产和游戏内资产进行同步，之后玩家就可以在游戏内支配已确权的资产</p>
+</div></div><div data-title="token.user" class="keyline-top section contain clearfix " data-reactid="54"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="55"><h3 id="tokenuser">token.user</h3>
+<p>游戏客户端向钱包申领指定用户的登录令牌: 输入游戏编号和玩家编号，输出令牌对象。</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>game_id</code></td>
+<td>游戏编号</td>
+</tr>
+<tr>
+<td><code>user_id</code></td>
+<td>游戏内玩家编号</td>
+</tr>
+<tr>
+<td><code>acct_id</code></td>
+<td>游戏内玩家归属账户</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="56"><h4 id="example-request-3">Example request</h4>
+<h4 id="example-request-body">Example request body</h4>
+<pre class='hljs'>[
+  <span class="hljs-string">"{game_id}"</span>,
+  <span class="hljs-string">"{user_id}"</span>,
+  <span class="hljs-string">"{acct_id}"</span>
+]</pre>
+<h4 id="example-response-1">Example response</h4>
+<pre class='hljs'>{
+  "data": {
+    "cid": "{game_id}",         //CP编号，也就是游戏编号
+    "uid": "{user_id}",         //玩家编号
+    "time": "{timestamp}",      //时间戳
+    "addr": "{user_address}",   //玩家绑定的收款地址
+    "pubkey": "{user_pubkey}"   //玩家收款地址对应的公钥，验签时使用
+  },
+  "sig": "{token_sig}"          //数据签名，验签时使用
+}</pre>
+</div></div><div data-title="balance.all" class="keyline-top section contain clearfix " data-reactid="57"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="58"><h3 id="balanceall">balance.all</h3>
+<p>查询账户余额。</p>
+<p>入口参数</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>acct_id</code></td>
+<td>游戏内玩家归属账户</td>
+</tr>
+</tbody>
+</table>
+<p>@note 对微信小程序而言，acct_id一般取值于openid，也就是说，同一个微信用户的不同游戏地址，会归类存储于同一个acct_id下</p>
+<ul>
+<li>balance.confirmed [$acct_id]          只包括确认交易的余额</li>
+</ul>
+<ul>
+<li>balance.unconfirmed [$acct_id]        包括未确认交易在内的余额</li>
+</ul>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="59"><h4 id="example-request-4">Example request</h4>
+<h4 id="example-response-2">Example response</h4>
+<pre class='hljs'>{
+  "unconfirmed": 5000,    //单位尘
+  "confirmed": 5000       //单位尘
+}</pre>
+<h4 id="衍生指令">衍生指令</h4>
+<pre class='hljs'>0.00005   //单位石</pre>
+<pre class='hljs'>0.00005   //单位石</pre>
+</div></div><div data-title="queryProps" class="keyline-top section contain clearfix " data-reactid="60"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="61"><h3 id="queryprops">queryProps</h3>
+<p>游戏向核心网发送游戏编码、玩家地址，向对等网络查询该玩家持有的道具列表。</p>
+<ul>
+<li>开放式连接器 Y - 授权式连接器 Y - 控制台连接器 Y -</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>game_id</code></td>
+<td>游戏编号</td>
+</tr>
+<tr>
+<td><code>user_addr</code></td>
+<td>游戏内玩家的有效地址</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="62"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>POST</div>
+      <div class='pad0 code small endpoint-url'>http://localhost:17332/public/prop/query/{game_id,</div>
+    </div>
+<h4 id="可访问性">可访问性</h4>
+<h4 id="example-request-5">Example request</h4>
+<h4 id="example-request-body-1">Example request body</h4>
+<pre class='hljs'>[
+  <span class="hljs-string">"{game_id}"</span>,
+  <span class="hljs-string">"{user_addr}"</span>
+]</pre>
+<h4 id="example-response-3">Example response</h4>
+<pre class='hljs'>[
+  {
+    <span class="hljs-attr">"pid"</span>: <span class="hljs-string">"{道具编号}"</span>,
+    <span class="hljs-attr">"cid"</span>: <span class="hljs-string">"{游戏编号}"</span>,
+    <span class="hljs-attr">"oid"</span>: <span class="hljs-string">"{道具原始编号}"</span>,
+    <span class="hljs-attr">"oper"</span>: <span class="hljs-string">"exchange"</span>,
+    <span class="hljs-attr">"prev"</span>: {
+      <span class="hljs-attr">"hash"</span>: <span class="hljs-string">"{转入交易的哈希}"</span>,
+      <span class="hljs-attr">"index"</span>: <span class="hljs-string">"{关联的输出索引}"</span>
+    },
+    <span class="hljs-attr">"current"</span>: {
+      <span class="hljs-attr">"hash"</span>: <span class="hljs-string">"{道具所在交易的哈希}"</span>,
+      <span class="hljs-attr">"index"</span>: <span class="hljs-string">"{关联的输出索引}"</span>
+    },
+    <span class="hljs-attr">"gold"</span>: <span class="hljs-string">"{含金量}"</span>,
+    <span class="hljs-attr">"confirm"</span>: <span class="hljs-string">"{确认数}"</span>,
+    <span class="hljs-attr">"root"</span>: {
+      <span class="hljs-attr">"hash"</span>: <span class="hljs-string">"{道具首发交易的哈希}"</span>,
+      <span class="hljs-attr">"index"</span>: <span class="hljs-string">"{关联的输出索引}"</span>
+    }
+  }
+]</pre>
+</div></div><div data-title="GIP0006 支付协议" class="keyline-top section contain clearfix " data-reactid="63"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="64"><h2 id="gip0006-支付协议">GIP0006 支付协议</h2>
+</div></div><div data-title="协议说明" class="keyline-top section contain clearfix " data-reactid="65"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="66"><h3 id="协议说明">协议说明</h3>
+<p>Layer: Consensus</p>
+<p>Title: Payment Protocol</p>
+<p>Status: Draft V0.1</p>
+<p>Author：bookman</p>
+<p>Type: Standards Track</p>
+<p>Created: 2018-06-19</p>
+<p>Summary：为游戏玩家提供安全便捷的支付结算通道</p>
+<p><strong>业务主体描述</strong></p>
+<p>1、玩家
+玩家在游戏提供的交互页面上选取商品并生成订单，使用自己的钱包支付订单，在订单在线兑付后确认订单流程完成</p>
+<p>2、钱包
+玩家从钱包跳转到游戏，在这个跳转过程中，送去了登录令牌，如果通过了验证，就可以顺利登录游戏
+玩家登录后，可以浏览到自己已有的道具（登录地址上的所有该游戏的道具）
+玩家在游戏商城里点选商品后，将形成一个订单，点击"支付"，跳回钱包
+玩家在钱包内签署该订单的支付交易，订单被网络确认后开始广播，玩家的钱包将会收到交易确认消息
+玩家可以在钱包中，通过检索相关订单记录，来查看相关订单支付详情
+玩家回到游戏中，再次点击"查看订单列表"，可以看到订单状态发生了变化，同时订单也执行了兑付</p>
+<p>3、游戏
+游戏负责提供商品列表、购物车以帮助玩家生成订单，并提供最终的订单在线兑付功能
+开放订单确认回调接口，以接收特约全节点发送的订单状态通告
+对已受理订单，定期向特约全节点查询其确认数，当达到预设阀值（例如6个）时触发兑付流程</p>
+<p>4、特约全节点
+因为特约全节点是游戏自行建立的全节点，所以游戏得以获得充分的授权。
+特约全节点为游戏提供订单在线兑付功能（链上道具的制备和转移），注意订单中的普通商品的兑付由游戏自行完成
+特约全节点还为游戏提供交易确认通知、订单存档和历史查询等功能
+特约全节点可以提供对等网络的一般性功能，也能面向游戏提供特约服务功能</p>
+<p>5、对等网络
+对等网络为各类合法交易提供中继广播、打包功能。</p>
+<p><strong>时序图</strong></p>
+<pre><code>    玩家             钱包             游戏          特约全节点           对等网络
+      |               |                |                 |                  |  
+      |  make order   |                |                 |                  |  
+      |———————————————+———————————————>|                 |                  |  
+      |               |   send order   |                 |                  |
+      |               |&#x3C;———————————————|                 |                  |
+      |               |   pay  order   |                 |                  |
+      |               |————————————————+—————————————————+—————————————————>|
+      |               |                |                 |   confirm tx     |
+      |               |                |                 |&#x3C;—————————————————|
+      |               |                |  confirm order  |                  |
+      |               |                |&#x3C;————————————————|                  |
+      |               |                | implement order |                  |
+      |               |                |————————————————>|                  |
+      |               |                |                 |   send prop      |
+      |               |                |                 |—————————————————>|
+      |               |                |                 |   confirm tx     |
+      |               |                |                 |&#x3C;—————————————————|
+      |               |                | confirm prop    |                  |
+      |               |                |&#x3C;————————————————|                  |
+      |               |  provide prop  |                 |                  |  
+      |&#x3C;——————————————+————————————————|                 |                  |  
+      |               |                |   query order   |                  |
+      |               |                |&#x3C;———————————————>|                  |
+      |               |                |                 |                  |  
+      |               |                |                 |                  |  
+</code></pre>
+<ul>
+<li>√ make order          ：玩家在商城选购商品形成订单</li>
+<li>√ send order          ：游戏将订单转发给钱包</li>
+<li>√ pay order           ：钱包收到游戏转入的订单（或玩家手动输入的订单），签发订单支付交易并广播至对等网络</li>
+<li>√ confirm tx          ：特约全节点收到对等网络交易确认通知
+池传导通知：调用游戏的订单确认回调接口，通告订单已收到
+链传导通知：
+1、将交易信息记录到 layout.o 条目下
+2、调用游戏的订单确认回调接口，通告订单已确认，附加确认次数</li>
+<li>√ confirm order       ：特约全节点通知游戏订单已确认</li>
+<li>√ implement order     ：游戏收到订单确认回调请求，分情况刷新订单状态，例如"已收到，处理中。。。"、"已确认，确认数N"等等
+1、如果是内部商品，直接兑付
+2、如果是上链商品，必须向特约全节点申请订单兑付，以完成道具制备（ prop.send ）和转移（ prop.send ）等操作</li>
+<li>√ send prop           ：特约全节点接受了游戏的订单兑付请求，签发道具制备转移交易并广播至对等网络</li>
+<li>√ confirm tx          ：特约全节点收到对等网络交易确认通知</li>
+<li>√ confirm prop        ：特约全节点通知游戏道具已确认</li>
+<li>√ provide prop        ：游戏向玩家核发道具（去重处理）</li>
+<li>√ query order         ：游戏向特约全节点核查待处理订单实时状态：指定游戏编号、订单流水号集合，查询对应订单详情</li>
+</ul>
+<p><strong>订单状态图</strong></p>
+<pre><code>        _____支付_____确认________履行____
+      |           ↓         ↓           ↓
+    订单生成      已支付     已确认      已履行       已过期
+      |           ↓         ↓           ↓           ↑
+      |       进入内存池    上链     兑付订单内容     |
+      |_____________________________________________|
+</code></pre>
+<p><strong>认证和通讯安全</strong></p>
+<ul>
+<li>游戏APP和服务端通讯安全自行负责</li>
+<li>玩家钱包和对等网络间依托现有的P2P通讯方式</li>
+<li>玩家钱包登录游戏APP：送去登录令牌，令牌中包含用户私钥签署过的数据</li>
+<li>游戏服务端访问对等网络：对于脱敏操作，可以直接明文通讯，如果出于对DDOS的担心，可以考虑一些流量控制方案</li>
+<li>游戏服务端和特约全节点（远程钱包）之间采用 HMAC 签名算法，确保两者相互认证和通讯数据不可篡改
+一、游戏服务端访问特约全节点（远程钱包）
+1、远程钱包必须为游戏服务端分配令牌编号和令牌固定量，可以通过本地制备指令 sys.createAuthToken 屏显制备内容
+2、每个游戏服务端配置被分配的令牌编号和令牌固定量，并以离线手动更新方式，和远程钱包的配置保持一致
+3、游戏服务端使用远程钱包RPC接口前，必须先发起命令获取自己的令牌随机量，来实现该随机量在服务端/远程钱包两端的同步
+4、游戏服务端将获取的令牌随机量、本地令牌固定量合成为访问令牌，将令牌编号、访问令牌附着在业务指令中一起上传
+5、远程钱包收到上传的令牌编号、访问令牌，和本地HMAC计算结果比对，一致则允许执行业务指令，否则拒绝
+6、对于WebSocket模式，可以在连接认证时缓存认证结果，连接期间无需再次上传访问令牌
+二、特约全节点访问游戏服务端
+1、特约全节点在访问游戏服务端接口时，在参数上附加相应的令牌编号、令牌随机量，以及据此计算的访问令牌
+2、游戏服务端通过本地的令牌固定量、接口上收到的令牌随机量以及参与计算的数据（事先约定）计算访问令牌，和收到的访问令牌比对，实现认证</li>
+<li>全节点RPC接口。全节点RPC接口上实现的操作指令分为三类：
+1、任何连接者都可以执行的指令
+2、本地连接才可以执行的指令
+3、限定执行指令，例如限定钱包、限定来访者令牌等</li>
+<li>
+<p><strong>线上版本使用HTTPS协议替换所有HTTP协议</strong></p>
+<ul>
+<li>可靠的证书生成工具例如 Openssl</li>
+<li>ssl开启设定全局统一</li>
+</ul>
+</li>
+</ul>
+</div></div><div data-title="order.pay" class="keyline-top section contain clearfix " data-reactid="67"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="68"><h3 id="orderpay">order.pay</h3>
+<p>钱包接收订单、签发支付交易并广播至对等网络。
+@note 采用 OP_RETURN 将订单流水和支付交易捆绑在一起，用以作为兑付凭证
+@note 游戏APP可以采用 URL Schema / 二维码图像等方式，将订单内容 [{game_id} {user_id} {order_sn} {order_sum}] 传递给钱包。</p>
+<ul>
+<li>开放式连接器 N - 授权式连接器 Y - 控制台连接器 Y -</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>game_id</code></td>
+<td>游戏编号</td>
+</tr>
+<tr>
+<td><code>user_id</code></td>
+<td>玩家编号</td>
+</tr>
+<tr>
+<td><code>order_sn</code></td>
+<td>订单编号</td>
+</tr>
+<tr>
+<td><code>order_sum</code></td>
+<td>订单金额</td>
+</tr>
+<tr>
+<td><code>account</code></td>
+<td>指定结算的钱包账户，一般为微信用户的openid</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="69"><h4 id="可访问性-1">可访问性</h4>
+<h4 id="example-request-6">Example request</h4>
+<h4 id="example-request-body-2">Example request body</h4>
+<pre class='hljs'>[
+  <span class="hljs-string">"{game_id}"</span>,
+  <span class="hljs-string">"{user_id}"</span>,
+  <span class="hljs-string">"{order_sn}"</span>,
+  <span class="hljs-string">"{order_sum}"</span>,
+  <span class="hljs-string">"{account}"</span>
+]</pre>
+<h4 id="example-response-4">Example Response</h4>
+</div></div><div data-title="order.query" class="keyline-top section contain clearfix " data-reactid="70"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="71"><h3 id="orderquery">order.query</h3>
+<p>查询订单支付状态。一般从游戏服务端发起请求。</p>
+<ul>
+<li>开放式连接器 N - 授权式连接器 Y - 控制台连接器 Y -</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>game_id</code></td>
+<td>游戏编号</td>
+</tr>
+<tr>
+<td><code>order_group</code></td>
+<td>订单流水号数组</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="72"><h4 id="可访问性-2">可访问性</h4>
+<h4 id="example-request-7">Example request</h4>
+<h4 id="example-request-body-3">Example request body</h4>
+<pre class='hljs'>[
+  <span class="hljs-string">"{game_id}"</span>,
+  <span class="hljs-string">"{order_group}"</span>
+]</pre>
+<h4 id="example-response-5">Example response</h4>
+<pre class='hljs'>[
+  {
+    <span class="hljs-attr">"oper"</span>: <span class="hljs-string">"pay"</span>,
+    <span class="hljs-attr">"cid"</span>: <span class="hljs-string">"{游戏编号}"</span>,
+    <span class="hljs-attr">"uid"</span>: <span class="hljs-string">"{玩家编号}"</span>,
+    <span class="hljs-attr">"sn"</span>: <span class="hljs-string">"{订单号}"</span>
+  }
+]</pre>
+</div></div><div data-title="prop.order" class="keyline-top section contain clearfix " data-reactid="73"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="74"><h3 id="proporder">prop.order</h3>
+<p>游戏服务端制备并送出道具。</p>
+<ul>
+<li>开放式连接器 N - 授权式连接器 Y - 控制台连接器 Y -</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>game_id</code></td>
+<td>游戏编号</td>
+</tr>
+<tr>
+<td><code>prop_ori_id</code></td>
+<td>道具原始</td>
+</tr>
+<tr>
+<td><code>prop_value</code></td>
+<td>道具含金量</td>
+</tr>
+<tr>
+<td><code>user_addr</code></td>
+<td>游戏内玩家的有效地址</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="75"><h4 id="可访问性-3">可访问性</h4>
+<h4 id="example-request-8">Example request</h4>
+<h4 id="example-request-body-4">Example request body</h4>
+<pre class='hljs'>[
+  <span class="hljs-string">"{game_id}"</span>,
+  <span class="hljs-string">"{prop_ori_id}"</span>,
+  <span class="hljs-string">"{prop_value}"</span>,
+  <span class="hljs-string">"{user_addr}"</span>
+]</pre>
+<h4 id="example-response-6">Example response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"hash"</span>: <span class="hljs-string">"{当前道具所在交易哈希}"</span>,
+  <span class="hljs-attr">"cid"</span>: <span class="hljs-string">"{游戏编码}"</span>,
+  <span class="hljs-attr">"pid"</span>: <span class="hljs-string">"{道具编码}"</span>,
+  <span class="hljs-attr">"oid"</span>: <span class="hljs-string">"{道具原始编码}"</span>,
+  <span class="hljs-attr">"gold"</span>: <span class="hljs-string">"{道具含金量}"</span>,
+  <span class="hljs-attr">"addr"</span>: <span class="hljs-string">"{目标地址}"</span>,
+}</pre>
+</div></div><div data-title="GIP0009 游戏道具的空投" class="keyline-top section contain clearfix " data-reactid="76"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="77"><h2 id="gip0009-游戏道具的空投">GIP0009 游戏道具的空投</h2>
+<p>Layer: Consensus</p>
+<p>Title: Bonus for Potential Game Player</p>
+<p>Status: Draft</p>
+<p>Author：bookman</p>
+<p>Type: Standards Track</p>
+<p>Created: 2018-08-15</p>
+<p>Summary：向潜在游戏玩家分发游戏道具的解决方案</p>
+</div></div><div data-title="游戏道具空投流程" class="keyline-top section contain clearfix " data-reactid="78"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="79"><h3 id="游戏道具空投流程">游戏道具空投流程</h3>
+<p>1、游戏厂商批量生成若干道具
+2、游戏厂商查询潜在游戏玩家，向其地址投放道具
+3、游戏玩家根据地址中包含的游戏信息，申领游戏专用地址
+4、钱包系统将先前收到的道具转入该专用地址，以便在游戏中顺利确权
+5、玩家登录游戏，使用先前获取的道具</p>
+<p>@note 关于游戏地址
+钱包按照 游戏ID + 玩家游戏内ID 的组合，为玩家分配游戏专用地址。玩家在游戏中获取的道具将会发往该地址。
+空投道具的行为一般发生于玩家进入游戏前，因此游戏只能将其投放至玩家玩过的其它游戏的专用地址。
+这些错位的道具无法在该专用地址对应的游戏中确权，因此当玩家真正进入目标游戏时，钱包必须主动提示用户进行道具的迁移。
+当迁移完成后，用户再次登录目标游戏时，就可以对这些道具进行确权，从而在游戏中合法使用它们。</p>
+</div></div><div data-title="GIP0001 虚拟物品的发行和交易" class="keyline-top section contain clearfix " data-reactid="80"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="81"><h2 id="gip0001-虚拟物品的发行和交易">GIP0001 虚拟物品的发行和交易</h2>
+<p>Layer: Consensus</p>
+<p>Title: Virtual Props' Publish and Trade</p>
+<p>Status: Draft V0.1</p>
+<p>Author：bookman</p>
+<p>Type: Standards Track</p>
+<p>Created: 2018-04-24</p>
+<p>Summary：提出了涵盖虚拟物品的发行、转移、竞价销售、熔铸功能的完整解决方案，将于主链发布之日默认激活。</p>
+</div></div><div data-title="概述" class="keyline-top section contain clearfix " data-reactid="82"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="83"><h3 id="概述">概述</h3>
+<p>1、CP Register：生产者注册信息
+2、CP Change：生产者修改信息/转移注册信息所有权
+3、VP Create：生产者发行虚拟物品，VP被制造出来，处于Produce状态，可以进入Exchange状态，也可以进入Found状态
+4、VP Exchange：VP在生产者和用户、用户和用户间转移，可以在Exchange状态上自循环，也可以进入Sale或Found状态
+5、VP Sale：VP被出售，进入Sale状态（竞价环节），可以自循环（通过Buy操作多轮竞价）。无论成功与否，最终都将回到Exchange状态
+6、VP Found：VP被熔铸为Coin，进入零钱包，这是终极状态，VP除币值外的所有属性被不可逆转的抹除</p>
+<p>虚拟物品状态机如下所示：</p>
+<pre><code>_________________________________
+</code></pre>
+<p>   /                                 |
+/                                  ↓
+Produce -->  Exchange --> Sale     Found
+↑  | | ↑     ↑ ||       ↑
+|  | | |     |_||       |
+|<strong>| | |<strong>__</strong></strong>|       |
+|<strong><strong><strong><strong>__</strong></strong></strong></strong>|</p>
+</div></div><div data-title="cp.list" class="keyline-top section contain clearfix " data-reactid="84"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="85"><h3 id="cplist">cp.list</h3>
+<p>查询系统中现有的所有CP列表：cp.list</p>
+<ul>
+<li>开放式连接器 N - 授权式连接器 Y - 控制台连接器 Y -</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cid</td>
+<td>CP唯一编号，由系统内部分配</td>
+</tr>
+<tr>
+<td>name</td>
+<td>CP的名称，由注册者设定，全局唯一</td>
+</tr>
+<tr>
+<td>url</td>
+<td>CP的URL地址</td>
+</tr>
+<tr>
+<td>ip</td>
+<td>CP的IP地址，可以为空</td>
+</tr>
+<tr>
+<td>current.hash</td>
+<td>注册信息所在交易的哈希</td>
+</tr>
+<tr>
+<td>current.index</td>
+<td>注册信息在交易中的序列号</td>
+</tr>
+<tr>
+<td>current.address</td>
+<td>注册信息关联的地址</td>
+</tr>
+<tr>
+<td>owned</td>
+<td>是否归属于当前钱包（仅对钱包客户端有效）</td>
+</tr>
+<tr>
+<td>status</td>
+<td>保留字段</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="86"><h4 id="可访问性-4">可访问性</h4>
+<h4 id="example-request-9">Example Request</h4>
+<h4 id="example-response-7">Example Response</h4>
+<pre class='hljs'>[
+  {
+    <span class="hljs-attr">"cid"</span>: <span class="hljs-string">"237da570-b725-11e8-a7ca-3f8b903ba033"</span>,
+    <span class="hljs-attr">"name"</span>: <span class="hljs-string">"hello"</span>,
+    <span class="hljs-attr">"url"</span>: <span class="hljs-string">"127.0.0.1"</span>,
+    <span class="hljs-attr">"ip"</span>: <span class="hljs-string">""</span>,
+    <span class="hljs-attr">"current"</span>: {
+      <span class="hljs-attr">"hash"</span>: <span class="hljs-string">"bd3a3656b94fd9d61ca7a3721c385e29e4b12176b9efa8fe0702ee5b95ff25c4"</span>,
+      <span class="hljs-attr">"index"</span>: <span class="hljs-number">0</span>,
+      <span class="hljs-attr">"address"</span>: <span class="hljs-string">"tb1qr790zz32jyyje8letxkavdv93qf7dmp0wjx3s0"</span>
+    },
+    <span class="hljs-attr">"owned"</span>: <span class="hljs-literal">true</span>,
+    <span class="hljs-attr">"status"</span>: <span class="hljs-number">1</span>
+  }
+]</pre>
+</div></div><div data-title="sys.createAuthToken" class="keyline-top section contain clearfix " data-reactid="87"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="88"><h3 id="tokenauth">sys.createAuthToken</h3>
+<p>终端令牌制备指令： sys.createAuthToken cpids
+@note： cpids 为逗分字符串，可携带一条或多条CPID信息</p>
+<ul>
+<li>开放式连接器 N - 授权式连接器 Y - 控制台连接器 Y -</li>
+</ul>
+<p>null</p>
+<p>@note 控制台屏显内容：
+1111: 038253ce66d5615a6efe9f262c2e96a305f9fab5e9ebb39688c55919b784fb8f88
+2222: 024cc9367ef61ab6f5842f50c50717434255a6427e2a3e3486f39000f8d4fce2ac
+3333: 03e434d1b87c191d31535a82adfb33c81fb2d1a56a3a5f9182673e92631382698b</p>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="89"><h4 id="可访问性-5">可访问性</h4>
+<h4 id="example-request-10">Example Request</h4>
+<h4 id="example-response-8">Example Response</h4>
+</div></div><div data-title="cp.create" class="keyline-top section contain clearfix " data-reactid="90"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="91"><h3 id="cpcreate">cp.create</h3>
+<p>CP注册指令：cp.create "name" "url" ["ip"]</p>
+<p>@note:
+注册成功后，生产者由系统生成的全局唯一编码 cid 所标识，称为CP编码
+name 由汉字、大小写字母、数字、下划线和点组成的标识字符串，长度4~20，必须是全局唯一的，不可重复
+ip是可选项，但是结合ip注册，可以得到类似域名寻址的效果，或者说，可以作为 .gamegold 的DNS替代服务使用
+共识变量 registerFee 决定了注册费用，这笔费用被系统冻结无人可以花费
+*该指令一般在主节点管理后台/控制台执行</p>
+<ul>
+<li>开放式连接器 N - 授权式连接器 Y - 控制台连接器 Y -</li>
+</ul>
+<p>入口参数</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name</td>
+<td>CP名称</td>
+</tr>
+<tr>
+<td>url</td>
+<td>CP的URL地址</td>
+</tr>
+<tr>
+<td>[ip]</td>
+<td>CP的IP地址</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="92"><h4 id="可访问性-6">可访问性</h4>
+<h4 id="example-request-11">Example Request</h4>
+<h4 id="example-response-9">Example Response</h4>
+<pre class='hljs'>{
+  "name": "testfellow3",                                                     //CP名称
+  "url": "http://920.cc",                                                    //URL地址
+  "ip": "",                                                                  //IP地址       
+  "cid": "0a021c00-bb23-11e8-8848-233ceb544c5d",                             //CP编码
+  "oper": "cpRegister",                                                      //操作类型
+  "txid": "412408ea931b6b8942c8fd865c1a6da46899b0ef30522884ba0b05d5b704dcdc" //CP记录所在交易的哈希，小端格式
+}</pre>
+</div></div><div data-title="cp.change" class="keyline-top section contain clearfix " data-reactid="93"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="94"><h3 id="cpchange">cp.change</h3>
+<p>CP修改/转让指令： cp.change "name" ["url" "ip" "addr"]</p>
+<p>@note:
+可以只修改名称，但修改后的名称必须全局唯一，而被修改掉的名字将可以被他人再次利用
+如果输入了 addr ，则表示向该地址转让注册信息
+修改、转让没有额外的手续费用
+*该指令一般在主节点管理后台/控制台执行，而非在钱包上执行</p>
+<p>入口参数</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name</td>
+<td>CP名称</td>
+</tr>
+<tr>
+<td>newname</td>
+<td>CP的新名称，如不想改名称则复制原名称</td>
+</tr>
+<tr>
+<td>[url]</td>
+<td>CP的URL地址，可以填写空串，如忽略则后续不可再有参数</td>
+</tr>
+<tr>
+<td>[ip]</td>
+<td>CP的IP地址，可以填写空串，如忽略则后续不可再有参数</td>
+</tr>
+<tr>
+<td>[addr]</td>
+<td>新的接收地址，！！！若填充此字段，相当于转让CP所有权</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="95"><h4 id="example-request-12">Example Request</h4>
+<h4 id="example-response-10">Example Response</h4>
+<pre class='hljs'>{
+  "name": "test1",                                                            //CP原有名称
+  "newName": "test2",                                                         //CP新的名称
+  "url": "http://gamegold.xin",                                               //CP最新的URL
+  "ip": "",                                                                   //CP最新的IP
+  "addr": "tb1qf0md5h9erhqwfwcrshdhkfpg93h0hz2jwk6rwm",                       //CP最新的地址
+  "cid": "9c998be0-bb26-11e8-948a-33c872827589",                              //CP编码
+  "oper": "cpChange",                                                         //操作类型
+  "txid": "92b1ec0a161f2554d0404cce7a10f70050616e304758e3de0338a10b2f172e41"  //CP记录所在交易的哈希，小端格式
+}</pre>
+</div></div><div data-title="cp.ById" class="keyline-top section contain clearfix " data-reactid="96"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="97"><h3 id="cpbyid">cp.ById</h3>
+<p>根据ID查询CP注册信息</p>
+<p>入口参数</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cid</td>
+<td>CP编码</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="98"><h4 id="example-request-13">Example Request</h4>
+<h4 id="example-response-11">Example Response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"cid"</span>: <span class="hljs-string">"xxxxxxxx-game-gold-boss-xxxxxxxxxxxx"</span>,
+  <span class="hljs-attr">"name"</span>: <span class="hljs-string">"BOSS"</span>,
+  <span class="hljs-attr">"url"</span>: <span class="hljs-string">"920.cc"</span>,
+  <span class="hljs-attr">"ip"</span>: <span class="hljs-string">"*"</span>
+}</pre>
+</div></div><div data-title="cp.ByName" class="keyline-top section contain clearfix " data-reactid="99"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="100"><h3 id="cpbyname">cp.ByName</h3>
+<p>根据名称查询CP注册信息</p>
+<p>入口参数</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name</td>
+<td>CP名称</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="101"><h4 id="example-response-12">Example Response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"cid"</span>: <span class="hljs-string">"xxxxxxxx-game-gold-boss-xxxxxxxxxxxx"</span>,
+  <span class="hljs-attr">"name"</span>: <span class="hljs-string">"BOSS"</span>,
+  <span class="hljs-attr">"url"</span>: <span class="hljs-string">"920.cc"</span>,
+  <span class="hljs-attr">"ip"</span>: <span class="hljs-string">"*"</span>,
+  <span class="hljs-attr">"current"</span>: {
+    <span class="hljs-attr">"hash"</span>: <span class="hljs-string">"f1573c53d45441e7d38b1e06ff3687bc26f716b0af06bc6cd219fb3768406087"</span>,
+    <span class="hljs-attr">"index"</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-attr">"address"</span>: <span class="hljs-string">"tb1qpmzc83qca4snn62ee0eul8rqtzrp5a5q0f96rs"</span>
+  },
+  <span class="hljs-attr">"owned"</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">"status"</span>: <span class="hljs-number">1</span>
+}</pre>
+</div></div><div data-title="prop.create" class="keyline-top section contain clearfix " data-reactid="102"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="103"><h3 id="propcreate">prop.create</h3>
+<p>虚拟道具注册指令 </p>
+<p>入口参数</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cid</td>
+<td>发行道具的CP编码</td>
+</tr>
+<tr>
+<td>oid</td>
+<td>发行道具的原始编码</td>
+</tr>
+<tr>
+<td>gold</td>
+<td>道具包含的虚拟币值，单位是尘</td>
+</tr>
+</tbody>
+</table>
+<p>@note
+注册时需要提供两个参数， cid 必须是有效的生产者编码， gold 表示该道具的含金量
+注册完毕后，还必须等待至少一个确认，才能正式发行成功
+进入道具序列的硬币，会从钱包硬币列表中消失，不可用于转账业务操作中
+*该指令一般在主节点管理后台/控制台执行，而非在钱包上执行</p>
+<p>@note
+现行游戏金的单位包括：</p>
+<ul>
+<li>d：尘(dust)，游戏金的最小计量单位</li>
+<li>g：氪(gram)，相当于1000尘</li>
+<li>K：金(kg)，相当于1000氪</li>
+<li>S：石(stone)，相当于100金</li>
+</ul>
+<p>输入参数中，统一使用尘作为单位
+输出参数中，视情况使用尘或者石
+UI中，视情况使用尘、氪、金、石</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>oper</td>
+<td>操作类型码</td>
+</tr>
+<tr>
+<td>cid</td>
+<td>CP编码</td>
+</tr>
+<tr>
+<td>oid</td>
+<td>道具原始编码</td>
+</tr>
+<tr>
+<td>gold</td>
+<td>道具包含的虚拟币值，单位是尘</td>
+</tr>
+<tr>
+<td>pid</td>
+<td>道具编码</td>
+</tr>
+<tr>
+<td>index</td>
+<td>交易内索引</td>
+</tr>
+<tr>
+<td>hash</td>
+<td>所在交易的哈希，大端格式</td>
+</tr>
+<tr>
+<td>txid</td>
+<td>所在交易的哈希，小端格式</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="104"><h4 id="example-request-14">Example Request</h4>
+<h4 id="example-response-13">Example Response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"oper"</span>: <span class="hljs-string">"new"</span>,
+  <span class="hljs-attr">"cid"</span>: <span class="hljs-string">"b77a9b90-bbc4-11e8-9203-1ff8357db148"</span>,
+  <span class="hljs-attr">"oid"</span>: <span class="hljs-string">"gamemonkey0003"</span>,
+  <span class="hljs-attr">"gold"</span>: <span class="hljs-number">10000</span>,
+  <span class="hljs-attr">"pid"</span>: <span class="hljs-string">"15e1a160-bbc5-11e8-9203-1ff8357db148"</span>,
+  <span class="hljs-attr">"index"</span>: <span class="hljs-number">0</span>,
+  <span class="hljs-attr">"txid"</span>: <span class="hljs-string">"d88d0e9ed243fb767643ea1dea754af9aab53e3eab274c4c1f95067efc15135b"</span>
+}</pre>
+</div></div><div data-title="prop.createlist" class="keyline-top section contain clearfix " data-reactid="105"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="106"><h3 id="propcreatelist">prop.createlist</h3>
+<p>VP批量制备指令： prop.createlist "cid|oid|gold,cid|oid|gold"</p>
+<p>prop.create 返回数据的数组形式</p>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="107"><h4 id="example-request-15">Example Request</h4>
+<h4 id="example-response-14">Example Response</h4>
+</div></div><div data-title="prop.send" class="keyline-top section contain clearfix " data-reactid="108"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="109"><h3 id="propsend">prop.send</h3>
+<p>VP转移指令： prop.send addr txid [index]</p>
+<p>通过 prop.create 发行的VP，必须通过 prop.send 发送到某个有效地址上，之后才能成为一个全流通道具，参与拍卖、熔铸等操作</p>
+<p>@note
+输入转移的目标地址，道具所在交易的哈希、输出索引值（可选，默认0），即可将道具转移给目标地址
+转移没有额外的手续费
+输入参数中，标记为 hash 的，按照大端格式解释，标记为 rhash 或 txid 的，按照小端格式解释</p>
+<p>入口参数</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>addr</td>
+<td>发送道具的目标地址</td>
+</tr>
+<tr>
+<td>txid</td>
+<td>道具所在的交易的哈希，小端格式</td>
+</tr>
+<tr>
+<td>index</td>
+<td>道具在交易输出中的索引值，默认0</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="110"><h4 id="example-request-16">Example Request</h4>
+<h4 id="example-response-15">Example Response</h4>
+</div></div><div data-title="prop.sendlist" class="keyline-top section contain clearfix " data-reactid="111"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="112"><h3 id="propsendlist">prop.sendlist</h3>
+<p>VP批量转移指令： prop.sendList "addr|txid|index,addr|txid|index"</p>
+<p>prop.send 数据的数组形式</p>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="113"><h4 id="example-request-17">Example Request</h4>
+<h4 id="example-response-16">Example Response</h4>
+</div></div><div data-title="prop.order" class="keyline-top section contain clearfix " data-reactid="114"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="115"><h3 id="proporder-1">prop.order</h3>
+<p>订购：制备道具并发放给指定地址，相当于同时执行了 prop.creae 和 prop.send</p>
+<p>入口参数</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cid</td>
+<td>生产者编码</td>
+</tr>
+<tr>
+<td>oid</td>
+<td>道具原始编码</td>
+</tr>
+<tr>
+<td>gold</td>
+<td>道具含金量 单位：尘</td>
+</tr>
+<tr>
+<td>addr</td>
+<td>目标地址</td>
+</tr>
+</tbody>
+</table>
+</div></div><div data-title="prop.found" class="keyline-top section contain clearfix " data-reactid="116"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="117"><h3 id="propfound">prop.found</h3>
+<p>VP 熔铸指令：      prop.found hash
+@note
+指定将要熔铸的道具所在的交易的哈希，执行指令后将永久抹除所有的道具属性，重新变为一枚普通的硬币
+不需要指定地址，熔铸后形成的硬币自动回到当前钱包的可用地址上</p>
+<p>入口参数</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>txid</td>
+<td>生产者编码</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>txid</td>
+<td>交易哈希，小端</td>
+</tr>
+<tr>
+<td>index</td>
+<td>交易输出索引</td>
+</tr>
+<tr>
+<td>cid</td>
+<td>生产者编码</td>
+</tr>
+<tr>
+<td>pid</td>
+<td>道具编码</td>
+</tr>
+<tr>
+<td>oid</td>
+<td>道具原始编码</td>
+</tr>
+<tr>
+<td>gold</td>
+<td>道具含金量 单位：尘</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="118"><h4 id="example-request-18">Example Request</h4>
+<h4 id="example-response-17">Example Response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"txid"</span>: <span class="hljs-string">"120fe53b49f6db9d8160588774b63974413b881f0a27f0c7dbb2dea490f4babd"</span>,
+  <span class="hljs-attr">"index"</span>: <span class="hljs-number">0</span>,
+  <span class="hljs-attr">"cid"</span>: <span class="hljs-string">"b77a9b90-bbc4-11e8-9203-1ff8357db148"</span>,
+  <span class="hljs-attr">"pid"</span>: <span class="hljs-string">"9e236880-bbdc-11e8-8f5c-0bef66529c12"</span>,
+  <span class="hljs-attr">"oid"</span>: <span class="hljs-string">"gamemonkey0003"</span>,
+  <span class="hljs-attr">"gold"</span>: <span class="hljs-number">10000</span>
+}</pre>
+</div></div><div data-title="prop.sale" class="keyline-top section contain clearfix " data-reactid="119"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="120"><h3 id="propsale">prop.sale</h3>
+<p>VP 拍卖指令：      prop.sale txid fixedPrice
+@note
+指定将要拍卖的道具所在的交易的哈希，并给出拍卖一口价，将生成一个拍卖交易
+进入拍卖序列的道具，会从钱包道具列表中消失，不可用于转移、熔铸等业务操作中</p>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="121"><h4 id="example-request-19">Example Request</h4>
+<h4 id="example-response-18">Example Response</h4>
+</div></div><div data-title="prop.buy" class="keyline-top section contain clearfix " data-reactid="122"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="123"><h3 id="propbuy">prop.buy</h3>
+<p>VP 竞拍指令：      prop.buy pid price
+@note
+指定要参与竞拍的道具的 pid ，以及自己的出价，就可以参与竞拍
+如果出价高于该拍卖交易的初始价格（自身含金量）以及所有历史报价，那么将形成一个新的拍卖交易，替代之前的拍卖交易
+如果出价高于该拍卖交易的一口价，那么将形成一个新的、已锁定的拍卖交易，替代之前的拍卖交易
+拍卖交易的有效期截止，或者提前进入锁定状态，就会被打包到区块中，打包结束后道具发生了转移，并进入买家钱包的道具列表中，而卖家将得到一笔拍卖金
+如果流拍，交易取消，道具回到原主人手中</p>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="124"><h4 id="example-request-20">Example Request</h4>
+<h4 id="example-response-19">Example Response</h4>
+</div></div><div data-title="address.list" class="keyline-top section contain clearfix " data-reactid="125"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="126"><h3 id="addresslist">address.list</h3>
+<p>查询指定账户下的有效地址。一般用来查询特定openid的微信用户名下的有效地址</p>
+<p>[receive list, change list, nested list]</p>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="127"><h4 id="example-request-21">Example Request</h4>
+<h4 id="example-response-20">Example Response</h4>
+<pre class='hljs'>[
+  [
+    <span class="hljs-string">"tb1qpcu7kpx6an8nycc9qzews4fwt3xm89xm8nkmyh"</span>,
+    <span class="hljs-string">"tb1qrx3g2p4fvtp6dgearxlaveecyreclf2yrwvet2"</span>,
+    <span class="hljs-string">"tb1qywwa32jk65kar6nz9adkdzzs63vc89k26ngjtp"</span>,
+    <span class="hljs-string">"tb1q9fryja72mcma9cxjmm0vq5mfrg5ugq3kk3vauc"</span>,
+    <span class="hljs-string">"tb1q8zqszrane28827msa080al8jj0zq2r6376fg20"</span>,
+    <span class="hljs-string">"tb1qfgjqx8dmlnnqj6kc3vselqgl9kkryegc2ym4gc"</span>,
+    <span class="hljs-string">"tb1q2vdpp7g34hr93cjpy24fkrrdds2wk5a38m8aa7"</span>,
+    <span class="hljs-string">"tb1qth346ed5g76xupars0t4m72cs2lfh60mkrjp9f"</span>,
+    <span class="hljs-string">"tb1qsm9zlyqvv47tasl0mn9h0krhl5hcfv7uz5jal5"</span>,
+    <span class="hljs-string">"tb1q5njps8h97s8d09ypcuwvs4m57jsenmsactugxm"</span>,
+  ],
+  [
+    <span class="hljs-string">"tb1qqsj8dru4r46u29nhgnrgc0wn64d7py9rg8fkc2"</span>,
+    <span class="hljs-string">"tb1qr24jr3excssn7nydrghzeca0zluj703ca79akk"</span>,
+    <span class="hljs-string">"tb1qvmadcnkutxwahq40m6uatxnqlgk482r0t7es9y"</span>,
+    <span class="hljs-string">"tb1qdcgcuv82rsl4epy0szkwfwpkhms59ad84333t9"</span>,
+    <span class="hljs-string">"tb1qw7wefk0ypfuu450qa80nxzumy48alltq426r0x"</span>,
+    <span class="hljs-string">"tb1qs84umpmrrxezpkhpv9qw7kz4pqft8r654x6xt2"</span>,
+    <span class="hljs-string">"tb1q3ed9wenehayl30rzyc60s7nszr9y24nrw62g89"</span>,
+    <span class="hljs-string">"tb1qhdghp7w8zezhcvljsyyslrp5hgnue4w4kuffk3"</span>,
+    <span class="hljs-string">"tb1qcvrnh6jcumzv8rrq86w6g4lfrhqpmsaafh3ly6"</span>,
+    <span class="hljs-string">"tb1qeq4yysu6h8x0kgafn3lxc8tde57s0ry0yleaay"</span>,
+  ],
+  [
+    <span class="hljs-string">"2N3cshjtvJUbQwr6boyTTEEtWJwZM187QSR"</span>,
+    <span class="hljs-string">"2N5twuF5CGhrnMaYB3FAM7p2Y7epmETeBTJ"</span>,
+    <span class="hljs-string">"2N6KeGtPxpZFDTqZ7d4E5mHbgrsSEdBXfnG"</span>,
+    <span class="hljs-string">"2N7eUi5kv2JKkF4uyg6avnUQEwBgCB2vsLo"</span>,
+    <span class="hljs-string">"2N8SPL5pa2n6LD5VwNXm9b4RQ5dCncn7VGn"</span>,
+    <span class="hljs-string">"2N8dTqZbwdkRVfNjVPF8qRJBPYHhyEayNux"</span>,
+    <span class="hljs-string">"2N9AxCDcvMRckjHTxDUTSfajaQYZxP2m1dK"</span>,
+    <span class="hljs-string">"2NAg85xswqn5vwgooitw4mAuLrUvKubrsM9"</span>,
+    <span class="hljs-string">"2NCKSKpqSmkXD3LRrqJtxhKSBKN9digxBFE"</span>,
+    <span class="hljs-string">"2NG8Fvtvu4g6z7mPwx1EpD2tF3pffX9MgtD"</span>,
+  ]
+]</pre>
+</div></div><div data-title="prop.list" class="keyline-top section contain clearfix " data-reactid="128"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="129"><h3 id="proplist">prop.list</h3>
+<p>查询当前拥有的道具列表
+@note prop.list 侧重于查询不同微信用户的道具列表，不区分游戏，而 queryProps 则侧重于查询用户指定的游戏专用地址中的道具列表</p>
+<p>入口参数</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>page</td>
+<td>页码，默认1</td>
+</tr>
+<tr>
+<td>acct</td>
+<td>指定的钱包账户，一般为指定用户的openid</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="130"><h4 id="example-request-22">Example Request</h4>
+</div></div><div data-title="prop.list.created" class="keyline-top section contain clearfix " data-reactid="131"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="132"><h3 id="proplistcreated">prop.list.created</h3>
+<p>列表自己创建的道具</p>
+<p>入口参数</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>acct</td>
+<td>指定的钱包账户，一般为指定用户的openid</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="133"><h4 id="example-request-23">Example Request</h4>
+</div></div><div data-title="prop.list.auction" class="keyline-top section contain clearfix " data-reactid="134"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="135"><h3 id="proplistauction">prop.list.auction</h3>
+<p>列表自己正在拍卖的道具</p>
+<p>入口参数</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>acct</td>
+<td>指定的钱包账户，一般为指定用户的openid</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="136"><h4 id="example-request-24">Example Request</h4>
+</div></div><div data-title="prop.list.bid" class="keyline-top section contain clearfix " data-reactid="137"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="138"><h3 id="proplistbid">prop.list.bid</h3>
+<p>列表自己参与拍卖的道具</p>
+<p>入口参数</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>acct</td>
+<td>指定的钱包账户，一般为指定用户的openid</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="139"><h4 id="example-request-25">Example Request</h4>
+</div></div><div data-title="部署特约全节点" class="keyline-top section contain clearfix " data-reactid="140"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="141"><h2 id="部署特约全节点">部署特约全节点</h2>
+<p>1、建立运行环境
+在安装了 node 8.0 及以上版本的基础上，运行如下指令：</p>
+<p>2、开启一个控制台窗口A，通过下述指令启动全节点，等待其同步数据完成</p>
+<p>3、新开一个控制台窗口B，运行如下命令查询CP列表，记录自己名下CP（owned字段为true）的CPID字段：</p>
+<p>如果自己尚未拥有CP记录，可以运行如下命令进行注册：</p>
+<p>其中：
+name是CP名称，全局唯一，不可重复，名称只能含有汉字、数字、字母、下划线和点，不能以下划线和点开头和结尾，长度限制为4~40</p>
+<pre><code>url是CP的回调服务地址，用于对外公开相关服务接口
+ip是备用IP地址，支持IPV4和IPV6两种格式，在url无效的情况下，可直接使用ip进行访问。
+</code></pre>
+<p>注册成功后，再次运行 cp.list 指令进行确认</p>
+<p>4、在窗口A键入 Ctrl-C 关闭全节点</p>
+<p>5、配置 gamegold.conf 文件</p>
+<ul>
+<li>采用包含全部CPID的逗分字符串，配置 hmac-connection 字段</li>
+<li>配置 api-key 字段</li>
+</ul>
+<p>@note gamegold.conf 位于 .gamegold\$networktype\ 目录下，对测试网而言 $networktype = testnet ， 对主网而言 $networktype = main</p>
+<p>6、在A窗口通过如下指令再次启动全节点</p>
+<p>7、在B窗口运行 sys.createAuthToken [CPID逗分列表]，A窗口会屏显授权令牌，记录并离线分发给各CP</p>
+</div></div><div data-title="游戏和特约全节点的交互" class="keyline-top section contain clearfix " data-reactid="142"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="143"><h2 id="游戏和特约全节点的交互">游戏和特约全节点的交互</h2>
+<p>注：详情请参考 GIP0005 - 认证和授权，以及 GIP0006 - 支付协议</p>
+<p>1、CP通过远程连接器，和特约全节点开展RPC通讯。CP需要将获取的授权令牌配置于它的远程连接器中，以控制台连接器为例：</p>
+<p>@note 当前版本下，所有授权节点都将共享整个钱包系统。未来版本中，将为不同CP划分独立钱包，以实现安全隔离</p>
+<p>2、特约全节点在特定事件（如支付确认等）发生时，会通过CP注册信息中的URL地址，向CP提交事件通知, 如下所示：</p>
+</div></div><div data-title="RPC通讯指令列表" class="keyline-top section contain clearfix " data-reactid="144"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="145"><h2 id="rpc通讯指令列表">RPC通讯指令列表</h2>
+</div></div><div data-title="客户端认证登录流程" class="keyline-top section contain clearfix " data-reactid="146"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="147"><h3 id="客户端认证登录流程">客户端认证登录流程</h3>
+<p>主要涉及指令： token.user game_id user_id open_id</p>
+<p>1、页游</p>
+<p>泛指运行于浏览器内的页面游戏，包括Flash游戏、HTML5游戏，运行环境包括PC、手机等</p>
+<ul>
+<li>页游客户端将随机用户码和CP编码，打包并生成二维码并显示在屏幕上</li>
+</ul>
+<ul>
+<li>钱包APP扫码后，在本地执行 token.user 指令，将生成的令牌以GET方式送入游戏服务器</li>
+<li>微信小程序扫码后，将信息送至小程序服务端，在服务端执行 token.user 指令，再将生成的令牌以GET方式送入游戏服务器
+两者的区别是：
+钱包APP用HD钱包技术，本地生成并管理所有的地址。
+微信小程序则在服务端采用HD钱包技术，远程管理所有的地址，用户相关地址记录于和他的openid同名的账户下。
+两者的共性是：
+都使用 cid+uid，通过HD钱包技术推导出专用地址，cid和uid含义、推导出的地址都是一样的</li>
+<li>游戏服务端接收 token ：</li>
+</ul>
+<p>2、手游APP</p>
+<p>运行于IOS、Android系统上的游戏类独立APP</p>
+<ul>
+<li>手游APP通过 URL Schema 技术，向钱包APP或者微信小程序送入cid+uid</li>
+<li>钱包APP生成token，同样以 URL Schema 将 token 送入手游APP，也可以先送入游戏服务端再下发给手游APP</li>
+<li>微信小程序通知小程序服务端，生成token送入游戏服务端</li>
+<li>游戏服务端接收 token 的流程同上</li>
+<li>游戏服务端将token下发给手游APP，手游APP允许用户登录</li>
+</ul>
+<p>3、微信小游戏/内嵌式微信小游戏</p>
+<p>运行于微信小程序环境内的游戏类小程序。内嵌式指使用WebViewer模式嵌入微信小程序中运行的游戏</p>
+<ul>
+<li>微信小游戏通过小程序跳转相关技术，向微信小程序钱包送入cid+uid</li>
+<li>微信小程序钱包通知小程序服务端，生成token送入游戏服务端再下发给微信小游戏</li>
+<li>游戏服务端接收 token 的流程同上</li>
+<li>游戏服务端将token下发给微信小游戏，允许用户登录</li>
+</ul>
+<p>4、从钱包发起的登录认证流程
+a、在钱包界面，点击游戏列表
+b、点击具体游戏后面的"登录"按钮，此时钱包为该游戏生成登录token，并试图跳转到游戏客户端（APP或微信小程序）
+c、游戏客户端向服务端请求登录：GET /auth/:tokan
+d、游戏服务端捕获该路由，核实该token的有效性，执行道具确权，接着设置登录状态并通知游戏客户端
+e、游戏客户端允许用户登录，使用经确权后的道具</p>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="148"><pre class='hljs'>{
+    <span class="hljs-attr">"cid"</span>: <span class="hljs-string">"game001"</span>,
+    <span class="hljs-attr">"uid"</span>: <span class="hljs-string">"user001"</span>
+}</pre>
+</div></div><div data-title="确权流程" class="keyline-top section contain clearfix " data-reactid="149"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="150"><h3 id="确权流程">确权流程</h3>
+<p>主要涉及指令： queryProps
+game_id：CP编码
+user_addr：游戏用户对应该游戏的钱包地址</p>
+<p>该指令由游戏服务端向全节点发起，用于道具确权
+模拟输入：</p>
+<p>入口参数</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>game_id</td>
+<td>CP编码</td>
+</tr>
+<tr>
+<td>user_addr</td>
+<td>钱包地址</td>
+</tr>
+</tbody>
+</table>
+<p>模拟输出：</p>
+<p>游戏服务端收到应答后，需要做双向确权：
+1、玩家背包中没有、应答中有的道具，需要发放给玩家
+2、玩家背包中有、应答中没有到道具，需要从背包中扣除
+@note
+文中提及到道具，都是指上链道具。游戏内普通道具不受该规则影响。
+目前不支持堆叠式道具，简单说每条记录不携带数量字段，都被看作是一件独立的道具</p>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="151"><pre class='hljs'>[
+  {
+    <span class="hljs-attr">"pid"</span>: <span class="hljs-string">"{道具编号}"</span>,
+    <span class="hljs-attr">"cid"</span>: <span class="hljs-string">"{游戏编号}"</span>,
+    <span class="hljs-attr">"oid"</span>: <span class="hljs-string">"{道具原始编号}"</span>,
+    <span class="hljs-attr">"oper"</span>: <span class="hljs-string">"exchange"</span>,
+    <span class="hljs-attr">"prev"</span>: {
+      <span class="hljs-attr">"hash"</span>: <span class="hljs-string">"{转入交易的哈希}"</span>,
+      <span class="hljs-attr">"index"</span>: <span class="hljs-string">"{关联的输出索引}"</span>
+    },
+    <span class="hljs-attr">"current"</span>: {
+      <span class="hljs-attr">"hash"</span>: <span class="hljs-string">"{道具所在交易的哈希}"</span>,
+      <span class="hljs-attr">"index"</span>: <span class="hljs-string">"{关联的输出索引}"</span>
+    },
+    <span class="hljs-attr">"gold"</span>: <span class="hljs-string">"{含金量}"</span>,
+    <span class="hljs-attr">"confirm"</span>: <span class="hljs-string">"{确认数}"</span>,
+    <span class="hljs-attr">"root"</span>: {
+      <span class="hljs-attr">"hash"</span>: <span class="hljs-string">"{道具首发交易的哈希}"</span>,
+      <span class="hljs-attr">"index"</span>: <span class="hljs-string">"{关联的输出索引}"</span>
+    }
+  }
+]</pre>
+</div></div><div data-title="订单支付" class="keyline-top section contain clearfix " data-reactid="152"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="153"><h3 id="订单支付">订单支付</h3>
+<p>主要涉及指令：order.pay</p>
+<p>1、用户在游戏客户端上点击"商品列表"
+2、点选商品后，游戏客户端向游戏服务端发送一个请求，服务端为用户生成一笔订单，缓存在服务端
+3、游戏客户端使用跳转指令，将订单送入钱包，每笔订单包括字段：游戏编号、玩家编号、原始订单号、金额
+4、钱包APP执行订单支付指令：</p>
+<pre><code>connector.execute({method:'order.pay', params:[cid, uid, sn, price, openid]}).then(tx => {
+    console.log('order.pay: ', tx);
+});
+</code></pre>
+<p>5、钱包成功支付后，向全网广播交易；当游戏特约全节点收到该交易，将调用游戏服务端的订单确认回调接口
+6、游戏服务端收到回调请求，将订单设置为"已确认"，处理道具发放流程，并推送给游戏客户端</p>
+<p>7、游戏客户端将订单订单状态改为已支付，延后更新用户背包信息</p>
+</div></div><div data-title="订单查询" class="keyline-top section contain clearfix " data-reactid="154"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="155"><h3 id="订单查询">订单查询</h3>
+<p>主要涉及指令：order.query</p>
+<p>订单查询指令一般从服务端发起，用于查询一段时间后未收到回调确认的订单的真实状态</p>
+<p>模拟输入：</p>
+<p>入口参数</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>game_id</td>
+<td>CP编码</td>
+</tr>
+<tr>
+<td>order_group</td>
+<td>订单编号数组，可一次性查询多条订单的状态</td>
+</tr>
+</tbody>
+</table>
+<p>模拟输出：</p>
+<p>confirm为0表示尚未确认，大于0表示已确认，达到商家设定的最小确认数时，即可向玩家制备并发放道具</p>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="156"><pre class='hljs'>[
+  {
+    <span class="hljs-attr">"oper"</span>    : <span class="hljs-string">"pay"</span>,
+    <span class="hljs-attr">"cid"</span>     : <span class="hljs-string">"{游戏编号}"</span>,
+    <span class="hljs-attr">"uid"</span>     : <span class="hljs-string">"{玩家编号}"</span>,
+    <span class="hljs-attr">"sn"</span>      : <span class="hljs-string">"{订单号}"</span>,
+    <span class="hljs-attr">"confirm"</span> : <span class="hljs-string">"{确认数}"</span>
+  }
+]</pre>
+</div></div><div data-title="制备并发放道具" class="keyline-top section contain clearfix " data-reactid="157"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="158"><h3 id="制备并发放道具">制备并发放道具</h3>
+<p>主要涉及指令： prop.order
+等同于 prop.create 和 prop.send 命令的组合，用于订单确认后，向用户快速制备发放指定的道具</p>
+<p>入口参数</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cid</td>
+<td>CP编码</td>
+</tr>
+<tr>
+<td>oid</td>
+<td>道具原始编号</td>
+</tr>
+<tr>
+<td>gold</td>
+<td>道具含金量</td>
+</tr>
+<tr>
+<td>addr</td>
+<td>玩家接收道具的地址</td>
+</tr>
+</tbody>
+</table>
+</div></div><div data-title="提供道具查询接口" class="keyline-top section contain clearfix " data-reactid="159"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="160"><h3 id="提供道具查询接口">提供道具查询接口</h3>
+<p>游戏服务端以约定的格式，对外提供道具信息查询接口</p>
+<p>如下为道具图片查询接口范例：</p>
+</div></div><div data-title="Gamegold 多账户体系整改方案" class="keyline-top section contain clearfix " data-reactid="161"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="162"><h2 id="gamegold-多账户体系整改方案">Gamegold 多账户体系整改方案</h2>
+<p>为了向用户屏蔽不必要的技术细节，以降低使用门槛，微信小程序并不在本地管理钱包，而是将关键操作全部委托到远方的微信小程序服务器。
+微信小程序服务器管理着一个超级钱包，其中包含了海量的账户，每个账户由个人用户的OPENID所标识，区隔开了用户的私钥、地址、道具等信息。
+从某种角度来看，微信小程序服务器是一个特殊的全节点，与其目的性相对应，有一系列的函数需要完成这种相关性改造，以便该特殊节点可以携带额外的OPENID参数访问这些函数，从而营造出一个多账户系统。
+与此同时，忽略这个参数的系列调用，其运作机制又回到了一个单账户体系。</p>
+<p>需要注意的是，同样的机制可能会被用在一个游戏特约全节点需要管理不同的游戏的场景中。
+在这个场景中，每一台游戏服务器都会被分配一个终端编码（等比于微信小程序用户的OPENID），从而被特约全节点映射到一个单独的账户上。</p>
+<p>以下为参与整改的函数清单</p>
+</div></div><div data-title="查询钱包余额" class="keyline-top section contain clearfix " data-reactid="163"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="164"><h3 id="查询钱包余额">查询钱包余额</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>account</td>
+<td>子账户名称</td>
+</tr>
+</tbody>
+</table>
+</div></div><div data-title="创建虚拟道具" class="keyline-top section contain clearfix " data-reactid="165"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="166"><h3 id="创建虚拟道具">创建虚拟道具</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cid</td>
+<td>游戏编码</td>
+</tr>
+<tr>
+<td>oid</td>
+<td>道具原生编码</td>
+</tr>
+<tr>
+<td>gold</td>
+<td>道具含金量</td>
+</tr>
+<tr>
+<td>openid</td>
+<td>子账号名称</td>
+</tr>
+</tbody>
+</table>
+</div></div><div data-title="转移虚拟道具" class="keyline-top section contain clearfix " data-reactid="167"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="168"><h3 id="转移虚拟道具">转移虚拟道具</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>addr</td>
+<td>转移的目标地址</td>
+</tr>
+<tr>
+<td>hash</td>
+<td>交易哈希</td>
+</tr>
+<tr>
+<td>index</td>
+<td>交易输出索引</td>
+</tr>
+<tr>
+<td>openid</td>
+<td>子账户名称</td>
+</tr>
+</tbody>
+</table>
+</div></div><div data-title="创建用户通行证" class="keyline-top section contain clearfix " data-reactid="169"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="170"><h3 id="创建用户通行证">创建用户通行证</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cid</td>
+<td>游戏编码</td>
+</tr>
+<tr>
+<td>uid</td>
+<td>用户游戏内编码</td>
+</tr>
+<tr>
+<td>openid</td>
+<td>子账号名称</td>
+</tr>
+</tbody>
+</table>
+</div></div><div data-title="捐赠道具" class="keyline-top section contain clearfix " data-reactid="171"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="172"><h3 id="捐赠道具">捐赠道具</h3>
+</div></div><div data-title="收取捐赠" class="keyline-top section contain clearfix " data-reactid="173"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="174"><h3 id="收取捐赠">收取捐赠</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>raw</td>
+<td>原始交易数据，HEX格式</td>
+</tr>
+<tr>
+<td>openid</td>
+<td>子账号名称</td>
+</tr>
+</tbody>
+</table>
+</div></div><div data-title="拍卖道具" class="keyline-top section contain clearfix " data-reactid="175"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="176"><h3 id="拍卖道具">拍卖道具</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>hash</td>
+<td>道具所在交易哈希</td>
+</tr>
+<tr>
+<td>index</td>
+<td>输出索引。在批量转移道具的交易中，需要输出索引以指明目标道具；如果遇到拍卖交易(目前只支持单件道具拍卖)，系统将锁定 index=2 ：该交易在 index=2 的输出上携带有效载荷</td>
+</tr>
+<tr>
+<td>fixed</td>
+<td>一口价</td>
+</tr>
+<tr>
+<td>openid</td>
+<td>子账号名称</td>
+</tr>
+</tbody>
+</table>
+</div></div><div data-title="竞拍道具" class="keyline-top section contain clearfix " data-reactid="177"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="178"><h3 id="竞拍道具">竞拍道具</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pid</td>
+<td>道具编号</td>
+</tr>
+<tr>
+<td>bid</td>
+<td>竞拍价</td>
+</tr>
+<tr>
+<td>openid</td>
+<td>子账号名称</td>
+</tr>
+</tbody>
+</table>
+</div></div><div data-title="查询道具列表" class="keyline-top section contain clearfix " data-reactid="179"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="180"><h3 id="查询道具列表">查询道具列表</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pageNum</td>
+<td>道具列表的页码，从1开始</td>
+</tr>
+<tr>
+<td>openid</td>
+<td>子账号名称</td>
+</tr>
+</tbody>
+</table>
+</div></div><div data-title="钱包相关的API" class="keyline-top section contain clearfix " data-reactid="181"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="182"><h2 id="钱包相关的api">钱包相关的API</h2>
+</div></div><div data-title="address.create" class="keyline-top section contain clearfix " data-reactid="183"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="184"><h3 id="addresscreate">address.create</h3>
+<p>Alias: address.receive.create</p>
+<p>创建一个收款地址</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>network</td>
+<td>网络类型</td>
+</tr>
+<tr>
+<td>id</td>
+<td>钱包ID</td>
+</tr>
+<tr>
+<td>type</td>
+<td>支持隔离见证</td>
+</tr>
+<tr>
+<td>address</td>
+<td>新生成的 Bech32 格式的地址</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="185"><h4 id="example-request-26">Example Request</h4>
+<h4 id="example-response-21">Example Response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"network"</span>: <span class="hljs-string">"testnet"</span>,
+  <span class="hljs-attr">"wid"</span>: <span class="hljs-number">1</span>,
+  <span class="hljs-attr">"id"</span>: <span class="hljs-string">"primary"</span>,
+  <span class="hljs-attr">"name"</span>: <span class="hljs-string">"default"</span>,
+  <span class="hljs-attr">"account"</span>: <span class="hljs-number">0</span>,
+  <span class="hljs-attr">"branch"</span>: <span class="hljs-number">0</span>,
+  <span class="hljs-attr">"index"</span>: <span class="hljs-number">2</span>,
+  <span class="hljs-attr">"witness"</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">"nested"</span>: <span class="hljs-literal">false</span>,
+  <span class="hljs-attr">"publicKey"</span>: <span class="hljs-string">"02c4af60a945212735abd7627c6fd96768c15389b82594447ae239f170afd38c0a"</span>,
+  <span class="hljs-attr">"script"</span>: <span class="hljs-literal">null</span>,
+  <span class="hljs-attr">"program"</span>: <span class="hljs-string">"0014ad6bdd1dd64aa3d8d8a90575518df742b06168c6"</span>,
+  <span class="hljs-attr">"type"</span>: <span class="hljs-string">"witness"</span>,
+  <span class="hljs-attr">"address"</span>: <span class="hljs-string">"tb1q444a68wkf23a3k9fq464rr0hg2cxz6xx3xxs4n"</span>
+}</pre>
+</div></div><div data-title="tx.send" class="keyline-top section contain clearfix " data-reactid="186"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="187"><h3 id="txsend">tx.send</h3>
+<p>根据输入的金额和地址，创建、签署、发送一笔P2PKH类转账交易</p>
+<p>入口参数</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>addr</td>
+<td>转账的目标地址</td>
+</tr>
+<tr>
+<td>value</td>
+<td>转账的金额，单位尘</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="188"><h4 id="example-request-27">Example Request</h4>
+<h4 id="example-response-22">Example Response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"wid"</span>: <span class="hljs-number">1</span>,
+  <span class="hljs-attr">"id"</span>: <span class="hljs-string">"primary"</span>,
+  <span class="hljs-attr">"hash"</span>: <span class="hljs-string">"589e81ebd2cde651f5d562363f5c414acc0527ea48a28a1735aa26d919304a64"</span>,
+  <span class="hljs-attr">"height"</span>: <span class="hljs-number">-1</span>,
+  <span class="hljs-attr">"block"</span>: <span class="hljs-literal">null</span>,
+  <span class="hljs-attr">"time"</span>: <span class="hljs-number">0</span>,
+  <span class="hljs-attr">"mtime"</span>: <span class="hljs-number">1537668448</span>,
+  <span class="hljs-attr">"date"</span>: <span class="hljs-string">"2018-09-23T02:07:28Z"</span>,
+  <span class="hljs-attr">"size"</span>: <span class="hljs-number">222</span>,
+  <span class="hljs-attr">"virtualSize"</span>: <span class="hljs-number">141</span>,
+  <span class="hljs-attr">"fee"</span>: <span class="hljs-number">2800</span>,
+  <span class="hljs-attr">"rate"</span>: <span class="hljs-number">19858</span>,
+  <span class="hljs-attr">"confirmations"</span>: <span class="hljs-number">0</span>,
+  <span class="hljs-attr">"inputs"</span>: [
+    {
+      <span class="hljs-attr">"value"</span>: <span class="hljs-number">5000000000</span>,
+      <span class="hljs-attr">"address"</span>: <span class="hljs-string">"tb1qdrdct4dlhh6wdulddy96h9lxgs9fekaffhyxz5"</span>,
+      <span class="hljs-attr">"path"</span>: {
+        <span class="hljs-attr">"name"</span>: <span class="hljs-string">"default"</span>,
+        <span class="hljs-attr">"account"</span>: <span class="hljs-number">0</span>,
+        <span class="hljs-attr">"change"</span>: <span class="hljs-literal">false</span>,
+        <span class="hljs-attr">"derivation"</span>: <span class="hljs-string">"m/0'/0/0"</span>
+      }
+    }
+  ],
+  <span class="hljs-attr">"outputs"</span>: [
+    {
+      <span class="hljs-attr">"value"</span>: <span class="hljs-number">10000</span>,
+      <span class="hljs-attr">"address"</span>: <span class="hljs-string">"tb1q9msqyf7nee72gk4qw2elawa5m7kgj6u8squmjw"</span>,
+      <span class="hljs-attr">"path"</span>: {
+        <span class="hljs-attr">"name"</span>: <span class="hljs-string">"default"</span>,
+        <span class="hljs-attr">"account"</span>: <span class="hljs-number">0</span>,
+        <span class="hljs-attr">"change"</span>: <span class="hljs-literal">false</span>,
+        <span class="hljs-attr">"derivation"</span>: <span class="hljs-string">"m/0'/0/13"</span>
+      }
+    },
+    {
+      <span class="hljs-attr">"value"</span>: <span class="hljs-number">4999987200</span>,
+      <span class="hljs-attr">"address"</span>: <span class="hljs-string">"tb1q5ggklpp0d89mtgtk9ddn27c02wd3dxha3a37ae"</span>,
+      <span class="hljs-attr">"path"</span>: {
+        <span class="hljs-attr">"name"</span>: <span class="hljs-string">"default"</span>,
+        <span class="hljs-attr">"account"</span>: <span class="hljs-number">0</span>,
+        <span class="hljs-attr">"change"</span>: <span class="hljs-literal">true</span>,
+        <span class="hljs-attr">"derivation"</span>: <span class="hljs-string">"m/0'/1/1"</span>
+      }
+    }
+  ],
+  <span class="hljs-attr">"tx"</span>: <span class="hljs-string">"0100000000010160f0055f9ad850ce85956ba8755d2e7a8f918207b62e2135fd3074bc6d46c3c00000000000ffffffff0210270000000000001600142ee00227d3ce7ca45aa072b3febbb4dfac896b8700c0052a01000000160014a2116f842f69cbb5a1762b5b357b0f539b169afd02473044022075e9d8f6bacbac95ab2aabe4d0f4c9db298fe4b0e9d6427f8d25fc06b2bd8b3f02205f57035af471d8b63e5cd3cf15987f56ed43b01fe64fbeb08a0c0ce176bd3a57012102091058a8f75f971f6dbc158b4bf08027bbc6825ceeaa82800e3af66ad417be0f00000000"</span>
+}</pre>
+</div></div><div data-title="prop.donate" class="keyline-top section contain clearfix " data-reactid="189"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="190"><h3 id="propdonate">prop.donate</h3>
+<p>生成一笔捐赠交易，并返回该交易的原始数据(HEX格式)</p>
+<p>入口参数</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>txid</td>
+<td>准备消耗的UTXO的交易哈希，小端格式</td>
+</tr>
+<tr>
+<td>index</td>
+<td>准备消耗的UTXO的索引，默认为0</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="191"><h4 id="example-request-28">Example Request</h4>
+<h4 id="example-response-23">Example Response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"hash"</span>: <span class="hljs-string">"78d06fa7cd44fe8f5bb811e268ff1ea594356d2700e9bbbbed6dc01cd3c2e054"</span>,
+  <span class="hljs-attr">"txid"</span>: <span class="hljs-string">"54e0c2d31cc06dedbbbbe900276d3594a51eff68e211b85b8ffe44cda76fd078"</span>,
+  <span class="hljs-attr">"cid"</span>: <span class="hljs-string">"73fd9030-bf01-11e8-9777-7fc8c74b6df3"</span>,
+  <span class="hljs-attr">"pid"</span>: <span class="hljs-string">"8ef12140-bf01-11e8-9777-7fc8c74b6df3"</span>,
+  <span class="hljs-attr">"oid"</span>: <span class="hljs-string">"sword"</span>,
+  <span class="hljs-attr">"raw"</span>: <span class="hljs-string">"010000000001017bdd6e315d4214c8ecb5a22522ccf266e7f2b883fea2a5ffa3039f8f9188efb50000000000ffffffff0002483045022100aa860e3b22029574dde1b2513ac53048465c1b229ae0ec84f6c9533ad26b7f320220683ce1df4791d0d0f3ca6a19cc852af020da024ed617a9ffe8856c900c9cf24e02210317f79b1b9a0190475bbb208017524fea99f307ac4adf5ed459c86b8e7c2e88e300000000"</span></pre>
+</div></div><div data-title="prop.receive" class="keyline-top section contain clearfix " data-reactid="192"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="193"><h3 id="propreceive">prop.receive</h3>
+<p>根据输入的捐赠交易的原始数据，补充、签署、发送该交易，以获得其中包含的道具</p>
+<p>入口参数</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>raw</td>
+<td>捐赠交易的原始数据(HEX格式的字符串)</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="194"><h4 id="example-request-29">Example Request</h4>
+<h4 id="example-response-24">Example Response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"hash"</span>: <span class="hljs-string">"7cc47718a2a3da398ddc015d1bbbffeddcb4e0c95c4cc1d4fc4dc1d2a50e30c8"</span>,
+  <span class="hljs-attr">"txid"</span>: <span class="hljs-string">"c8300ea5d2c14dfcd4c14c5cc9e0b4dcedffbb1b5d01dc8d39daa3a21877c47c"</span>,
+  <span class="hljs-attr">"cid"</span>: <span class="hljs-string">"73fd9030-bf01-11e8-9777-7fc8c74b6df3"</span>,
+  <span class="hljs-attr">"pid"</span>: <span class="hljs-string">"8ef12140-bf01-11e8-9777-7fc8c74b6df3"</span>,
+  <span class="hljs-attr">"oid"</span>: <span class="hljs-string">"sword"</span>,
+  <span class="hljs-attr">"addr"</span>: <span class="hljs-string">"tb1qp702eg67av8ty6jl87hyfas8v6h9rzxugvz7su"</span>
+}</pre>
+</div></div><div data-title="和区块数据相关的接口" class="keyline-top section contain clearfix " data-reactid="195"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="196"><h2 id="和区块数据相关的接口">和区块数据相关的接口</h2>
+</div></div><div data-title="查询区块信息" class="keyline-top section contain clearfix " data-reactid="197"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="198"><h3 id="查询区块信息">查询区块信息</h3>
+<p>支持分页</p>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="199"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>http://localhost:17332/public/blocks</div>
+    </div>
+<h4 id="example-request-30">Example Request</h4>
+<h4 id="example-response-25">Example Response</h4>
+<pre class='hljs'>{
+    <span class="hljs-attr">"blocks"</span>: [
+      {
+        <span class="hljs-attr">"height"</span>: <span class="hljs-number">544972</span>,
+        <span class="hljs-attr">"size"</span>: <span class="hljs-number">1126</span>,
+        <span class="hljs-attr">"virtualSize"</span>: <span class="hljs-number">1126</span>,
+        <span class="hljs-attr">"hash"</span>: <span class="hljs-string">"000000000000000001aadeb33e33230bf35eaa6d4303c57074a8040077c7aef1"</span>,
+        <span class="hljs-attr">"time"</span>: <span class="hljs-number">1535208512</span>,
+        <span class="hljs-attr">"txlength"</span>: <span class="hljs-number">5</span>,
+        <span class="hljs-attr">"poolInfo"</span>: {}
+      }, {
+        <span class="hljs-attr">"height"</span>: <span class="hljs-number">544971</span>,
+        <span class="hljs-attr">"size"</span>: <span class="hljs-number">33307</span>,
+        <span class="hljs-attr">"virtualSize"</span>: <span class="hljs-number">33307</span>,
+        <span class="hljs-attr">"hash"</span>: <span class="hljs-string">"000000000000000000b193ca28b0388c6900cde1ee3d77578136a4cbbe9a2d59"</span>,
+        <span class="hljs-attr">"time"</span>: <span class="hljs-number">1535208493</span>,
+        <span class="hljs-attr">"txlength"</span>: <span class="hljs-number">72</span>,
+        <span class="hljs-attr">"poolInfo"</span>: {
+            <span class="hljs-attr">"poolName"</span>: <span class="hljs-string">"AntMiner"</span>,
+            <span class="hljs-attr">"url"</span>: <span class="hljs-string">"https://bitmaintech.com/"</span>
+        }
+      }
+    ],
+    <span class="hljs-attr">"length"</span>: <span class="hljs-number">2</span>,
+    <span class="hljs-attr">"pagination"</span>: {
+        <span class="hljs-attr">"next"</span>: <span class="hljs-string">"2018-08-26"</span>,
+        <span class="hljs-attr">"prev"</span>: <span class="hljs-string">"2018-08-24"</span>,
+        <span class="hljs-attr">"currentTs"</span>: <span class="hljs-number">1535241599</span>,
+        <span class="hljs-attr">"current"</span>: <span class="hljs-string">"2018-08-25"</span>,
+        <span class="hljs-attr">"isToday"</span>: <span class="hljs-literal">true</span>,
+        <span class="hljs-attr">"more"</span>: <span class="hljs-literal">false</span>
+    }
+}</pre>
+</div></div><div data-title="根据哈希查询区块" class="keyline-top section contain clearfix " data-reactid="200"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="201"><h3 id="根据哈希查询区块">根据哈希查询区块</h3>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="202"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>http://localhost:17332/public/block/:hash</div>
+    </div>
+<h4 id="example-request-31">Example Request</h4>
+<h4 id="example-response-26">Example Response</h4>
+<pre class='hljs'>{
+    <span class="hljs-attr">"hash"</span>: <span class="hljs-string">"000000000000000001aadeb33e33230bf35eaa6d4303c57074a8040077c7aef1"</span>,
+    <span class="hljs-attr">"size"</span>: <span class="hljs-number">1126</span>,
+    <span class="hljs-attr">"height"</span>: <span class="hljs-number">544972</span>,
+    <span class="hljs-attr">"version"</span>: <span class="hljs-number">536870912</span>,
+    <span class="hljs-attr">"merkleroot"</span>: <span class="hljs-string">"820df9ed8f57fe6464e5032fe0a9cbf4f986d793dcf78192b8a899993ba27d4b"</span>,
+    <span class="hljs-attr">"tx"</span>: [<span class="hljs-string">"38f6aa1c8112d681be031ea5113c1d4ffa9d245e0515cf27ed45210307cba86f"</span>, <span class="hljs-string">"2b45705210e20bbcb1f8c22ab26cddca086964f0122df42cd3dc48a2e1c563aa"</span>, <span class="hljs-string">"382cc1a07ccfc94676aa6373c4d19ac3a8485064b665335d270713393f0d6514"</span>, <span class="hljs-string">"60fe5f9173a1c78f2e0cbcff2b69baef5b90ee437c7363a367cbffb0e3a3c755"</span>, <span class="hljs-string">"ec1e19f1e121b1650d174e322bd3b674e0c943e5db6bc4a5422d6f177ea89bf3"</span>],
+    <span class="hljs-attr">"time"</span>: <span class="hljs-number">1535208512</span>,
+    <span class="hljs-attr">"nonce"</span>: <span class="hljs-number">4137301843</span>,
+    <span class="hljs-attr">"bits"</span>: <span class="hljs-number">402788059</span>,
+    <span class="hljs-attr">"difficulty"</span>: <span class="hljs-number">534246483976</span>,
+    <span class="hljs-attr">"chainwork"</span>: <span class="hljs-string">"000000000000000000000000000000000000000000bc51a0a20e00709ff0f905"</span>,
+    <span class="hljs-attr">"confirmations"</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">"previousblockhash"</span>: <span class="hljs-string">"000000000000000000b193ca28b0388c6900cde1ee3d77578136a4cbbe9a2d59"</span>,
+    <span class="hljs-attr">"reward"</span>: <span class="hljs-number">12.50007423</span>,
+    <span class="hljs-attr">"isMainChain"</span>: <span class="hljs-literal">true</span>,
+    <span class="hljs-attr">"poolInfo"</span>: {}
+}</pre>
+</div></div><div data-title="获取块原始数据" class="keyline-top section contain clearfix " data-reactid="203"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="204"><h3 id="获取块原始数据">获取块原始数据</h3>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="205"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>http://localhost:17332/public/rawblock/:hash</div>
+    </div>
+<h4 id="example-request-32">Example Request</h4>
+<h4 id="example-response-27">Example Response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"rawblock"</span>:<span class="hljs-string">"00000020592d9abecba4368157773deee1cd00698c38b028ca93b1000000000000000000820df9ed8f57fe6464e5032fe0a9cbf4f986d793dcf78192b8a899993ba27d4b406c815bdb0e021853379af60501000000010000000000000000000000000000000000000000000000000000000000000000ffffffff5c03cc5008192f5669614254432f4d696e6564206279206e6d73393133352f2cfabe6d6d184dc8e1ef0d19eddd4581a029620e0de25eaad2d6a1787c9df61d782045f37f0400000000000000109b63d30764e69a2d914f1943512b0100ffffffff017f99814a000000001976a914f1c075a01882ae0972f95d3a4177c86c852b7d9188ac000000000100000001e19cfde39d5ce89d39200dd0e7e7bbc9a2ea8bcf3a9c74b15edb40b45c921240000000006b483045022100f06cf926c0c630f678434cb6b8eb602064d0615f41bca5ad3c2b31d87692ab470220149e26ee6d4b0fb375dcb09ef81996365b853a8538be8cc0dc61b5db9f9e71be4121038dcabe66cc702624e6c7f2a437df7c36a68962a9becaa0f5f3e68a36839b5faaffffffff01c6dffe65010000001976a9146279b5d9e239500612d4f57d9cb1383bc6957a2288ac000000000200000001e7023fd9f341275c71181dc8797c987495d8fbe12db5619ac86d8c3e2fb1c197010000006b4830450221008a4a6b2d29bb5c5d96f55db2f513f8ef584aaa313c9112c745647fbd9d104cc00220646830de592a2ccea9abd9e30b4d9ded0cacbc66515792e56ca6291f02da84dd412102e730398dca951ded3e419829579c857f956d861ad5738d032ef17ccd2ca370aeffffffff02600e4e07000000001976a914cbe7d31810af5abb158d531fce0be1048021a30a88ace6b90100000000001976a9140a061221aa52f3942e8b39ad2b2c98abf058833488ac0000000002000000017755ce1733b8f89f14feceff96c9094ed571d78554478e733fa42abdfcffb5f3010000006b483045022100a9150be4afc7c0caffeed0b8f138701fc340be8ab0a0612862e600169b738acc0220792e8e9a274debb52c7a4ff76b84dbe1bc546efac36076dbac7d2211531f111b41210346e53d43ae00387c5198579129d4cf2e03ec6a66d7aee2f3efeba10c07cd64b3ffffffff02ff54bd03000000001976a914aa1604b040a7d3c86401fba95d1731b992d366e888ac19798c0d000000001976a9143bf58baf7fb8b69f7f4ffbb1a146c54ac78873e188ac00000000010000000145213921cec40e505c6f16e649b8205944e31dc85182a843909b234da605bc42010000006b483045022100bdf5c7dcf2baf938be5d336b222591f8e3435e9d67d8330544cc0cab40c631a002207979ad560335d35596e0d0141ff1e5ba7b363ce83a84328e6b549185b8506455412103cb8a7ef04cadfdc25425d84162f553bfee89b3109e939a3998c336b2f80642f0ffffffff02abdb00000000000017a9140c1ffe16047f2177e9e55b7b22e4ab699332b0d4870f763800000000001976a91429c69c5c468eab11fc22a558d80d7c555465595c88ac00000000"</span>
+}</pre>
+</div></div><div data-title="根据高度查询区块" class="keyline-top section contain clearfix " data-reactid="206"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="207"><h3 id="根据高度查询区块">根据高度查询区块</h3>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="208"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>http://localhost:17332/public/block-index/:height</div>
+    </div>
+<h4 id="example-request-33">Example Request</h4>
+<h4 id="example-response-28">Example Response</h4>
+<pre class='hljs'>{
+    <span class="hljs-attr">"blockHash"</span>: <span class="hljs-string">"000000000000000001aadeb33e33230bf35eaa6d4303c57074a8040077c7aef1"</span>
+}</pre>
+</div></div><div data-title="和地址相关的接口" class="keyline-top section contain clearfix " data-reactid="209"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="210"><h2 id="和地址相关的接口">和地址相关的接口</h2>
+</div></div><div data-title="根据地址字符串，获取相应地址的关联信息" class="keyline-top section contain clearfix " data-reactid="211"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="212"><h3 id="根据地址字符串，获取相应地址的关联信息">根据地址字符串，获取相应地址的关联信息</h3>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="213"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>http://localhost:17332/public/addr/:addr</div>
+    </div>
+<h4 id="example-request-34">Example Request</h4>
+<h4 id="example-response-29">Example Response</h4>
+<pre class='hljs'>{
+    <span class="hljs-attr">"addrStr"</span>: <span class="hljs-string">"qzj93tjl4unastps6c4rmg0xd6tgfxmmsu83r39jac"</span>,
+    <span class="hljs-attr">"balance"</span>: <span class="hljs-number">10</span>,
+    <span class="hljs-attr">"balanceSat"</span>: <span class="hljs-number">1000000000</span>,
+    <span class="hljs-attr">"totalReceived"</span>: <span class="hljs-number">21.738</span>,
+    <span class="hljs-attr">"totalReceivedSat"</span>: <span class="hljs-number">2173800000</span>,
+    <span class="hljs-attr">"totalSent"</span>: <span class="hljs-number">11.738</span>,
+    <span class="hljs-attr">"totalSentSat"</span>: <span class="hljs-number">1173800000</span>,
+    <span class="hljs-attr">"unconfirmedBalance"</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-attr">"unconfirmedBalanceSat"</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-attr">"unconfirmedTxApperances"</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-attr">"txApperances"</span>: <span class="hljs-number">2</span>,
+    <span class="hljs-attr">"transactions"</span>: [
+      <span class="hljs-string">"f0a56e7eedb628e8ff5bd9399aa0f4a1cc909168bb66129e170708ca8ff7911f"</span>, 
+      <span class="hljs-string">"b1f14329a2ce13415f2c083aadb75e78cc01315a68a8448ecadc24794b8309fd"</span>, 
+      <span class="hljs-string">"ad0ccb3718201d7392b4d49ef0df56557dad8cee4d5ab9b9605b34fa5fc05a2c"</span>
+    ]
+}</pre>
+</div></div><div data-title="根据地址字符串，获取相应地址的UTXO集合" class="keyline-top section contain clearfix " data-reactid="214"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="215"><h3 id="根据地址字符串，获取相应地址的utxo集合">根据地址字符串，获取相应地址的UTXO集合</h3>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="216"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>http://localhost:17332/public/addr/:addr/utxo</div>
+    </div>
+<h4 id="example-request-35">Example Request</h4>
+<h4 id="example-response-30">Example Response</h4>
+<pre class='hljs'>[
+  {
+    <span class="hljs-attr">"address"</span>: <span class="hljs-string">"qzj93tjl4unastps6c4rmg0xd6tgfxmmsu83r39jac"</span>,
+    <span class="hljs-attr">"txid"</span>: <span class="hljs-string">"ad0ccb3718201d7392b4d49ef0df56557dad8cee4d5ab9b9605b34fa5fc05a2c"</span>,
+    <span class="hljs-attr">"vout"</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-attr">"scriptPubKey"</span>: <span class="hljs-string">"76a914a458ae5faf27d82c30d62a3da1e66e96849b7b8788ac"</span>,
+    <span class="hljs-attr">"amount"</span>: <span class="hljs-number">10</span>,
+    <span class="hljs-attr">"satoshis"</span>: <span class="hljs-number">1000000000</span>,
+    <span class="hljs-attr">"height"</span>: <span class="hljs-number">544967</span>,
+    <span class="hljs-attr">"confirmations"</span>: <span class="hljs-number">13</span>
+  }
+]</pre>
+</div></div><div data-title="查询多个地址的UTXO合集" class="keyline-top section contain clearfix " data-reactid="217"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="218"><h3 id="查询多个地址的utxo合集">查询多个地址的UTXO合集</h3>
+<p>地址字符串采用逗分格式，最多4个</p>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="219"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>http://localhost:17332/public/addrs/:addrs/utxo</div>
+    </div>
+<h4 id="example-request-36">Example Request</h4>
+<h4 id="example-response-31">Example Response</h4>
+<pre class='hljs'>[
+  {
+    <span class="hljs-attr">"address"</span>: <span class="hljs-string">"qzj93tjl4unastps6c4rmg0xd6tgfxmmsu83r39jac"</span>,
+    <span class="hljs-attr">"txid"</span>: <span class="hljs-string">"ad0ccb3718201d7392b4d49ef0df56557dad8cee4d5ab9b9605b34fa5fc05a2c"</span>,
+    <span class="hljs-attr">"vout"</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-attr">"scriptPubKey"</span>: <span class="hljs-string">"76a914a458ae5faf27d82c30d62a3da1e66e96849b7b8788ac"</span>,
+    <span class="hljs-attr">"amount"</span>: <span class="hljs-number">10</span>,
+    <span class="hljs-attr">"satoshis"</span>: <span class="hljs-number">1000000000</span>,
+    <span class="hljs-attr">"height"</span>: <span class="hljs-number">544967</span>,
+    <span class="hljs-attr">"confirmations"</span>: <span class="hljs-number">14</span>
+  }, 
+  {
+    <span class="hljs-attr">"address"</span>: <span class="hljs-string">"qqx4tc82a2qepfkfmsff9z9eqwtacckeuvre8x5dkf"</span>,
+    <span class="hljs-attr">"txid"</span>: <span class="hljs-string">"b1f14329a2ce13415f2c083aadb75e78cc01315a68a8448ecadc24794b8309fd"</span>,
+    <span class="hljs-attr">"vout"</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">"scriptPubKey"</span>: <span class="hljs-string">"76a9140d55e0eaea8190a6c9dc129288b90397dc62d9e388ac"</span>,
+    <span class="hljs-attr">"amount"</span>: <span class="hljs-number">0.00058477</span>,
+    <span class="hljs-attr">"satoshis"</span>: <span class="hljs-number">58477</span>,
+    <span class="hljs-attr">"height"</span>: <span class="hljs-number">544968</span>,
+    <span class="hljs-attr">"confirmations"</span>: <span class="hljs-number">13</span>
+  }, 
+  {
+    <span class="hljs-attr">"address"</span>: <span class="hljs-string">"qqx4tc82a2qepfkfmsff9z9eqwtacckeuvre8x5dkf"</span>,
+    <span class="hljs-attr">"txid"</span>: <span class="hljs-string">"b6515df332afe96975b910474101bcad9f3704e36a025cb3298a09d7df1ed174"</span>,
+    <span class="hljs-attr">"vout"</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">"scriptPubKey"</span>: <span class="hljs-string">"76a9140d55e0eaea8190a6c9dc129288b90397dc62d9e388ac"</span>,
+    <span class="hljs-attr">"amount"</span>: <span class="hljs-number">10.03049683</span>,
+    <span class="hljs-attr">"satoshis"</span>: <span class="hljs-number">1003049683</span>,
+    <span class="hljs-attr">"height"</span>: <span class="hljs-number">491481</span>,
+    <span class="hljs-attr">"confirmations"</span>: <span class="hljs-number">53500</span>
+  }
+]</pre>
+</div></div><div data-title="多地址交易查询" class="keyline-top section contain clearfix " data-reactid="220"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="221"><h3 id="多地址交易查询">多地址交易查询</h3>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="222"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>http://localhost:17332/public/addrs/:addrs/txs</div>
+    </div>
+<h4 id="example-request-37">Example Request</h4>
+<h4 id="example-response-32">Example Response</h4>
+<pre class='hljs'>{
+    <span class="hljs-attr">"totalItems"</span>: <span class="hljs-number">6</span>,
+    <span class="hljs-attr">"from"</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-attr">"to"</span>: <span class="hljs-number">6</span>,
+    <span class="hljs-attr">"items"</span>: [{
+        <span class="hljs-attr">"txid"</span>: <span class="hljs-string">"4da4f78590c1b648e127c30bdf10318e8fab4fc3d735815e71b69f5fec4e021d"</span>,
+        <span class="hljs-attr">"version"</span>: <span class="hljs-number">1</span>,
+        <span class="hljs-attr">"locktime"</span>: <span class="hljs-number">0</span>,
+        <span class="hljs-attr">"vin"</span>: [{
+            <span class="hljs-attr">"txid"</span>: <span class="hljs-string">"efd702c094ad62f2e42a10eaa909428ec956c1d737e561ef25bbc2f523a5be7e"</span>,
+            <span class="hljs-attr">"vout"</span>: <span class="hljs-number">1</span>,
+            <span class="hljs-attr">"sequence"</span>: <span class="hljs-number">4294967295</span>,
+            <span class="hljs-attr">"n"</span>: <span class="hljs-number">0</span>,
+            <span class="hljs-attr">"scriptSig"</span>: {
+                <span class="hljs-attr">"hex"</span>: <span class="hljs-string">"4830450220369720a96415c40111082c9d3a2034cb09efb28843ef7ad44a9038047e0da8b7022100f5b6087747de69053490bc01fb38bd3651584b0bd322b7228793cd4d25a9d6e4014104a8f73f8cfc61dd803b472e41df3c3de487b165ac7bc13f5b9f562a5fe0aef7675b08447c7826fff031df22302095ce5084a9daec16fdc82aba3a1cbedbfde670"</span>,
+                <span class="hljs-attr">"asm"</span>: <span class="hljs-string">"30450220369720a96415c40111082c9d3a2034cb09efb28843ef7ad44a9038047e0da8b7022100f5b6087747de69053490bc01fb38bd3651584b0bd322b7228793cd4d25a9d6e401 04a8f73f8cfc61dd803b472e41df3c3de487b165ac7bc13f5b9f562a5fe0aef7675b08447c7826fff031df22302095ce5084a9daec16fdc82aba3a1cbedbfde670"</span>
+            },
+            <span class="hljs-attr">"addr"</span>: <span class="hljs-string">"qqx4tc82a2qepfkfmsff9z9eqwtacckeuvre8x5dkf"</span>,
+            <span class="hljs-attr">"valueSat"</span>: <span class="hljs-number">1000000000</span>,
+            <span class="hljs-attr">"value"</span>: <span class="hljs-number">10</span>,
+            <span class="hljs-attr">"doubleSpentTxID"</span>: <span class="hljs-literal">null</span>,
+            <span class="hljs-attr">"isConfirmed"</span>: <span class="hljs-literal">null</span>,
+            <span class="hljs-attr">"confirmations"</span>: <span class="hljs-literal">null</span>,
+            <span class="hljs-attr">"unconfirmedInput"</span>: <span class="hljs-literal">null</span>
+        }],
+        <span class="hljs-attr">"valueIn"</span>: <span class="hljs-number">10</span>,
+        <span class="hljs-attr">"fees"</span>: <span class="hljs-number">0.0001</span>,
+        <span class="hljs-attr">"vout"</span>: [{
+            <span class="hljs-attr">"value"</span>: <span class="hljs-string">"0.50000000"</span>,
+            <span class="hljs-attr">"n"</span>: <span class="hljs-number">0</span>,
+            <span class="hljs-attr">"scriptPubKey"</span>: {
+                <span class="hljs-attr">"hex"</span>: <span class="hljs-string">"76a914aa064dd44a83a6592704b3e4df54be7fd5ac5a2488ac"</span>,
+                <span class="hljs-attr">"asm"</span>: <span class="hljs-string">"OP_DUP OP_HASH160 aa064dd44a83a6592704b3e4df54be7fd5ac5a24 OP_EQUALVERIFY OP_CHECKSIG"</span>,
+                <span class="hljs-attr">"addresses"</span>: [<span class="hljs-string">"qz4qvnw5f2p6vkf8qje7fh65helattz6ys2nazryw5"</span>],
+                <span class="hljs-attr">"type"</span>: <span class="hljs-string">"pubkeyhash"</span>
+            },
+            <span class="hljs-attr">"spentTxId"</span>: <span class="hljs-literal">null</span>,
+            <span class="hljs-attr">"spentIndex"</span>: <span class="hljs-literal">null</span>,
+            <span class="hljs-attr">"spentHeight"</span>: <span class="hljs-literal">null</span>
+        }, {
+            <span class="hljs-attr">"value"</span>: <span class="hljs-string">"9.49990000"</span>,
+            <span class="hljs-attr">"n"</span>: <span class="hljs-number">1</span>,
+            <span class="hljs-attr">"scriptPubKey"</span>: {
+                <span class="hljs-attr">"hex"</span>: <span class="hljs-string">"76a9140d55e0eaea8190a6c9dc129288b90397dc62d9e388ac"</span>,
+                <span class="hljs-attr">"asm"</span>: <span class="hljs-string">"OP_DUP OP_HASH160 0d55e0eaea8190a6c9dc129288b90397dc62d9e3 OP_EQUALVERIFY OP_CHECKSIG"</span>,
+                <span class="hljs-attr">"addresses"</span>: [<span class="hljs-string">"qqx4tc82a2qepfkfmsff9z9eqwtacckeuvre8x5dkf"</span>],
+                <span class="hljs-attr">"type"</span>: <span class="hljs-string">"pubkeyhash"</span>
+            },
+            <span class="hljs-attr">"spentTxId"</span>: <span class="hljs-literal">null</span>,
+            <span class="hljs-attr">"spentIndex"</span>: <span class="hljs-literal">null</span>,
+            <span class="hljs-attr">"spentHeight"</span>: <span class="hljs-literal">null</span>
+        }],
+        <span class="hljs-attr">"blockhash"</span>: <span class="hljs-string">"00000000000000010cc748cb7c481b2d4e2c1c142c6295b21c148fb3c0e62771"</span>,
+        <span class="hljs-attr">"blockheight"</span>: <span class="hljs-number">290250</span>,
+        <span class="hljs-attr">"confirmations"</span>: <span class="hljs-number">254731</span>,
+        <span class="hljs-attr">"time"</span>: <span class="hljs-number">1394652831</span>,
+        <span class="hljs-attr">"blocktime"</span>: <span class="hljs-number">1394652831</span>,
+        <span class="hljs-attr">"valueOut"</span>: <span class="hljs-number">9.9999</span>,
+        <span class="hljs-attr">"size"</span>: <span class="hljs-number">258</span>
+    }]
+}</pre>
+</div></div><div data-title="查询指定地址余额" class="keyline-top section contain clearfix " data-reactid="223"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="224"><h3 id="查询指定地址余额">查询指定地址余额</h3>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="225"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>http://localhost:17332/public/addr/:addr/balance</div>
+    </div>
+<h4 id="example-request-38">Example Request</h4>
+<h4 id="example-response-33">Example Response</h4>
+<pre class='hljs'>  1.99900114</pre>
+</div></div><div data-title="查询指定地址总接收" class="keyline-top section contain clearfix " data-reactid="226"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="227"><h3 id="查询指定地址总接收">查询指定地址总接收</h3>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="228"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>http://localhost:17332/public/addr/:addr/totalReceived</div>
+    </div>
+<h4 id="example-request-39">Example Request</h4>
+<h4 id="example-response-34">EXample Response</h4>
+<pre class='hljs'>  1.99900114</pre>
+</div></div><div data-title="查询指定地址总花费" class="keyline-top section contain clearfix " data-reactid="229"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="230"><h3 id="查询指定地址总花费">查询指定地址总花费</h3>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="231"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>http://localhost:17332/public/addr/:addr/totalSent</div>
+    </div>
+<h4 id="example-request-40">Example Request</h4>
+<h4 id="example-response-35">Example Response</h4>
+<pre class='hljs'>  0</pre>
+</div></div><div data-title="查询指定地址未确认金额" class="keyline-top section contain clearfix " data-reactid="232"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="233"><h3 id="查询指定地址未确认金额">查询指定地址未确认金额</h3>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="234"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>http://localhost:17332/public/addr/:addr/unconfirmedBalance</div>
+    </div>
+<h4 id="example-request-41">Example Request</h4>
+<h4 id="example-response-36">Example Response</h4>
+<pre class='hljs'>  0</pre>
+</div></div><div data-title="和交易相关的接口" class="keyline-top section contain clearfix " data-reactid="235"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="236"><h2 id="和交易相关的接口">和交易相关的接口</h2>
+</div></div><div data-title="根据交易ID获取交易信息" class="keyline-top section contain clearfix " data-reactid="237"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="238"><h3 id="根据交易id获取交易信息">根据交易ID获取交易信息</h3>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="239"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>http://localhost:17332/public/tx/:txid</div>
+    </div>
+<h4 id="example-request-42">Example Request</h4>
+<h4 id="example-response-37">Example Response</h4>
+<pre class='hljs'>{
+    <span class="hljs-attr">"txid"</span>:<span class="hljs-string">"a0aa92665cd61c5c2b2fe6f26287a226fb6fea033c59881298de36775773ce70"</span>,
+    <span class="hljs-attr">"version"</span>:<span class="hljs-number">1</span>,
+    <span class="hljs-attr">"locktime"</span>:<span class="hljs-number">0</span>,
+    <span class="hljs-attr">"isCoinBase"</span>:<span class="hljs-literal">true</span>,
+    <span class="hljs-attr">"vin"</span>:[     
+        {
+            <span class="hljs-attr">"coinbase"</span>:<span class="hljs-string">"03785708202f5669614254432f4d696e656420627920677a7867666a7a687339313330302f2cfabe6d6dcdfdf8fed333ae7546bc9a3ee4ede9d1bf98e4ef3efd7cae20d6adb23b77ac57040000000000000010d7f0b90bf326c24d7fcbc32d79300100"</span>,
+            <span class="hljs-attr">"sequence"</span>:<span class="hljs-number">4294967295</span>,
+            <span class="hljs-attr">"n"</span>:<span class="hljs-number">0</span>
+        }
+    ],
+    <span class="hljs-attr">"vout"</span>:[
+        {
+            <span class="hljs-attr">"value"</span>:<span class="hljs-string">"12.58185276"</span>,
+            <span class="hljs-attr">"n"</span>:<span class="hljs-number">0</span>,
+            <span class="hljs-attr">"scriptPubKey"</span>:{
+                <span class="hljs-attr">"hex"</span>:<span class="hljs-string">"76a914f1c075a01882ae0972f95d3a4177c86c852b7d9188ac"</span>,
+                <span class="hljs-attr">"asm"</span>:<span class="hljs-string">"OP_DUP OP_HASH160 f1c075a01882ae0972f95d3a4177c86c852b7d91 OP_EQUALVERIFY OP_CHECKSIG"</span>,
+                <span class="hljs-attr">"addresses"</span>:[<span class="hljs-string">"qrcuqadqrzp2uztjl9wn5sthepkg22majyxw4gmv6p"</span>],
+                <span class="hljs-attr">"type"</span>:<span class="hljs-string">"pubkeyhash"</span>
+            },
+            <span class="hljs-attr">"spentTxId"</span>:<span class="hljs-literal">null</span>,
+            <span class="hljs-attr">"spentIndex"</span>:<span class="hljs-literal">null</span>,
+            <span class="hljs-attr">"spentHeight"</span>:<span class="hljs-literal">null</span>
+        }
+    ],
+    <span class="hljs-attr">"blockhash"</span>:<span class="hljs-string">"00000000000000000076b2016cde9097d68424e238c8a60a4de552895eb1cc32"</span>,
+    <span class="hljs-attr">"blockheight"</span>:<span class="hljs-number">546680</span>,
+    <span class="hljs-attr">"confirmations"</span>:<span class="hljs-number">1</span>,
+    <span class="hljs-attr">"time"</span>:<span class="hljs-number">1536227565</span>,
+    <span class="hljs-attr">"blocktime"</span>:<span class="hljs-number">1536227565</span>,
+    <span class="hljs-attr">"valueOut"</span>:<span class="hljs-number">12.58185276</span>,
+    <span class="hljs-attr">"size"</span>:<span class="hljs-number">184</span>
+}</pre>
+</div></div><div data-title="根据交易ID，查询交易原始数据" class="keyline-top section contain clearfix " data-reactid="240"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="241"><h3 id="根据交易id，查询交易原始数据">根据交易ID，查询交易原始数据</h3>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="242"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>http://localhost:17332/public/rawtx/:txid</div>
+    </div>
+<h4 id="example-request-43">Example Request</h4>
+<h4 id="example-response-38">Example Response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"rawtx"</span>:<span class="hljs-string">"01000000010000000000000000000000000000000000000000000000000000000000000000ffffffff2403c85008174d696e656420627920416e74506f6f6c3426205b816995350600008e0b0100ffffffff02b957824a000000001976a9141fefe863a7e0ddc767780ce3bedc564cf5cbda6388ace51d0000000000001976a914000000000000000000000000000000000000000088ac00000000"</span>
+}</pre>
+</div></div><div data-title="查询区块或地址相关交易列表" class="keyline-top section contain clearfix " data-reactid="243"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="244"><h3 id="查询区块或地址相关交易列表">查询区块或地址相关交易列表</h3>
+<p>支持分页</p>
+<p>入口参数</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>req.query.block</td>
+<td>区块哈希，二选一</td>
+</tr>
+<tr>
+<td>req.query.address</td>
+<td>地址，二选一</td>
+</tr>
+<tr>
+<td>req.query.pageNum</td>
+<td>页码，默认第一页</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="245"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>http://localhost:17332/public/txs</div>
+    </div>
+<h4 id="example-request-44">Example Request</h4>
+<h4 id="example-response-39">Example Response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"pagesTotal"</span>:<span class="hljs-number">221</span>,
+  <span class="hljs-attr">"txs"</span>:[
+    {
+      <span class="hljs-attr">"txid"</span>:<span class="hljs-string">"44f814cb17bce592fffbfbc86f187c0ba67c71c37240444133ae5beda8a22a6f"</span>,
+      <span class="hljs-attr">"version"</span>:<span class="hljs-number">1</span>,
+      <span class="hljs-attr">"locktime"</span>:<span class="hljs-number">0</span>,
+      <span class="hljs-attr">"vin"</span>:[
+        {
+          <span class="hljs-attr">"txid"</span>:<span class="hljs-string">"4e857cc14a3848bf424c3d3f82d75a16d7c3f3011f699f9393b5cf3e1890e668"</span>,
+          <span class="hljs-attr">"vout"</span>:<span class="hljs-number">10</span>,
+          <span class="hljs-attr">"sequence"</span>:<span class="hljs-number">4294967295</span>,
+          <span class="hljs-attr">"n"</span>:<span class="hljs-number">0</span>,
+          <span class="hljs-attr">"scriptSig"</span>:{
+            <span class="hljs-attr">"hex"</span>:<span class="hljs-string">"483045022100d5d8ce5aa87d8686b4eb57c6fe97bf9fa9eade0885acd75abadac55caf7cc7fe022079eff5b52ea4ed5ff56a86b3fe8f6510d8457b202ee2c3fefc196bc8aa69ce7a0121038482c9aef4e72ee8ef2501dddf27bbca7f5711400c7a9d4adb6dba82746fd0eb"</span>,
+            <span class="hljs-attr">"asm"</span>:<span class="hljs-string">"3045022100d5d8ce5aa87d8686b4eb57c6fe97bf9fa9eade0885acd75abadac55caf7cc7fe022079eff5b52ea4ed5ff56a86b3fe8f6510d8457b202ee2c3fefc196bc8aa69ce7a[ALL] 038482c9aef4e72ee8ef2501dddf27bbca7f5711400c7a9d4adb6dba82746fd0eb"</span>
+          },
+          <span class="hljs-attr">"addr"</span>:<span class="hljs-string">"1Nde8sQVbD3MJXxSohQJvRWKZKx9Zfo4oZ"</span>,
+          <span class="hljs-attr">"valueSat"</span>:<span class="hljs-number">9263816813</span>,
+          <span class="hljs-attr">"value"</span>:<span class="hljs-number">92.63816813</span>,
+          <span class="hljs-attr">"doubleSpentTxID"</span>:<span class="hljs-literal">null</span>
+        }
+      ],
+      <span class="hljs-attr">"vout"</span>:[
+        {
+          <span class="hljs-attr">"value"</span>:<span class="hljs-string">"0.00527203"</span>,
+          <span class="hljs-attr">"n"</span>:<span class="hljs-number">0</span>,
+          <span class="hljs-attr">"scriptPubKey"</span>:{
+            <span class="hljs-attr">"hex"</span>:<span class="hljs-string">"a914b71350787646b97f2508010dd51dea5d6079773887"</span>,
+            <span class="hljs-attr">"asm"</span>:<span class="hljs-string">"OP_HASH160 b71350787646b97f2508010dd51dea5d60797738 OP_EQUAL"</span>,
+            <span class="hljs-attr">"addresses"</span>:[<span class="hljs-string">"3JP2iddqvycmRyZi944oVtN9eiSP57Tmwj"</span>],
+            <span class="hljs-attr">"type"</span>:<span class="hljs-string">"scripthash"</span>
+          },
+          <span class="hljs-attr">"spentTxId"</span>:<span class="hljs-literal">null</span>,
+          <span class="hljs-attr">"spentIndex"</span>:<span class="hljs-literal">null</span>,
+          <span class="hljs-attr">"spentHeight"</span>:<span class="hljs-literal">null</span>
+        }
+      ],
+      <span class="hljs-attr">"blockhash"</span>:<span class="hljs-string">"000000000000000000020ce5c7fb6f916e94cc8c4dcb8612eeb2fff52495ecfe"</span>,
+      <span class="hljs-attr">"blockheight"</span>:<span class="hljs-number">540209</span>,
+      <span class="hljs-attr">"confirmations"</span>:<span class="hljs-number">1</span>,
+      <span class="hljs-attr">"time"</span>:<span class="hljs-number">1536242593</span>,
+      <span class="hljs-attr">"blocktime"</span>:<span class="hljs-number">1536242593</span>,
+      <span class="hljs-attr">"valueOut"</span>:<span class="hljs-number">92.63780119</span>,
+      <span class="hljs-attr">"size"</span>:<span class="hljs-number">648</span>,
+      <span class="hljs-attr">"valueIn"</span>:<span class="hljs-number">92.63816813</span>,
+      <span class="hljs-attr">"fees"</span>:<span class="hljs-number">0.00036694</span>
+    }
+  ]
+}</pre>
+<pre class='hljs'>{
+  <span class="hljs-attr">"pagesTotal"</span>:<span class="hljs-number">1</span>,
+  <span class="hljs-attr">"txs"</span>:[
+    {
+      <span class="hljs-attr">"txid"</span>:<span class="hljs-string">"7f812fa570950279c0c366b25ff30a3b8fdc7f130516ca8d76794c0a4954a399"</span>,
+      <span class="hljs-attr">"version"</span>:<span class="hljs-number">1</span>,
+      <span class="hljs-attr">"locktime"</span>:<span class="hljs-number">0</span>,
+      <span class="hljs-attr">"vin"</span>:[
+        {
+          <span class="hljs-attr">"txid"</span>:<span class="hljs-string">"ad0ccb3718201d7392b4d49ef0df56557dad8cee4d5ab9b9605b34fa5fc05a2c"</span>,
+          <span class="hljs-attr">"vout"</span>:<span class="hljs-number">0</span>,
+          <span class="hljs-attr">"sequence"</span>:<span class="hljs-number">4294967295</span>,
+          <span class="hljs-attr">"n"</span>:<span class="hljs-number">0</span>,
+          <span class="hljs-attr">"scriptSig"</span>:{
+            <span class="hljs-attr">"hex"</span>:<span class="hljs-string">"483045022100c7b2408fd0dcffbcdd00feffad4daba55c0fc908a2ae5b1941db82904fd028e0022072a568f9d2190541c6431d92e2b1e722af1db6501cacf3e7941a99c29e4b0dff41210381c5d018624c510d551646e605596e425c80cfa1c154dad7099501ce566179f8"</span>,
+            <span class="hljs-attr">"asm"</span>:<span class="hljs-string">"3045022100c7b2408fd0dcffbcdd00feffad4daba55c0fc908a2ae5b1941db82904fd028e0022072a568f9d2190541c6431d92e2b1e722af1db6501cacf3e7941a99c29e4b0dff41 0381c5d018624c510d551646e605596e425c80cfa1c154dad7099501ce566179f8"</span>
+          },
+          <span class="hljs-attr">"addr"</span>:<span class="hljs-string">"qzj93tjl4unastps6c4rmg0xd6tgfxmmsu83r39jac"</span>,
+          <span class="hljs-attr">"valueSat"</span>:<span class="hljs-number">1000000000</span>,
+          <span class="hljs-attr">"value"</span>:<span class="hljs-number">10</span>,
+          <span class="hljs-attr">"doubleSpentTxID"</span>:<span class="hljs-literal">null</span>,
+          <span class="hljs-attr">"isConfirmed"</span>:<span class="hljs-literal">null</span>,
+          <span class="hljs-attr">"confirmations"</span>:<span class="hljs-literal">null</span>,
+          <span class="hljs-attr">"unconfirmedInput"</span>:<span class="hljs-literal">null</span>
+        }
+      ],
+      <span class="hljs-attr">"valueIn"</span>:<span class="hljs-number">10</span>,
+      <span class="hljs-attr">"fees"</span>:<span class="hljs-number">0.00000382</span>,
+      <span class="hljs-attr">"vout"</span>:[
+        {
+          <span class="hljs-attr">"value"</span>:<span class="hljs-string">"1.63873531"</span>,
+          <span class="hljs-attr">"n"</span>:<span class="hljs-number">0</span>,
+          <span class="hljs-attr">"scriptPubKey"</span>:{
+            <span class="hljs-attr">"hex"</span>:<span class="hljs-string">"76a9149cb2f21046880cadffa76f13080194f6dd70a74488ac"</span>,
+            <span class="hljs-attr">"asm"</span>:<span class="hljs-string">"OP_DUP OP_HASH160 9cb2f21046880cadffa76f13080194f6dd70a744 OP_EQUALVERIFY OP_CHECKSIG"</span>,
+            <span class="hljs-attr">"addresses"</span>:[<span class="hljs-string">"qzwt9ussg6yqet0l5ah3xzqpjnmd6u98gsr6n83pqm"</span>],
+            <span class="hljs-attr">"type"</span>:<span class="hljs-string">"pubkeyhash"</span>
+          },
+          <span class="hljs-attr">"spentTxId"</span>:<span class="hljs-literal">null</span>,
+          <span class="hljs-attr">"spentIndex"</span>:<span class="hljs-literal">null</span>,
+          <span class="hljs-attr">"spentHeight"</span>:<span class="hljs-literal">null</span>
+        },
+        {
+          <span class="hljs-attr">"value"</span>:<span class="hljs-string">"8.36126087"</span>,
+          <span class="hljs-attr">"n"</span>:<span class="hljs-number">1</span>,
+          <span class="hljs-attr">"scriptPubKey"</span>:{
+            <span class="hljs-attr">"hex"</span>:<span class="hljs-string">"76a914a772af263fda5e95d6fc6461e6868d8aeb21499e88ac"</span>,
+            <span class="hljs-attr">"asm"</span>:<span class="hljs-string">"OP_DUP OP_HASH160 a772af263fda5e95d6fc6461e6868d8aeb21499e OP_EQUALVERIFY OP_CHECKSIG"</span>,
+            <span class="hljs-attr">"addresses"</span>:[<span class="hljs-string">"qznh9tex8ld9a9wkl3jxre5x3k9wkg2fncgchnmza5"</span>],
+            <span class="hljs-attr">"type"</span>:<span class="hljs-string">"pubkeyhash"</span>
+          },
+          <span class="hljs-attr">"spentTxId"</span>:<span class="hljs-literal">null</span>,
+          <span class="hljs-attr">"spentIndex"</span>:<span class="hljs-literal">null</span>,
+          <span class="hljs-attr">"spentHeight"</span>:<span class="hljs-literal">null</span>
+        }
+      ],
+      <span class="hljs-attr">"blockhash"</span>:<span class="hljs-string">"000000000000000001c807fe20a65c06afd7a26a57e3d909988709f357b841d7"</span>,
+      <span class="hljs-attr">"blockheight"</span>:<span class="hljs-number">544985</span>,
+      <span class="hljs-attr">"confirmations"</span>:<span class="hljs-number">1704</span>,
+      <span class="hljs-attr">"time"</span>:<span class="hljs-number">1535214645</span>,
+      <span class="hljs-attr">"blocktime"</span>:<span class="hljs-number">1535214645</span>,
+      <span class="hljs-attr">"valueOut"</span>:<span class="hljs-number">9.99999618</span>,
+      <span class="hljs-attr">"size"</span>:<span class="hljs-number">226</span>
+    }
+  ]
+}</pre>
+</div></div><div data-title="域名查询类接口" class="keyline-top section contain clearfix " data-reactid="246"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="247"><h2 id="域名查询类接口">域名查询类接口</h2>
+</div></div><div data-title="域名列表" class="keyline-top section contain clearfix " data-reactid="248"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="249"><h3 id="域名列表">域名列表</h3>
+<p>入口参数</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>page</td>
+<td>页数，默认1</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="250"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>http://localhost:17332/public/cps</div>
+    </div>
+<h4 id="example-request-45">Example Request</h4>
+<h4 id="example-response-40">Example Response</h4>
+<pre class='hljs'>{
+  "list": [
+    {
+      "cid": "b77a9b90-bbc4-11e8-9203-1ff8357db148",                                //CP编码
+      "name": "hello",                                                              //CP名称
+      "url": "http://127.0.0.1",                                                    //CP域名
+      "ip": "",                                                                     //CP的IP地址
+      "current": {
+        "hash": "00465324a3a7487ebcf7fccf0ddcd72d7142b35669c2cb3e15bfc39dbef7e96a", //记录所在哈希
+        "index": 0,                                                                 //对应的输出索引
+        "address": "tb1qr790zz32jyyje8letxkavdv93qf7dmp0wjx3s0"                     //记录归属地址
+      }
+    }
+  ],
+  "page": 1,  //当前页码
+  "total": 1  //总的页数
+}</pre>
+</div></div><div data-title="域名查询 - 根据ID" class="keyline-top section contain clearfix " data-reactid="251"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="252"><h3 id="域名查询---根据id">域名查询 - 根据ID</h3>
+<p>入口参数</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>CP编码</td>
+</tr>
+</tbody>
+</table>
+<p>查询成功的结果：</p>
+<p>查询失败的结果：</p>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="253"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>http://localhost:17332/public/cp/:id</div>
+    </div>
+<h4 id="example-request-46">Example Request</h4>
+<h4 id="example-response-41">Example Response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"cid"</span>: <span class="hljs-string">"b77a9b90-bbc4-11e8-9203-1ff8357db148"</span>,
+  <span class="hljs-attr">"name"</span>: <span class="hljs-string">"hello"</span>,
+  <span class="hljs-attr">"url"</span>: <span class="hljs-string">"http://127.0.0.1"</span>,
+  <span class="hljs-attr">"ip"</span>: <span class="hljs-string">""</span>,
+  <span class="hljs-attr">"current"</span>: {
+    <span class="hljs-attr">"hash"</span>: <span class="hljs-string">"00465324a3a7487ebcf7fccf0ddcd72d7142b35669c2cb3e15bfc39dbef7e96a"</span>,
+    <span class="hljs-attr">"index"</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-attr">"address"</span>: <span class="hljs-string">"tb1qr790zz32jyyje8letxkavdv93qf7dmp0wjx3s0"</span>
+  }
+}</pre>
+<pre class='hljs'>{
+  <span class="hljs-attr">"error"</span>: {
+    <span class="hljs-attr">"type"</span>: <span class="hljs-string">"Error"</span>,
+    <span class="hljs-attr">"message"</span>: <span class="hljs-string">"No message."</span>
+  }
+}</pre>
+</div></div><div data-title="域名查询 - 根据名称" class="keyline-top section contain clearfix " data-reactid="254"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="255"><h3 id="域名查询---根据名称">域名查询 - 根据名称</h3>
+<p>入口参数</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name</td>
+<td>CP名称，非英文字符需要通过 encodeURIComponent 进行编码</td>
+</tr>
+</tbody>
+</table>
+<p>查询成功的结果</p>
+<p>查询失败的结果：</p>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="256"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>http://localhost:17332/public/cp/name/:name</div>
+    </div>
+<h4 id="example-request-47">Example Request</h4>
+<h4 id="example-response-42">Example Response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"cid"</span>: <span class="hljs-string">"b77a9b90-bbc4-11e8-9203-1ff8357db148"</span>,
+  <span class="hljs-attr">"name"</span>: <span class="hljs-string">"hello"</span>,
+  <span class="hljs-attr">"url"</span>: <span class="hljs-string">"http://127.0.0.1"</span>,
+  <span class="hljs-attr">"ip"</span>: <span class="hljs-string">""</span>,
+  <span class="hljs-attr">"current"</span>: {
+    <span class="hljs-attr">"hash"</span>: <span class="hljs-string">"00465324a3a7487ebcf7fccf0ddcd72d7142b35669c2cb3e15bfc39dbef7e96a"</span>,
+    <span class="hljs-attr">"index"</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-attr">"address"</span>: <span class="hljs-string">"tb1qr790zz32jyyje8letxkavdv93qf7dmp0wjx3s0"</span>
+  }
+}</pre>
+<pre class='hljs'>{
+  <span class="hljs-attr">"error"</span>: {
+    <span class="hljs-attr">"type"</span>: <span class="hljs-string">"Error"</span>,
+    <span class="hljs-attr">"message"</span>: <span class="hljs-string">"No message."</span>
+  }
+}</pre>
+</div></div><div data-title="系统状态查询类接口" class="keyline-top section contain clearfix " data-reactid="257"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="258"><h2 id="系统状态查询类接口">系统状态查询类接口</h2>
+</div></div><div data-title="系统状态" class="keyline-top section contain clearfix " data-reactid="259"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="260"><h3 id="系统状态">系统状态</h3>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="261"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>http://localhost:17332/public/status</div>
+    </div>
+<h4 id="example-request-48">Example Request</h4>
+<h4 id="example-response-43">Example Response</h4>
+<pre class='hljs'>{
+    <span class="hljs-attr">"info"</span>: {
+        <span class="hljs-attr">"version"</span>: <span class="hljs-string">"bitcore-1.1.2"</span>,
+        <span class="hljs-attr">"blocks"</span>: <span class="hljs-number">544981</span>,
+        <span class="hljs-attr">"proxy"</span>: <span class="hljs-string">""</span>,
+        <span class="hljs-attr">"difficulty"</span>: <span class="hljs-number">559149630057</span>,
+        <span class="hljs-attr">"testnet"</span>: <span class="hljs-literal">false</span>,
+        <span class="hljs-attr">"relayfee"</span>: <span class="hljs-number">0</span>,
+        <span class="hljs-attr">"errors"</span>: <span class="hljs-string">""</span>,
+        <span class="hljs-attr">"network"</span>: <span class="hljs-string">"livenet"</span>
+    }
+}</pre>
+</div></div><div data-title="同步状态" class="keyline-top section contain clearfix " data-reactid="262"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="263"><h3 id="同步状态">同步状态</h3>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="264"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>http://localhost:17332/public/sync</div>
+    </div>
+<h4 id="example-request-49">Example Request</h4>
+<h4 id="example-response-44">Example Response</h4>
+<pre class='hljs'>{
+    <span class="hljs-attr">"status"</span>: <span class="hljs-string">"finished"</span>,
+    <span class="hljs-attr">"blockChainHeight"</span>: <span class="hljs-number">544981</span>,
+    <span class="hljs-attr">"syncPercentage"</span>: <span class="hljs-number">100</span>,
+    <span class="hljs-attr">"height"</span>: <span class="hljs-number">544981</span>,
+    <span class="hljs-attr">"error"</span>: <span class="hljs-literal">null</span>,
+    <span class="hljs-attr">"type"</span>: <span class="hljs-string">"bitcore node"</span>
+}</pre>
+</div></div><div data-title="API版本信息" class="keyline-top section contain clearfix " data-reactid="265"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="266"><h3 id="api版本信息">API版本信息</h3>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="267"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>http://localhost:17332/public/version</div>
+    </div>
+<h4 id="example-request-50">Example Request</h4>
+<h4 id="example-response-45">Example Response</h4>
+<pre class='hljs'>{
+    <span class="hljs-attr">"version"</span>:<span class="hljs-string">"5.0.0-beta.44"</span>
+}</pre>
+</div></div><div data-title="连接节点信息" class="keyline-top section contain clearfix " data-reactid="268"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="269"><h3 id="连接节点信息">连接节点信息</h3>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="270"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>http://localhost:17332/public/peer</div>
+    </div>
+<h4 id="example-request-51">Example Request</h4>
+<h4 id="example-response-46">Example Response</h4>
+<pre class='hljs'>{
+    <span class="hljs-attr">"connected"</span>: <span class="hljs-literal">true</span>,
+    <span class="hljs-attr">"host"</span>: <span class="hljs-string">"127.0.0.1"</span>,
+    <span class="hljs-attr">"port"</span>: <span class="hljs-literal">null</span>
+}</pre>
+</div></div><div data-title="手续费估算" class="keyline-top section contain clearfix " data-reactid="271"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="272"><h3 id="手续费估算">手续费估算</h3>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="273"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>http://localhost:17332/public/utils/estimatefee</div>
+    </div>
+<h4 id="example-request-52">Example Request</h4>
+<h4 id="example-response-47">Example Response</h4>
+<pre class='hljs'>{
+    <span class="hljs-attr">"2"</span>:<span class="hljs-number">0.00001</span>
+}</pre>
+</div></div><div data-title="汇率" class="keyline-top section contain clearfix " data-reactid="274"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="275"><h3 id="汇率">汇率</h3>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="276"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>http://localhost:17332/currency</div>
+    </div>
+<h4 id="example-request-53">Example Request</h4>
+<h4 id="example-response-48">Example Response</h4>
+<pre class='hljs'>{
+    <span class="hljs-attr">"status"</span>: <span class="hljs-number">200</span>,
+    <span class="hljs-attr">"data"</span>: {
+        <span class="hljs-attr">"kraken"</span>: <span class="hljs-number">531.4</span>
+    }
+}</pre>
+</div></div><div data-title="支持币种" class="keyline-top section contain clearfix " data-reactid="277"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="278"><h3 id="支持币种">支持币种</h3>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="279"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>http://localhost:17332/explorers</div>
+    </div>
+<h4 id="example-request-54">Example Request</h4>
+<h4 id="example-response-49">Example Response</h4>
+<pre class='hljs'>[
+  {
+    <span class="hljs-attr">"name"</span>: <span class="hljs-string">"Bitcoin Cash"</span>,
+    <span class="hljs-attr">"ticker"</span>: <span class="hljs-string">"BCH"</span>,
+    <span class="hljs-attr">"url"</span>: <span class="hljs-string">"https://bch-insight.bitpay.com"</span>
+  },
+  {
+    <span class="hljs-attr">"name"</span>: <span class="hljs-string">"Bitcoin"</span>,
+    <span class="hljs-attr">"ticker"</span>: <span class="hljs-string">"BTC"</span>,
+    <span class="hljs-attr">"url"</span>: <span class="hljs-string">"https://insight.bitpay.com"</span>
+  }
+]</pre>
+</div></div></div></div></div><div class="fixed-top space-left16" data-reactid="280"><div class="events fill-light bottom-shadow pad1 col6 pin-topright  " data-reactid="281"><div class="space-right1 small quiet inline" data-reactid="282">Show examples in:</div><div class="rounded-toggle inline short" data-reactid="283"><a class="strong active" data-reactid="284">cURL</a><a class="strong " data-reactid="285">cli</a><a class="strong " data-reactid="286">Python</a><a class="strong " data-reactid="287">JS</a><a class="strong " data-reactid="288">Java</a><a class="strong " data-reactid="289">ObjC</a><a class="strong " data-reactid="290">Swift</a></div><div class="fr pad0" data-reactid="291"><a title="Display as 1 column" style="cursor:pointer;" class="icon quiet caret-left pad0 fill-darken0 round" data-reactid="292"></a></div></div></div><div class="fill-dark dark bottom-shadow fixed-top pad0 width16" data-reactid="293"><a href="/" class="active space-top1 space-left1 pin-topleft icon round dark pad0 fill-red" data-reactid="294"></a><div class="strong small pad0
+          
+          space-left4 line-height15" data-reactid="295">API Documentation</div></div></div></div><!--STOP-->
+    <script src='bundle.js'></script>
+  </body>
+</html>
