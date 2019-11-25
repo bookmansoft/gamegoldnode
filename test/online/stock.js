@@ -303,7 +303,7 @@ describe('凭证管理', () => {
             assert(ret.result.stock.hPrice === 1000);
         });
     
-        it('连挖20个区块，确保生成CP快照，确保交易分成顺利进行', async () => {
+        it('连挖30个区块，确保生成CP快照，确保交易分成顺利进行', async () => {
             //在之前的测试中，连挖10个块尚不足以确保生成CP快照，改为30个后测试恢复正常
             await remote.execute('miner.generate.admin', [30]); 
             await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
@@ -331,6 +331,7 @@ describe('凭证管理', () => {
         });
     
         it('查看媒体分润', async () => {
+            console.log("当前CP信息:" + JSON.stringify(cp.id,));
             //查询作为bob的推荐者，alice的媒体分成 - 两笔共 20 分得 15% = 3, 注意媒体分成是提前结算的
             let ret = await remote.execute('stock.record', [5, cp.id, 0, [['@total','price']]]);
             assert(!ret.error);
