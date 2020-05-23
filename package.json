@@ -1,18 +1,15 @@
 {
   "name": "gamegoldnode",
-  "version": "1.6.31",
-  "description": "Game Gold Node",
+  "version": "2.0.0-RC1",
+  "description": "Vallnet Node",
   "main": "index.js",
   "scripts": {
-    "start": "cross-env GAMEGOLD_NETWORK=testnet node index.js",
-    "main": "cross-env GAMEGOLD_NETWORK=main node index.js",
-    "spv": "cross-env GAMEGOLD_NETWORK=testnet node spv.js",
+    "start": "cross-env GAMEGOLD_NETWORK=testnet node index.js --phrase=bookmansoft --word=\"遭 裕 御 为 往 看 验 剩 九 煮 胡 沉\" --wallet=bookmansoft,english",
     "cli": "cross-env GAMEGOLD_NETWORK=testnet node bin/cli",
     "test": "mocha --reporter spec test/*.js"
   },
   "bin": {
-    "ggcmd": "./bin/cli",
-    "ggmain": "./bin/climain"
+    "vc": "./bin/cli"
   },
   "repository": {
     "type": "git",
@@ -27,7 +24,7 @@
   "dependencies": {
     "body-parser": "1.19.0",
     "express": "4.17.0",
-    "gamegold": "^1.6.31",
+    "gamegold": "^2.0.0-RC1",
     "gamerpc": "^2.2.0",
     "n64": "0.2.10",
     "node-fetch": "2.3.0",
