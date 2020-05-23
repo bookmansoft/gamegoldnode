@@ -9,7 +9,7 @@
 git clone https://github.com/bookmansoft/gamegoldnode
 ```
 
-2. 部署环境/安装依赖
+2. 部署环境
 
 安装Node的指定版本: Nodejs@14.0.0
 **注意：14.0.3或更新版本对部分依赖库兼容性不佳，所以请安装指定版本，不要急于升级**
@@ -18,6 +18,8 @@ git clone https://github.com/bookmansoft/gamegoldnode
 ```bash
 npm i
 ```
+
+安装创世私钥: 手工拷贝 node_modules\gamegold\wallet-testnet.encrypt 文件至项目根目录
 
 3. 运行全节点
 ```bash
