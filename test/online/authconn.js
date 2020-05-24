@@ -5,16 +5,7 @@
 //引入工具包
 const toolkit = require('gamerpc')
 //创建授权式连接器实例
-const remote = new toolkit.conn();
-remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览器环境中的 fetch 函数
-//     .setup({ //设置授权式连接器的参数 - 将会覆盖默认设置
-//     type:   'testnet',               //希望连接的对等网络的类型，分为 testnet 和 main
-//     ip:     '127.0.0.1',             //远程全节点地址
-//     apiKey: 'bookmansoft',           //远程全节点基本校验密码
-//     id:     'primary',               //默认访问的钱包编号
-//     cid:    'terminal001',           //终端编码，作为访问远程全节点时的终端标识
-//     token:  '0340129aaa7a69ac10bfbf314b9b1ca8bdda5faecce1b6dab3e7c4178b99513392', //访问钱包时的令牌固定量，通过HMAC算法，将令牌随机量和令牌固定量合成为最终的访问令牌
-// });
+const remote = (require('./connector'))({})
 
 describe('授权式连接器测试', () => {
     it('打印厂商列表', async () => {

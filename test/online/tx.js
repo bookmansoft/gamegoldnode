@@ -3,11 +3,8 @@
  * Creted by liub 2018.9.11
  */
 
- //引入工具包
-const toolkit = require('gamerpc')
 //创建授权式连接器实例
-const remote = new toolkit.conn();
-remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览器环境中的 fetch 函数
+const remote = (require('./connector'))({})
 
 describe('交易相关的JSONP', function() {
     it('获取相关的交易信息', async () => {

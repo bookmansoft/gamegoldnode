@@ -5,14 +5,12 @@
 
 const assert = require('assert')
 const uuid = require('uuid/v1');
-
-//引入工具包
 const toolkit = require('gamerpc')
 
 //中间环境变量
 let env = {
-    rootName: 'xxxxxxxx-game-gold-root-xxxxxxxxxxxx',
-    rootToken: '03aee0ed00c6ad4819641c7201f4f44289564ac4e816918828703eecf49e382d08',
+    rootName: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx',
+    rootToken: '03252fcf8061d221ad0a066d3e8447fd1e6184874a2fdc02eeced5c47d14bd8462',
 };
 
 //创建管理员使用的连接器，并设置相应的参数

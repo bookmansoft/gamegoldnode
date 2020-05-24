@@ -4,25 +4,10 @@
 
 const uuid = require('uuid/v1');
 const assert = require('assert');
-
-//引入工具包
-const toolkit = require('gamerpc')
-//创建授权式连接器实例
-const remote = new toolkit.conn();
-remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览器环境中的 fetch 函数
-.setup({
-    type:   'testnet',
-    ip:     '127.0.0.1',          //远程服务器地址
-    head:   'http',               //远程服务器通讯协议，分为 http 和 https
-    id:     'primary',            //默认访问的钱包编号
-    apiKey: 'bookmansoft',        //远程服务器基本校验密码
-    cid:    'xxxxxxxx-game-gold-root-xxxxxxxxxxxx', //授权节点编号，用于访问远程钱包时的认证
-    token:  '03aee0ed00c6ad4819641c7201f4f44289564ac4e816918828703eecf49e382d08', //授权节点令牌固定量，用于访问远程钱包时的认证
-    structured: true,
-});
+const remote = (require('./connector'))({structured: true});
 // 超级节点Cpb编号,由它发行所有的矿产证
-let boosCid = 'xxxxxxxx-game-gold-boss-xxxxxxxxxxxx';
-let bossOid = 'xxxxxxxx-game-gold-boss-tokenxxx0000';
+let boosCid = 'xxxxxxxx-vallnet-boss-xxxxxxxxxxxxxx';
+let bossOid = 'xxxxxxxx-vallnet-boss-tokenxxxxx0000';
 
 //在多个测试用例间传递中间结果的缓存变量
 let env = {
@@ -30,11 +15,11 @@ let env = {
     pid: '',
     address: '',
     has: false,     //如果不存在token,后续的测试也就无法进行了.
-    };   
+};  
 describe('普通节点升级为超级节点', ()=>{
     before(async () => {
         //查询本地节点矿产证列表
-        let ret = await remote.execute('prop.list', [1, 'default', bossOid]);
+        let ret = await remote.execute('prop.query', [1, 'default', bossOid]);
         
         assert(!ret.error);
         // 如果存在多于一个的矿产证,env.

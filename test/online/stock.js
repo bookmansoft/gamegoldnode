@@ -7,7 +7,7 @@
 /**
  * 合约检测结果码
  */
-const verifyCode = {
+const VerifyCode = {
     Failed: 0,                              //失败
     Success: 1,                             //成功
     StockOffering: 1001,                    //处于发行期，不能再次发售
@@ -29,22 +29,7 @@ const verifyCode = {
 
 const uuid = require('uuid/v1')
 const assert = require('assert');
-
-//引入工具包
-const toolkit = require('gamerpc')
-//创建授权式连接器实例
-const remote = new toolkit.conn();
-remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览器环境中的 fetch 函数
-.setup({
-    type:   'testnet',
-    ip:     '127.0.0.1',          //远程服务器地址
-    head:   'http',               //远程服务器通讯协议，分为 http 和 https
-    id:     'primary',            //默认访问的钱包编号
-    apiKey: 'bookmansoft',        //远程服务器基本校验密码
-    cid:    'xxxxxxxx-game-gold-root-xxxxxxxxxxxx', //授权节点编号，用于访问远程钱包时的认证
-    token:  '03aee0ed00c6ad4819641c7201f4f44289564ac4e816918828703eecf49e382d08', //授权节点令牌固定量，用于访问远程钱包时的认证
-    structured: true,
-});
+const remote = (require('./connector'))({structured: true})
 
 /* CP对象中，stock子对象的数据结构
 stock: { 
@@ -102,7 +87,7 @@ describe('凭证管理', () => {
     
         it('注册CP', async () => {
             //注册一个新的CP, 指定 15% 的媒体分成
-            let ret = await remote.execute('cp.create', [cp.name, 'http://127.0.0.1', null, 'slg', 15]);
+            let ret = await remote.execute('cp.create', [cp.name, '127.0.0.1,,slg,15']);
     
             //确保该CP数据上链
             await remote.execute('miner.generate.admin', [1]);
@@ -118,9 +103,16 @@ describe('凭证管理', () => {
             alice.addr = ret.result.data.addr;
     
             //注册bob的子帐号, 记录对应特定CP的专属地址
-            ret = await remote.execute('token.user', [cp.id, bob.name, alice.addr, bob.name]);
+            ret = await remote.execute('token.user', [cp.id, bob.name, null, bob.name]);
             bob.cid = cp.id;
             bob.addr = ret.result.data.addr;
+
+            //将alice设置为bob的推广员
+            await remote.execute('order.setGuider', [alice.addr, cp.id, bob.addr]);
+
+            //确保该CP数据上链
+            await remote.execute('miner.generate.admin', [1]);
+            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
         });
     
         it('一级市场发行 - 非法账户', async () => {
@@ -189,6 +181,9 @@ describe('凭证管理', () => {
             ret = await remote.execute('stock.purchase', [cp.id, 500, alice.name]);
             assert(!ret.error);
 
+            await remote.execute('miner.generate.admin', [1]);
+            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+
             //查询 Alice 的凭证余额 === 500
             ret = await remote.execute('stock.list.wallet', [[['cid', cp.id], ['addr', alice.addr]]]);
             assert(ret.result.list[0].sum === 500);
@@ -196,6 +191,9 @@ describe('凭证管理', () => {
 
             //Alice 购买超过剩余总量的凭证，接口上没有报错，但操作最终失败了
             ret = await remote.execute('stock.purchase', [cp.id, 600, alice.name]);
+
+            await remote.execute('miner.generate.admin', [1]);
+            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
 
             //查询 Alice 的凭证余额 === 500
             ret = await remote.execute('stock.list.wallet', [[['cid', cp.id], ['addr', alice.addr]]]);
@@ -215,6 +213,9 @@ describe('凭证管理', () => {
             ret = await remote.execute('stock.send', [cp.id, 100, bob.addr, alice.name]);
             assert(!ret.error);
     
+            await remote.execute('miner.generate.admin', [1]);
+            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+
             //查询 Alice 的凭证余额 === 400
             ret = await remote.execute('stock.list.wallet', [[['cid', cp.id], ['addr', alice.addr]]]);
             assert(ret.result.list[0].sum === 400);
@@ -229,6 +230,9 @@ describe('凭证管理', () => {
             let ret = await remote.execute('stock.bid', [cp.id, 200, 2000, alice.name]);
             assert(!ret.error);
     
+            await remote.execute('miner.generate.admin', [1]);
+            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+
             ret = await remote.execute('stock.bid.list', [[['cid', cp.id]]]);
             assert(ret.result.list[0].addr === alice.addr);
             assert(ret.result.list[0].stock.sum === 200);
@@ -239,6 +243,9 @@ describe('凭证管理', () => {
             //Bob购买凭证，因为金额不足失败
             let ret = await remote.execute('stock.auction', [cp.id, alice.addr, 100, 2000, bob.name]);
             assert(!!ret.error);
+
+            await remote.execute('miner.generate.admin', [1]);
+            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
 
             //查询 Bob 的凭证余额
             ret = await remote.execute('stock.list.wallet', [[['cid', cp.id], ['addr', bob.addr]]]);
@@ -251,6 +258,9 @@ describe('凭证管理', () => {
             //Bob购买凭证 100 
             ret = await remote.execute('stock.auction', [cp.id, alice.addr, 100, 2000, bob.name]);
             assert(!ret.error);
+
+            await remote.execute('miner.generate.admin', [1]);
+            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
 
             //查询 Bob 的凭证余额 === 200
             ret = await remote.execute('stock.list.wallet', [[['cid', cp.id], ['addr', bob.addr]]]);

@@ -3,6 +3,9 @@
  */
 const uuid = require('uuid/v1');
 const assert = require('assert');
+//创建授权式连接器实例
+const remote = (require('./connector'))({structured: true})
+
 /**
  * 交易对合约的状态
  */
@@ -16,22 +19,6 @@ const contractStatus = {
     Exchanged: 7,       //兑换执行状态(乙方获得游戏金)
     Backed: 8           //兑换退回状态(甲方获得游戏金)
 };
-
-//引入工具包
-const toolkit = require('gamerpc')
-//创建授权式连接器实例
-const remote = new toolkit.conn();
-remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览器环境中的 fetch 函数
-.setup({
-    type:   'testnet',
-    ip:     '127.0.0.1',          //远程服务器地址
-    head:   'http',               //远程服务器通讯协议，分为 http 和 https
-    id:     'primary',            //默认访问的钱包编号
-    apiKey: 'bookmansoft',        //远程服务器基本校验密码
-    cid:    'xxxxxxxx-game-gold-root-xxxxxxxxxxxx', //授权节点编号，用于访问远程钱包时的认证
-    token:  '03aee0ed00c6ad4819641c7201f4f44289564ac4e816918828703eecf49e382d08', //授权节点令牌固定量，用于访问远程钱包时的认证
-    structured: true,
-});
 
 //为了能顺利用已有比特币余额的地址创建交易对,测试前必须注释相关代码--移到doc中去
 //1.consensus.js:
