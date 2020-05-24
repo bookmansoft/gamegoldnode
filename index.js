@@ -1,8 +1,6 @@
 #!/usr/bin/env node
 
 'use strict';
-const path = require('path');
-
 process.title = 'gamegold';
 
 const gamegold = require('gamegold');
