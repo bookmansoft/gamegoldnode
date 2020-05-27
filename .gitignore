@@ -70,6 +70,5 @@ package-lock.json
 .gamegold/main/chain.ldb/
 .gamegold/main/walletdb.ldb/
 .gamegold/main/hosts.json
-wallet-testnet.encrypt
 .gamegold/testnet/contractdb.ldb/
 .gamegold/testnet/gamegold.conf

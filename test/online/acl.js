@@ -6,52 +6,17 @@
 const assert = require('assert')
 const uuid = require('uuid/v1');
 const toolkit = require('gamerpc')
+const connector = require('./connector');
+
+//创建管理员使用的连接器
+const remote = connector({structured: true});
+//创建操作员使用的连接器，并设置相应的参数
+const remoteOperator = connector({structured: true});
+//创建用于事件监控的长连模式的连接器，并设置相应的参数
+const monitor = connector({structured: true});
 
 //中间环境变量
-let env = {
-    rootName: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx',
-    rootToken: '03252fcf8061d221ad0a066d3e8447fd1e6184874a2fdc02eeced5c47d14bd8462',
-};
-
-//创建管理员使用的连接器，并设置相应的参数
-const remote = new toolkit.conn();
-remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览器环境中的 fetch 函数
-.setup({
-    type:   'testnet',
-    ip:     '127.0.0.1',          //远程服务器地址
-    head:   'http',               //远程服务器通讯协议，分为 http 和 https
-    id:     'primary',            //默认访问的钱包编号
-    apiKey: 'bookmansoft',        //远程服务器基本校验密码
-    cid: env.rootName, 
-    token: env.rootToken,
-    structured: true,
-});
-
-//创建操作员使用的连接器，并设置相应的参数
-const remoteOperator = new toolkit.conn();
-remoteOperator.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览器环境中的 fetch 函数
-.setup({
-    type:   'testnet',
-    ip:     '127.0.0.1',          //远程服务器地址
-    head:   'http',               //远程服务器通讯协议，分为 http 和 https
-    id:     'primary',            //默认访问的钱包编号
-    apiKey: 'bookmansoft',        //远程服务器基本校验密码
-    structured: true,
-});
-
-//创建用于事件监控的长连模式的连接器，并设置相应的参数
-const monitor = new toolkit.conn();
-monitor.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览器环境中的 fetch 函数
-.setup({
-    type:   'testnet',
-    ip:     '127.0.0.1',          //远程服务器地址
-    head:   'http',               //远程服务器通讯协议，分为 http 和 https
-    id:     'primary',            //默认访问的钱包编号
-    apiKey: 'bookmansoft',        //远程服务器基本校验密码
-    cid: env.rootName, 
-    token: env.rootToken,
-    structured: true,
-});
+let env = {};
 
 describe('操作员管理', () => {
     it('管理员为操作员分配令牌', async () => {

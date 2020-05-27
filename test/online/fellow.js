@@ -6,7 +6,7 @@ const uuid = require('uuid/v1');
 const assert = require('assert');
 const remote = (require('./connector'))({structured: true});
 // 超级节点Cpb编号,由它发行所有的矿产证
-let boosCid = 'xxxxxxxx-vallnet-boss-xxxxxxxxxxxxxx';
+let bossCid = 'xxxxxxxx-vallnet-boss-xxxxxxxxxxxxxx';
 let bossOid = 'xxxxxxxx-vallnet-boss-tokenxxxxx0000';
 
 //在多个测试用例间传递中间结果的缓存变量
@@ -23,7 +23,7 @@ describe('普通节点升级为超级节点', ()=>{
         
         assert(!ret.error);
         // 如果存在多于一个的矿产证,env.
-        if(ret.result.list.length > 0 && ret.result.list[0].cid == boosCid){
+        if(ret.result.list.length > 0 && ret.result.list[0].cid == bossCid){
             env.pid = ret.result.list[0].pid;
             env.address = ret.result.list[0].current.address;
             env.has = true;

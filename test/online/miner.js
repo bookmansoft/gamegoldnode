@@ -18,8 +18,8 @@ let alice = {
     addr: '',
 };
 
-let boosCid = 'xxxxxxxx-game-gold-boss-xxxxxxxxxxxx';
-let bossOid = 'xxxxxxxx-game-gold-boss-tokenxxx0000';
+let bossCid = 'xxxxxxxx-vallnet-boss-xxxxxxxxxxxxxx';
+let bossOid = 'xxxxxxxx-vallnet-boss-tokenxxxxx0000';
 //记录当前测试使用的矿产证
 let minerToken ={
     pid: '',
@@ -35,7 +35,7 @@ describe('矿产证管理', () => {
         
         assert(!ret.error);
         // 如果存在多于一个的矿产证,则取第一个登记在minerToken名下.
-        if(ret.result.list.length > 0 && ret.result.list[0].cid == boosCid){
+        if(ret.result.list.length > 0 && ret.result.list[0].cid == bossCid){
             minerToken.pid = ret.result.list[0].pid;
             minerToken.address = ret.result.list[0].current.address;
             minerToken.has = true;
