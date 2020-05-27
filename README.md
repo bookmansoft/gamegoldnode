@@ -24,8 +24,6 @@ git clone https://github.com/bookmansoft/gamegoldnode
 cd gamegoldnode
 # 安装依赖项
 npm i
-# 拷贝创世私钥至项目根目录, 以便让本地钱包拥有最高权限, 注意如下为windows下文件拷贝命令格式
-copy .\node_modules\gamegold\wallet-testnet.encrypt .\
 # 将 vc 指令和行命令程序挂接
 npm link
 ```
@@ -51,11 +49,11 @@ vc help
 vc ?
 # 调用挖矿流程，生成 100 个新的区块
 vc miner.generate.admin 100
-# 生成一个新的地址
-vc address.create
+# 生成bookman账号，同时获取该账号下的一个新地址 tb1q0h3thutw4jl6hrse59493nkeg36he7dkgnt8lg
+vc address.create bookman
 # 接口的金额单位使用Dust(尘)，系统内部使用VC(维, 1维=10^8尘)，可执行 vc miner.generate.admin 10 进行充值
-vc tx.send tb1qwlm83tk3cd6wmcf34x43unewkhp9scu6x9x3l7 1000
-# 查询地址余额
-vc balance.all tb1qwlm83tk3cd6wmcf34x43unewkhp9scu6x9x3l7
+vc tx.send tb1q0h3thutw4jl6hrse59493nkeg36he7dkgnt8lg 1000
+# 查询指定账户地址余额
+vc balance.all bookman
 ```
 @注意：系统共识设定中，规定了100个包之后的挖矿奖励才能使用，因此必须挖出一定的区块，先前的区块奖励才能使用
