@@ -82,7 +82,7 @@ describe('凭证管理', () => {
     
         it('一级市场发行 - CP不存在', async () => {
             let ret = await remote.execute('stock.offer', [cp.name, 1000, 1000]);
-            assert(!!ret.error && ret.error.message == 'CP Not Exist');
+            assert(!!ret.error);
         });
     
         it('注册CP', async () => {
