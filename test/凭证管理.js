@@ -1,50 +1,23 @@
 /**
- * 联机单元测试：本地全节点提供运行时环境
+ * 联机单元测试：凭证管理
  * @description
- * 2019.05.26 凭证分成降至20%，且参照计划发行总量而非实际发行总量计算占比
  */
-
-/**
- * 合约检测结果码
- */
-const VerifyCode = {
-    Failed: 0,                              //失败
-    Success: 1,                             //成功
-    StockOffering: 1001,                    //处于发行期，不能再次发售
-    StockCooling: 1002,                     //处于冷却期，不能再次发售
-    WrongPrice: 1003,                       //不当的价格
-    WrongFee: 1004,                         //不当的税费
-    WrongPublisher: 1005,                   //错误的发布者
-    WrongSum: 1006,                         //凭证数量不合理
-    WrongBonus: 1007,                       //累计奖励不足，不能再次发行
-    SnapNull: 1008,                         //凭证快照不存在
-    SignFailed: 1009,                       //签名错误
-    WrongHeight: 1010,                      //错误的高度值
-    WrongFormat: 1011,                      //错误的格式
-    StockAccountNotExist: 1012,             //凭证账户不存在
-    StockAccountNotEnoughSum: 1013,         //凭证账户余额不足
-    StockOfferExpired: 1014,                //凭证发行已过期
-    FundNotEnough: 1015,                    //资金不足
-};
 
 const uuid = require('uuid/v1')
-const assert = require('assert');
-const remote = (require('./connector'))({structured: true})
-
-/* CP对象中，stock子对象的数据结构
-stock: { 
-  hHeight: 0,
-  hSum: 0,
-  hPrice: 0,
-  hBonus: 0,
-  hAds: 0,
-  sum: 0,
-  price: 0,
-  height: 0 
-}
-*/
+const assert = require('assert')
+const remote = (require('../test/online/connector'))({structured: true})
 
 describe('凭证管理', () => {
+    before(async () => {
+        //强制设置同步完成标志
+        await remote.execute('miner.setsync.admin', []);
+        //检测块高度，必要时进行挖矿以确保创世区块成熟
+        let ret = await remote.execute('block.tips', []);
+        if(ret.result[0].height < 100) {
+            await remote.execute('miner.generate.admin', [100-ret.result[0].height]);
+        }
+    });
+
     //重复多次测试
     for(let i = 0; i < 1; i++) {
         //CP
@@ -66,20 +39,6 @@ describe('凭证管理', () => {
             sn: ()=>{return "oid-bob-"+ uuid().slice(0,28);},     //订单编号
         };
 
-        it('准备工作', async () => {
-            //强制设置同步完成标志
-            await remote.execute('miner.setsync.admin', []);
-    
-            //检测块高度，必要时进行挖矿以确保创世区块成熟
-            let ret = await remote.execute('block.tips', []);
-            if(ret.result[0].height < 100) {
-                for(let i = ret.result[0].height; i < 101; i++) {
-                    await remote.execute('miner.generate.admin', [1]);
-                    await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
-                }
-            }
-        });
-    
         it('一级市场发行 - CP不存在', async () => {
             let ret = await remote.execute('stock.offer', [cp.name, 1000, 1000]);
             assert(!!ret.error);
@@ -91,19 +50,19 @@ describe('凭证管理', () => {
     
             //确保该CP数据上链
             await remote.execute('miner.generate.admin', [1]);
-            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+            await remote.wait(1000);
 
             //查询并打印CP信息
             ret = await remote.execute('cp.byName', [cp.name]);
             cp.id = ret.result.cid;
     
             //注册alice的子帐号, 记录对应特定CP的专属地址
-            ret = await remote.execute('token.user', [cp.id, alice.name, null, alice.name]);
+            ret = await remote.execute('cp.user', [cp.id, alice.name, null, alice.name]);
             alice.cid = cp.id;
             alice.addr = ret.result.data.addr;
     
             //注册bob的子帐号, 记录对应特定CP的专属地址
-            ret = await remote.execute('token.user', [cp.id, bob.name, null, bob.name]);
+            ret = await remote.execute('cp.user', [cp.id, bob.name, null, bob.name]);
             bob.cid = cp.id;
             bob.addr = ret.result.data.addr;
 
@@ -112,7 +71,7 @@ describe('凭证管理', () => {
 
             //确保该CP数据上链
             await remote.execute('miner.generate.admin', [1]);
-            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+            await remote.wait(1000);
         });
     
         it('一级市场发行 - 非法账户', async () => {
@@ -161,7 +120,7 @@ describe('凭证管理', () => {
             assert(!ret.error);
     
             await remote.execute('miner.generate.admin', [1]);
-            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+            await remote.wait(1000);
 
             ret = await remote.execute('cp.byId', [cp.id]);
             assert(ret.result.stock.sum === 1000);
@@ -175,14 +134,14 @@ describe('凭证管理', () => {
 
             //为用户转账
             await remote.execute('tx.send', [alice.addr, 5000000000]);
-            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+            await remote.wait(1000);
 
             //Alice 购买 500 凭证
             ret = await remote.execute('stock.purchase', [cp.id, 500, alice.name]);
             assert(!ret.error);
 
             await remote.execute('miner.generate.admin', [1]);
-            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+            await remote.wait(1000);
 
             //查询 Alice 的凭证余额 === 500
             ret = await remote.execute('stock.list.wallet', [[['cid', cp.id], ['addr', alice.addr]]]);
@@ -193,7 +152,7 @@ describe('凭证管理', () => {
             ret = await remote.execute('stock.purchase', [cp.id, 600, alice.name]);
 
             await remote.execute('miner.generate.admin', [1]);
-            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+            await remote.wait(1000);
 
             //查询 Alice 的凭证余额 === 500
             ret = await remote.execute('stock.list.wallet', [[['cid', cp.id], ['addr', alice.addr]]]);
@@ -214,7 +173,7 @@ describe('凭证管理', () => {
             assert(!ret.error);
     
             await remote.execute('miner.generate.admin', [1]);
-            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+            await remote.wait(1000);
 
             //查询 Alice 的凭证余额 === 400
             ret = await remote.execute('stock.list.wallet', [[['cid', cp.id], ['addr', alice.addr]]]);
@@ -231,7 +190,7 @@ describe('凭证管理', () => {
             assert(!ret.error);
     
             await remote.execute('miner.generate.admin', [1]);
-            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+            await remote.wait(1000);
 
             ret = await remote.execute('stock.bid.list', [[['cid', cp.id]]]);
             assert(ret.result.list[0].addr === alice.addr);
@@ -245,7 +204,7 @@ describe('凭证管理', () => {
             assert(!!ret.error);
 
             await remote.execute('miner.generate.admin', [1]);
-            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+            await remote.wait(1000);
 
             //查询 Bob 的凭证余额
             ret = await remote.execute('stock.list.wallet', [[['cid', cp.id], ['addr', bob.addr]]]);
@@ -253,25 +212,25 @@ describe('凭证管理', () => {
 
             //向Bob转账，以使其拥有足够的资金
             await remote.execute('tx.send', [bob.addr, 5000000000]);
-            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+            await remote.wait(1000);
 
             //Bob购买凭证 100 
             ret = await remote.execute('stock.auction', [cp.id, alice.addr, 100, 2000, bob.name]);
             assert(!ret.error);
 
             await remote.execute('miner.generate.admin', [1]);
-            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+            await remote.wait(1000);
 
             //查询 Bob 的凭证余额 === 200
             ret = await remote.execute('stock.list.wallet', [[['cid', cp.id], ['addr', bob.addr]]]);
-            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+            await remote.wait(1000);
             assert(ret.result.list[0].sum === 200);
         });
     
         it('验证凭证分配的有效性', async () => {
             //挖矿以确保数据上链
             await remote.execute('miner.generate.admin', [1]);
-            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+            await remote.wait(1000);
 
             let ret = await remote.execute('stock.record', [7, cp.id, 0]);
             assert(ret.result.list[0].price == 2000);
@@ -303,7 +262,7 @@ describe('凭证管理', () => {
     
             //挖矿以确保数据上链
             await remote.execute('miner.generate.admin', [1]);
-            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+            await remote.wait(1000);
 
             ret = await remote.execute('cp.byId', [cp.id]);
             //注意数值没有发生变化
@@ -316,7 +275,7 @@ describe('凭证管理', () => {
         it('连挖30个区块，确保生成CP快照，确保交易分成顺利进行', async () => {
             //在之前的测试中，连挖10个块尚不足以确保生成CP快照，改为30个后测试恢复正常
             await remote.execute('miner.generate.admin', [30]); 
-            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+            await remote.wait(1000);
         });
     
         it('发起支付交易，然后查询支付流水', async () => {
@@ -333,7 +292,7 @@ describe('凭证管理', () => {
 
             //挖矿以确保数据上链
             await remote.execute('miner.generate.admin', [1]);
-            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+            await remote.wait(1000);
 
             //查询bob的交易流水 - 两笔
             ret = await remote.execute('order.query.wallet', [[['cid', cp.id]], bob.name]);
@@ -359,9 +318,9 @@ describe('凭证管理', () => {
             let ret = await remote.execute('stock.offer', [cp.id, 1000, 1000]);
             assert(!!ret.error); //冷却期内不能继续发行
     
-            //挖矿以确保数据上链
+            //确保数据上链
             await remote.execute('miner.generate.admin', [1]);
-            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+            await remote.wait(1000);
 
             ret = await remote.execute('cp.byId', [cp.id]);
             //注意数值没有发生变化
@@ -370,23 +329,22 @@ describe('凭证管理', () => {
             assert(ret.result.stock.hSum === 500);
             assert(ret.result.stock.hPrice === 1000);
         });
-    
+
         /**
-         * 由于连挖4032个块会导致连接器超时，在 BLOCK_DAY = 144 的设定下，跳过如下两个单元测试
+         * 注：由于连挖4032个块会导致连接器超时，在 BLOCK_DAY = 144 的设定下，可跳过如下两个单元测试
          */
-        it.skip('连挖4032个块，确保度过冷却期', async () => {
-            await remote.execute('miner.generate.admin', [4032]);
-            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2500);
+        it('连续记账，确保度过冷却期', async () => {
+            await remote.execute('miner.generate.admin', [42]);
+            await remote.wait(1000);
         });
     
-    
-        it.skip('再次发行凭证成功', async () => {
+        it('再次发行凭证成功', async () => {
             let ret = await remote.execute('stock.offer', [cp.id, 1000, 1000]);
             assert(!ret.error);
     
             //挖矿以确保数据上链
             await remote.execute('miner.generate.admin', [1]);
-            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(2000);
+            await remote.wait(1000);
 
             ret = await remote.execute('cp.byId', [cp.id]);
             assert(ret.result.stock.sum === 1000); 

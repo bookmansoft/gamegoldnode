@@ -60,15 +60,9 @@ typings/
 # next.js build output
 .next
 
-.gamegold/testnet/chain.ldb/
-.gamegold/testnet/walletdb.ldb/
-.gamegold/testnet/hosts
-.gamegold/testnet/debug.log
+.gamegold/testnet/
+.gamegold/main/
+.gamegold/htlc/
+*.encrypt
+backup.txt
 package-lock.json
-.gamegold/testnet/hosts.json
-.gamegold/testnet/spvchain.ldb/
-.gamegold/main/chain.ldb/
-.gamegold/main/walletdb.ldb/
-.gamegold/main/hosts.json
-.gamegold/testnet/contractdb.ldb/
-.gamegold/testnet/gamegold.conf
