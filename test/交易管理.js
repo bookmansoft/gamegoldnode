@@ -4,7 +4,7 @@
  */
 
 const assert = require('assert')
-const connector = require('../test/online/connector');
+const connector = require('../test/util/connector');
 
 const remote = connector({structured: true});
 let env = {};

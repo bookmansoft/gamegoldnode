@@ -2,7 +2,7 @@
  * 负载测试：通过在被测系统上不断增加压力，直到性能指标，例如“响应时间”超过预定指标或者某种资源使用已经达到饱和状态时系统的处理极限。
  */
 const assert = require('assert');
-const connector = require('../test/online/connector');
+const connector = require('../test/util/connector');
 
 let env = {
     address: [],

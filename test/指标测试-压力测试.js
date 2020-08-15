@@ -2,7 +2,7 @@
  * 压力测试：测试系统在一定饱和状态下，例如CPU、内存等在饱和使用情况下，系统能够处理的会话能力，以及系统是否会出现错误。
  */
 
-const remote = (require('../test/online/connector'))();
+const remote = (require('../test/util/connector'))();
 
 describe('压力测试', () => {
     before(async () => {

@@ -14,7 +14,7 @@ const utils = gamegold.utils;
 const Address = gamegold.address;
 const digest = gamegold.crypto.digest;
 
-const remote = (require('../test/online/connector'))();
+const remote = (require('../test/util/connector'))();
 
 let env = {
     message: '风吹草低现牛羊', 

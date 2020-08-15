@@ -9,7 +9,7 @@
 
 const uuidv1 = require('uuid/v1');
 const assert = require('assert');
-const remote = (require('../test/online/connector'))();
+const remote = (require('../test/util/connector'))();
 
 let env = {
 	alice: {

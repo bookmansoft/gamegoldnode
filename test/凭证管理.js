@@ -5,7 +5,7 @@
 
 const uuid = require('uuid/v1')
 const assert = require('assert')
-const remote = (require('../test/online/connector'))({structured: true})
+const remote = (require('../test/util/connector'))({structured: true})
 
 describe('凭证管理', () => {
     before(async () => {

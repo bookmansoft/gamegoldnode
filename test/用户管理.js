@@ -22,7 +22,7 @@
 const assert = require('assert')
 const uuid = require('uuid/v1');
 const toolkit = require('gamerpc')
-const connector = require('../test/online/connector');
+const connector = require('../test/util/connector');
 
 //创建超级用户使用的连接器
 const remote = connector({structured: true});

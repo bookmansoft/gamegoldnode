@@ -6,8 +6,8 @@
  */
 
 const assert = require('assert')
-const connector = require('../test/online/connector');
-const common = require('../test/online/common');
+const connector = require('../test/util/connector');
+const common = require('../test/util/common');
 
 const exec = require('child_process').exec; 
 let child = null;

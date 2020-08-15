@@ -10,8 +10,8 @@
 
 const assert = require('assert');
 const uuidv1 = require('uuid/v1');
-const common = require('../test/online/common');
-const connector = require('../test/online/connector')
+const common = require('../test/util/common');
+const connector = require('../test/util/connector')
 
 //引入核心库，在包引入模式下直接使用 require('gamegold')
 const gamegold = require('gamegold');

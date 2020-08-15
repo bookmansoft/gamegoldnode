@@ -3,7 +3,7 @@
  */
 
 const assert = require('assert');
-const remote = (require('../test/online/connector'))();
+const remote = (require('../test/util/connector'))();
 
 let env = {
     address: [],

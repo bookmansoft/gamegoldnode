@@ -9,7 +9,7 @@ const Address = gamegold.address;
 const digest = gamegold.crypto.digest;
 const KeyRing = gamegold.keyring;
 
-const connector = require('../test/online/connector')
+const connector = require('../test/util/connector')
 const remote = connector();
 
 //建立上下文对象

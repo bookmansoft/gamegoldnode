@@ -4,7 +4,7 @@
 
 const assert = require('assert')
 const uuidv1 = require('uuid/v1');
-const remote = (require('../test/online/connector'))();
+const remote = (require('../test/util/connector'))();
 
 //声明中间环境变量
 let env = {
