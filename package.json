@@ -28,7 +28,7 @@
     "gamegold": "^2.0.2",
     "gamerpc": "^6.0.3",
     "n64": "0.2.10",
-    "node-fetch": "2.3.0",
+    "node-fetch": "2.6.1",
     "socket.io": "2.2.0",
     "uuid": "3.3.2"
   }
