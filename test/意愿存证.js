@@ -49,7 +49,6 @@ describe('意愿存证', function() {
     it('核心节点为企业用户注册证书', async () => {
 		let ret = await remote.execute('cp.user', [env.cp.id, env.alice.name, null, env.cp.id]);
 		env.alice.address = ret.data.addr;
-        env.alice.pubkey = ret.data.pubkey;
 
         ret = await remote.execute('key.export.private', [env.alice.address, env.cp.id]);
         assert(!ret.error);
@@ -66,12 +65,12 @@ describe('意愿存证', function() {
 
 		//签发意愿存证
         let ret = await remote.execute('ca.issue', [
-            env.alice.address,          //签发地址
-            '',                         //name
-            env.cp.pubkey,           	//cp pubkey
-            hash,                		//content hash
-            0,                          //有效期，填0表示使用默认值
-            env.cp.id,
+            env.alice.address,          //见证地址
+            '',                         //证书名称
+            env.cp.pubkey,           	//目标地址公钥
+            hash,                		//内容哈希
+            0,                          //相对有效期，填0表示使用默认值
+            env.cp.id,                  //见证地址归属账号
         ]);
 		assert(ret.erid);
 		//保存存证编号
