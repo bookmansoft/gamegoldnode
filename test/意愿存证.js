@@ -7,8 +7,9 @@ const uuid = require('uuid/v1')
 const assert = require('assert');
 const remote = (require('../test/util/connector'))();
 const gamegold = require('gamegold');
+const TX = gamegold.tx;
 const digest = gamegold.crypto.digest;
-const base58 = gamegold.base58;
+
 
 //设定测试所需的环境变量
 let env = {
@@ -20,9 +21,15 @@ let env = {
     alice: {
         name: "alice-"+ uuid().slice(0,30), //用户名称，采用了随机生成字段 
         address: '',                        //用户专属地址，充当见证人地址，初始为空
+        pubkey: '',                         //企业证书地址公钥，初始为空
         erid:'',                            //缓存生成的存证编号，初始为空
     },
-    content: 'hello world', //存证原始内容
+    phone: {
+        name: "13855558888",                //目标号码 
+        address: '',                        //目标号码证书地址
+        pubkey: '',                         //目标号码证书地址公钥
+    },
+    content: 'hello world',                 //存证原始内容
 };
 
 describe('意愿存证', function() {
@@ -55,6 +62,7 @@ describe('意愿存证', function() {
            '127.0.0.1'
        ]);
 	   env.cp.id = ret.cid;             //填充企业证书编号
+       env.cp.address = ret.pubAddress; //填充企业证书地址
 	   env.cp.pubkey = ret.pubKey;      //填充企业证书地址公钥
 
        //确保该CP数据上链
@@ -66,9 +74,6 @@ describe('意愿存证', function() {
            env.cp.name
        ]);
        assert(env.cp.name == ret.name); //断言名称相吻合
-
-    
-       await remote.execute('tx.create', [{"sendnow":true}, [{"value":200000000, "account": env.cp.id}]]);
     });
 
 	it('核心节点查询企业证书', async () => {
@@ -80,7 +85,15 @@ describe('意愿存证', function() {
     });
 
     it('核心节点为企业充值', async () => {
-        let ret = await remote.execute('tx.create', [{"sendnow":true}, [{"value":100000000, "account": env.cp.id}]]);
+        let ret = await remote.execute('tx.create' /*命令字: 创建一笔交易*/, [
+            {"sendnow": true /*指示该交易创建后必须立即发送*/}, 
+            [
+                {
+                    "value": 100000000,     //通证数值
+                    "account": env.cp.id,   //目标账户，注意不是用地址指定接收单位
+                },
+            ]
+        ]);
         assert(!ret.error);
 
         await remote.execute('miner.generate.admin', [1]);
@@ -94,7 +107,19 @@ describe('意愿存证', function() {
             null,                   //保留字段
             env.cp.id,              //企业证书编号
         ]);
-		env.alice.address = ret.data.addr; //填充用户专属地址
+        env.alice.address = ret.data.addr;  //从返回值中获取用户专属地址
+        env.alice.pubkey = ret.data.pubkey; //从返回值中获取用户专属地址公钥
+	});
+
+    it('核心节点为目标号码注册证书', async () => {
+		let ret = await remote.execute('cp.user', [
+            env.cp.id,              //企业证书编号
+            env.phone.name,         //目标号码
+            null,                   //保留字段
+            env.cp.id,              //企业证书编号
+        ]);
+        env.phone.address = ret.data.addr;  //从返回值中获取专属地址
+        env.phone.pubkey = ret.data.pubkey; //从返回值中获取专属地址公钥
 	});
 
     it('用户签发意愿存证', async () => {
@@ -105,13 +130,13 @@ describe('意愿存证', function() {
         let ret = await remote.execute('ca.issue', [
             env.alice.address,          //见证地址
             '',                         //证书名称，可置空
-            env.cp.pubkey,           	//存证存储地址公钥
+            env.phone.pubkey,         	//存证存储地址公钥
             hash,                		//存证内容哈希
             0,                          //相对有效期，即当前高度往前推定指定区块。填0表示使用默认相对有效期
             env.cp.id,                  //见证地址归属账号
         ]);
 		assert(ret.erid);               //断言正确生成了存证编号
-        env.alice.erid = ret.erid;      //保存存证编号
+        env.alice.erid = ret.erid;      //从返回值中获取存证编号
 
 		//确保存证上链
         await remote.execute('miner.generate.admin', [1]);
@@ -121,6 +146,16 @@ describe('意愿存证', function() {
     it('查询存证：根据存证编号查询存证内容', async () => {
         let ret = await remote.execute('ca.list', [[['erid', env.alice.erid]]]);
         assert(ret.list[0].erid == env.alice.erid);
+    });
+
+    it('查询存证：根据手机号码查询存证', async () => {
+        let ret = await remote.execute('tx.list.address', [env.phone.address]);
+        assert(!!ret);
+        for(let item of ret) {
+            const src = TX.fromRaw(Buffer.from(item.hex, 'hex'));
+            let eritem = src.outputs[0].getReturnData([0x6a]);
+            assert(eritem.erid == env.alice.erid);
+        }
     });
 
     it('验证存证：验证存证的有效性 - 成功', async () => {
@@ -143,7 +178,7 @@ describe('意愿存证', function() {
 
     it('查询废止：查询存证废止列表', async () => {
         let ret = await remote.execute('ca.list.ab', [
-            [['erid', env.alice.erid]]      //类似graphQL的查询语法
+            [['erid', env.alice.erid]],
         ]);
         assert(ret.count == 1);
     });
@@ -163,7 +198,7 @@ describe('意愿存证', function() {
         let ret = await remote.execute('ca.issue', [
             env.alice.address,          //见证地址
             '',                         //存证名称
-            env.cp.pubkey,           	//存证地址公钥
+            env.phone.pubkey,         	//存证地址公钥
             hash,                		//存证内容哈希
             5,                          //相对有效期，填0表示使用默认值
             env.cp.id,                  //见证地址归属账户
