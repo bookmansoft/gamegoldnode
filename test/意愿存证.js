@@ -120,12 +120,12 @@ describe('意愿存证', function() {
 
 		//签发意愿存证
         let ret = await remote.execute('ca.issue', [
-            env.alice.address,          //签发地址
-            '',                         //name
-            env.cp.pubkey,           	//cp pubkey
-            hash,                		//content hash
-            5,                          //有效期，填0表示使用默认值
-            env.cp.id,
+            env.alice.address,          //见证地址
+            '',                         //存证名称
+            env.cp.pubkey,           	//存证地址公钥
+            hash,                		//存证内容哈希
+            5,                          //相对有效期，填0表示使用默认值
+            env.cp.id,                  //见证地址归属账户
         ]);
 		assert(ret.erid);
 		//保存存证编号
