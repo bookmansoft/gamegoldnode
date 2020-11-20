@@ -5,9 +5,10 @@
 
 const uuid = require('uuid/v1')
 const assert = require('assert');
-const remote = (require('../test/util/connector'))();
+const remote = (require('../test/util/connector'))({
+    ip: '114.116.107.218',
+});
 const gamegold = require('gamegold');
-const TX = gamegold.tx;
 const digest = gamegold.crypto.digest;
 
 //设定测试所需的环境变量
@@ -133,7 +134,6 @@ describe('意愿存证', function() {
 
     it('查询存证：根据用户名称查询存证', async () => {
         let ret = await remote.execute('ca.byName', [env.cp.id, env.alice.name]);
-        console.log(ret);
         assert(ret[0].erid == env.alice.erid);
         assert(!!ret[0].ver.verify);
     });
