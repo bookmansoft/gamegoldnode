@@ -6,7 +6,7 @@
 const uuid = require('uuid/v1')
 const assert = require('assert');
 const remote = (require('../test/util/connector'))({
-    ip: '114.116.107.218',
+    //ip: '114.116.107.218', //如开启此配置，则指向远程服务器
 });
 const gamegold = require('gamegold');
 const digest = gamegold.crypto.digest;
@@ -112,11 +112,14 @@ describe('意愿存证', function() {
 
 		//签发意愿存证
         let ret = await remote.execute('ca.issue', [
+            {
+                name: '',               //证书名称，可置空
+                hash: hash,             //存证内容哈希
+                height: 0,              //相对有效期，即当前高度往前推定指定区块。填0表示使用默认相对有效期
+                cluster: env.cp.id,     //簇值
+            },
             env.alice.address,          //见证地址
-            '',                         //证书名称，可置空
             env.alice.pubkey,         	//存证存储地址公钥
-            hash,                		//存证内容哈希
-            0,                          //相对有效期，即当前高度往前推定指定区块。填0表示使用默认相对有效期
             env.cp.id,                  //见证地址归属账号
         ]);
 		assert(ret.erid);               //断言正确生成了存证编号
@@ -133,14 +136,20 @@ describe('意愿存证', function() {
     });
 
     it('查询存证：根据用户名称查询存证', async () => {
-        let ret = await remote.execute('ca.byName', [env.cp.id, env.alice.name]);
-        assert(ret[0].erid == env.alice.erid);
-        assert(!!ret[0].ver.verify);
+        let ret = await remote.execute('ca.user.status', [env.cp.id, env.alice.name, [['page', 1], ['size', 10]]]);
+        assert(ret.list[0].erid == env.alice.erid);
+        assert(!!ret.list[0].verify);
+    });
+
+    it('查询存证：根据用户名称查询存证日志', async () => {
+        let ret = await remote.execute('ca.user.log', [env.cp.id, env.alice.name, [['page', 1], ['size', 10]]]);
+        assert(ret.list[0].erid == env.alice.erid);
     });
 
     it('验证存证：验证存证的有效性 - 成功', async () => {
         let ret = await remote.execute('ca.verify', [env.alice.erid]);
         assert(ret && ret.verify);
+        console.log(ret);
     });
 
     it('废止存证：用户废止先前签发的意愿存证', async () => {
@@ -176,11 +185,14 @@ describe('意愿存证', function() {
 
 		//签发意愿存证
         let ret = await remote.execute('ca.issue', [
+            {
+                name: '',               //存证名称
+                hash: hash,             //存证内容哈希
+                height: 5,              //相对有效期，填0表示使用默认值
+                cluster: env.cp.id,     //簇值
+            },
             env.alice.address,          //见证地址
-            '',                         //存证名称
             env.alice.pubkey,         	//存证地址公钥
-            hash,                		//存证内容哈希
-            5,                          //相对有效期，填0表示使用默认值
             env.cp.id,                  //见证地址归属账户
         ]);
 		assert(ret.erid);
