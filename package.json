@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js --bip150=false --bip151=false --genesis --network=testnet --phrase=bookmansoft",
+    "client": "node index.js --bip150=true --bip151=true --genesis --network=testnet --phrase=bookmansoft --only=127.0.0.1:2100 --port-offset=50 --prefix=~/.gamegold/client",
     "cli": "node bin/cli",
     "test": "mocha --reporter spec test/*.js"
   },
@@ -25,7 +26,7 @@
     "cross-env": "^5.1.3",
     "body-parser": "1.19.0",
     "express": "4.17.0",
-    "gamegold": "^2.1.2",
+    "gamegold": "^2.1.3",
     "gamerpc": "^6.0.5",
     "n64": "0.2.10",
     "node-fetch": "^2.6.1",

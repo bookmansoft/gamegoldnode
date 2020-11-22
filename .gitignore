@@ -67,3 +67,4 @@ typings/
 backup.txt
 package-lock.json
 testnet-genesis.params
+.gamegold/client/
