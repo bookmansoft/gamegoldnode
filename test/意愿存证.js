@@ -99,7 +99,6 @@ describe('意愿存证', function() {
 		let ret = await remote.execute('cp.user', [
             env.cp.id,              //企业证书编号
             env.alice.name,         //用户编号
-            null,                   //保留字段
             env.cp.id,              //企业证书编号
         ]);
         env.alice.address = ret.data.addr;  //从返回值中获取用户专属地址
@@ -107,7 +106,7 @@ describe('意愿存证', function() {
 	});
 
     it('用户签发意愿存证', async () => {
-		//生成真实意愿存证文件的哈希值
+		//生成真实意愿存证文件的哈希值，是对原始信息进行了两次标准 SHA256 运算所得结果
 		let hash = digest.hash256(Buffer.from(env.content)).toString('hex');
 
 		//签发意愿存证
@@ -136,28 +135,47 @@ describe('意愿存证', function() {
     });
 
     it('查询存证：根据用户名称查询存证', async () => {
-        let ret = await remote.execute('ca.user.status', [env.cp.id, env.alice.name, [['page', 1], ['size', 10]]]);
+        let ret = await remote.execute('ca.user.status', [
+            env.cp.id, 
+            env.alice.name, 
+            [
+                ['page', 1],                    //可选项，指定显示页数
+                ['size', 10],                   //可选项，指定每页条数
+                ['source.cluster', env.cp.id],  //可选项，精确指定簇值，'source.cluster'表示是二级属性
+            ]
+        ]);
         assert(ret.list[0].erid == env.alice.erid);
         assert(!!ret.list[0].verify);
     });
 
     it('查询存证：根据用户名称查询存证日志', async () => {
-        let ret = await remote.execute('ca.user.log', [env.cp.id, env.alice.name, [['page', 1], ['size', 10]]]);
+        let ret = await remote.execute('ca.user.log', [
+            env.cp.id, 
+            env.alice.name, 
+            [
+                ['page', 1], 
+                ['size', 10],
+            ]
+        ]);
         assert(ret.list[0].erid == env.alice.erid);
     });
 
     it('验证存证：验证存证的有效性 - 成功', async () => {
         let ret = await remote.execute('ca.verify', [env.alice.erid]);
         assert(ret && ret.verify);
-        console.log(ret);
     });
 
     it('废止存证：用户废止先前签发的意愿存证', async () => {
+        //注意：入参现为二维数组形式，可一次性发起多笔废止交易
         let ret = await remote.execute('ca.abolish', [
-            env.alice.address,             //见证地址
-			env.alice.erid,                //已生成的存证编号
-			0,                             //废止决定生效高度
-			env.cp.id,			           //见证地址归属账号
+            [
+                [
+                    env.alice.address,             //见证地址
+                    env.alice.erid,                //已生成的存证编号
+                    0,                             //废止决定生效高度
+                    env.cp.id,			           //见证地址归属账号
+                ],
+            ]
         ]);
         assert(!ret.error);
 
@@ -180,7 +198,7 @@ describe('意愿存证', function() {
     });
 
     it('用户签发意愿存证', async () => {
-        //生成真实意愿存证文件的哈希值
+		//生成真实意愿存证文件的哈希值，是对原始信息进行了两次标准 SHA256 运算所得结果
 		let hash = digest.hash256(Buffer.from(env.content)).toString('hex');
 
 		//签发意愿存证
