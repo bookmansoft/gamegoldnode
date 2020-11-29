@@ -96,10 +96,9 @@ describe('意愿存证', function() {
     });
 
     it('核心节点为企业用户注册证书', async () => {
-		let ret = await remote.execute('cp.user', [
+		let ret = await remote.execute('sys.aliance.user', [
             env.cp.id,              //企业证书编号
             env.alice.name,         //用户编号
-            env.cp.id,              //企业证书编号
         ]);
         env.alice.address = ret.data.addr;  //从返回值中获取用户专属地址
         env.alice.pubkey = ret.data.pubkey; //从返回值中获取用户专属地址公钥
@@ -112,7 +111,7 @@ describe('意愿存证', function() {
 		//签发意愿存证
         let ret = await remote.execute('ca.issue', [
             {
-                name: '',               //证书名称，可置空
+                name: env.alice.name,   //证书名称，可置空
                 hash: hash,             //存证内容哈希
                 height: 0,              //相对有效期，即当前高度往前推定指定区块。填0表示使用默认相对有效期
                 cluster: env.cp.id,     //簇值
@@ -204,7 +203,7 @@ describe('意愿存证', function() {
 		//签发意愿存证
         let ret = await remote.execute('ca.issue', [
             {
-                name: '',               //存证名称
+                name: env.alice.name,   //存证名称
                 hash: hash,             //存证内容哈希
                 height: 5,              //相对有效期，填0表示使用默认值
                 cluster: env.cp.id,     //簇值

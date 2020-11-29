@@ -107,7 +107,7 @@ const node = new FullNode({
   node.startSync();
   
   //通过传入 true/false 开启/关闭挖矿
-  node.rpc.execute({method:'miner.set.admin',params:[false]});
+  await node.rpc.execute({method:'miner.set.admin',params:[false]});
 
   if(node.miner && (!node.miner.addresses || node.miner.addresses.length==0)) {
     await node.rpc.execute({method:'miner.setsync.admin',params:[]});

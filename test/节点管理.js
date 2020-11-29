@@ -53,12 +53,12 @@ describe('节点管理', () => {
 
     it('自动记账：设置节点自动记账', async () => {
         let ret = await remote.execute('miner.set.admin', [true]);
-        assert(!ret.error);
+        assert(!ret.error && ret.mode == true);
     });
 
     it('手动记账：设置节点手动记账', async () => {
         let ret = await remote.execute('miner.set.admin', [false]);
-        assert(!ret.error);
+        assert(!ret.error && ret.mode == false);
 
         //设置一个等待时间
         await remote.wait(1000);

@@ -1,11 +1,11 @@
 {
   "name": "gamegoldnode",
-  "version": "2.1.5",
+  "version": "2.2.0",
   "description": "Vallnet Node",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js --bip150=false --bip151=false --genesis --network=testnet --phrase=bookmansoft",
-    "client": "node index.js --bip150=true --bip151=true --genesis --network=testnet --phrase=bookmansoft --only=127.0.0.1:2100 --port-offset=50 --prefix=~/.gamegold/client",
+    "start": "node index.js --bip150=false --bip151=false --genesis=bookmansoft --network=testnet",
+    "client": "node index.js --bip150=true --bip151=true --genesis=bookmansoft --network=testnet --only=127.0.0.1:2100 --port-offset=50 --prefix=~/.gamegold/client",
     "cli": "node bin/cli",
     "test": "mocha --reporter spec test/*.js"
   },
