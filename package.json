@@ -28,6 +28,7 @@
     "express": "4.17.0",
     "gamegold": "^2.2.0",
     "gamerpc": "^6.0.5",
+    "kafkajs": "^1.15.0",
     "n64": "0.2.10",
     "node-fetch": "^2.6.1",
     "socket.io": "2.2.0",
