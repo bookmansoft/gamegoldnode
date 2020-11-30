@@ -4,8 +4,8 @@
   "description": "Vallnet Node",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js --bip150=false --bip151=false --genesis=bookmansoft --network=testnet",
-    "client": "node index.js --bip150=true --bip151=true --genesis=bookmansoft --network=testnet --only=127.0.0.1:2100 --port-offset=50 --prefix=~/.gamegold/client",
+    "start": "node index.js --bip150=false --bip151=false --genesis --network=testnet --password=bookmansoft",
+    "client": "node index.js --bip150=false --bip151=false --genesis --network=testnet --seeds=127.0.0.1:2100 --port-offset=50 --prefix=~/.gamegold/client --password=bookmansoft",
     "cli": "node bin/cli",
     "test": "mocha --reporter spec test/*.js"
   },
