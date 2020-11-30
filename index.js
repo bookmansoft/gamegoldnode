@@ -28,6 +28,10 @@ const startproxy = require('./lib/proxy/startproxy');
 const FullNode = gamegold.fullnode;
 const Account = gamegold.wallet.Account;
 const MTX = gamegold.mtx;
+const kafka = require('./lib/kafka/connector')
+
+//创建生产者
+const producer = kafka.producer();
 
 const node = new FullNode({
   config: true, // 是否载入外部配置文件
@@ -46,12 +50,19 @@ const node = new FullNode({
     gamegold.contractPlugin,    //合约账户管理插件，可以在全节点加载
     gamegold.wallet.plugin,     //钱包管理插件，可以在全节点或SPV节点加载
   ],
-  mnemonic: {
-    passphrase: 'bookmansoft',
-    language: 'english',
-    bits: 256,
-  },
+  // mnemonic: {
+  //   passphrase: 'bookmansoft',
+  //   language: 'english',
+  //   bits: 256,
+  // },
 });
+
+let connecting = async () => {
+  producer.connect().catch(err => {
+    setTimeout(connecting, 5000);
+  });
+} 
+
 
 (async () => {
   /**
@@ -65,27 +76,44 @@ const node = new FullNode({
   await node.ensure();
   await node.open();
 
-  const cdb = node.require('contractdb');
-  if (cdb) {
-    cdb.on('prop/receive', msg => {
-      //console.log('prop/receive:', msg);
-    });
-
-    cdb.on('prop/auction', msg => {
-      //console.log('prop/auction:', msg);
-    });
-
-    cdb.on('cp/orderPay', msg => {
-      //console.log('cp/orderPay:', msg);
-    });
-
-    cdb.on('balance.client', msg => {
-      //console.log('balance.client', msg);
-    });
-  }
-
   const wdb = node.require('walletdb');
   if (wdb) {
+    wdb.on('ca/issue', async msg => {
+      await producer.send({
+        topic: 'caIssue',
+        messages: [
+          { value: JSON.stringify(msg) },
+        ],
+      })
+    });
+    
+    wdb.on('ca/abolish', async msg => {
+      await producer.send({
+        topic: 'caAbolish',
+        messages: [
+          { value: JSON.stringify(msg) },
+        ],
+      })
+    });
+
+    wdb.on('ca/unissue', async msg => {
+      await producer.send({
+        topic: 'caUnissue',
+        messages: [
+          { value: JSON.stringify(msg) },
+        ],
+      })
+    });
+    
+    wdb.on('ca/unabolish', async msg => {
+      await producer.send({
+        topic: 'caUnabolish',
+        messages: [
+          { value: JSON.stringify(msg) },
+        ],
+      })
+    });
+
     wdb.on('prop/receive', msg => {
       //console.log('prop/receive:', msg);
     });
@@ -120,6 +148,10 @@ const node = new FullNode({
     pow: process.argv.indexOf('--pow') !== -1,
     ports: [2000, 2100],
   });
+  //#endregion
+
+  //#region 建立kafka连接
+  connecting();
   //#endregion
 })().catch((err) => {
   console.error(err.stack);
