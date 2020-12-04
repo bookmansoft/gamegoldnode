@@ -30,9 +30,6 @@ const Account = gamegold.wallet.Account;
 const MTX = gamegold.mtx;
 const kafka = require('./lib/kafka/connector')
 
-//创建生产者
-const producer = kafka.producer();
-
 const node = new FullNode({
   config: true, // 是否载入外部配置文件
   argv: true,
@@ -57,13 +54,6 @@ const node = new FullNode({
   // },
 });
 
-let connecting = async () => {
-  producer.connect().catch(err => {
-    setTimeout(connecting, 5000);
-  });
-} 
-
-
 (async () => {
   /**
    * 当前结点是一个全功能节点，提供如下功能：
@@ -78,41 +68,6 @@ let connecting = async () => {
 
   const wdb = node.require('walletdb');
   if (wdb) {
-    wdb.on('ca/issue', async msg => {
-      await producer.send({
-        topic: 'caIssue',
-        messages: [
-          { value: JSON.stringify(msg) },
-        ],
-      })
-    });
-    
-    wdb.on('ca/abolish', async msg => {
-      await producer.send({
-        topic: 'caAbolish',
-        messages: [
-          { value: JSON.stringify(msg) },
-        ],
-      })
-    });
-
-    wdb.on('ca/unissue', async msg => {
-      await producer.send({
-        topic: 'caUnissue',
-        messages: [
-          { value: JSON.stringify(msg) },
-        ],
-      })
-    });
-    
-    wdb.on('ca/unabolish', async msg => {
-      await producer.send({
-        topic: 'caUnabolish',
-        messages: [
-          { value: JSON.stringify(msg) },
-        ],
-      })
-    });
 
     wdb.on('prop/receive', msg => {
       //console.log('prop/receive:', msg);
@@ -150,8 +105,55 @@ let connecting = async () => {
   });
   //#endregion
 
+  node.on('ca.issue', msg => {
+    producer.send({
+      topic: 'caIssue',
+      messages: [
+        { value: JSON.stringify(msg) },
+      ],
+    }).catch(e=>{});
+  });
+  
+  node.on('ca.abolish', msg => {
+    producer.send({
+      topic: 'caAbolish',
+      messages: [
+        { value: JSON.stringify(msg) },
+      ],
+    }).catch(e=>{});
+  });
+
+  node.on('ca.unissue', msg => {
+    producer.send({
+      topic: 'caUnissue',
+      messages: [
+        { value: JSON.stringify(msg) },
+      ],
+    }).catch(e=>{});
+  });
+  
+  node.on('ca/unabolish', msg => {
+    producer.send({
+      topic: 'caUnabolish',
+      messages: [
+        { value: JSON.stringify(msg) },
+      ],
+    }).catch(e=>{});
+  });
+
   //#region 建立kafka连接
-  connecting();
+  const producer = kafka.producer();
+  let connecting = async () => {
+    producer.connect().catch(err => {
+      setTimeout(connecting, 5000);
+    });
+  } 
+
+  await connecting();
+
+  producer.on('DISCONNECT', e => { //断线重连
+    connecting();
+  });
   //#endregion
 })().catch((err) => {
   console.error(err.stack);
