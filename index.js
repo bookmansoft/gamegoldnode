@@ -26,9 +26,8 @@ if (process.argv.indexOf('--version') !== -1 || process.argv.indexOf('-v') !== -
 const gamegold = require('gamegold');
 const startproxy = require('./lib/proxy/startproxy');
 const FullNode = gamegold.fullnode;
-const Account = gamegold.wallet.Account;
-const MTX = gamegold.mtx;
-const kafka = require('./lib/kafka/connector')
+const kafka = require('./lib/kafka/connector');
+const connector = require('./lib/remote/connector');
 
 const node = new FullNode({
   config: true, // 是否载入外部配置文件
@@ -141,19 +140,31 @@ const node = new FullNode({
     }).catch(e=>{});
   });
 
-  //#region 建立kafka连接
-  const producer = kafka.producer();
-  let connecting = async () => {
-    producer.connect().catch(err => {
-      setTimeout(connecting, 5000);
+  if(node.config.args.only) {
+    let env = node.config.args.only.split(':');
+
+    const remote = connector({
+      type: node.network.type,
+      ip: env[0],
+      port: parseInt(env[1]) + 2,
     });
-  } 
+    let ret = await remote.execute('aliance.token', []);
+    await node.rpc.addPeer([node.config.args.only, ret.pub]);
+  }
 
-  await connecting();
+  //#region 建立kafka连接
+  // const producer = kafka.producer();
+  // let connecting = async () => {
+  //   producer.connect().catch(err => {
+  //     setTimeout(connecting, 5000);
+  //   });
+  // } 
 
-  producer.on('DISCONNECT', e => { //断线重连
-    connecting();
-  });
+  // await connecting();
+
+  // producer.on('DISCONNECT', e => { //断线重连
+  //   connecting();
+  // });
   //#endregion
 })().catch((err) => {
   console.error(err.stack);

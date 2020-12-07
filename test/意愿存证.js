@@ -5,7 +5,7 @@
 
 const uuid = require('uuid/v1')
 const assert = require('assert');
-const remote = (require('../test/util/connector'))({
+const remote = (require('../lib/remote/connector'))({
     //ip: '114.116.107.218', //如开启此配置，则指向远程服务器
 });
 const gamegold = require('gamegold');

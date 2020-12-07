@@ -1,11 +1,11 @@
 {
   "name": "gamegoldnode",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "Vallnet Node",
   "main": "index.js",
   "scripts": {
     "start": "node index.js --bip150=false --bip151=false --genesis --network=testnet --password=bookmansoft",
-    "client": "node index.js --bip150=false --bip151=false --genesis --network=testnet --seeds=127.0.0.1:2100 --port-offset=50 --prefix=~/.gamegold/client --password=bookmansoft",
+    "client": "node index.js --bip150=true --bip151=true --genesis --network=testnet --only=127.0.0.1:2100 --port-offset=10 --prefix=~/.gamegold/client --keystore=testnet-bookman-1.keystore --password=bookmansoft",
     "cli": "node bin/cli",
     "test": "mocha --reporter spec test/*.js"
   },
@@ -26,7 +26,7 @@
     "cross-env": "^5.1.3",
     "body-parser": "1.19.0",
     "express": "4.17.0",
-    "gamegold": "^2.2.2",
+    "gamegold": "^2.2.3",
     "gamerpc": "^6.0.5",
     "kafkajs": "^1.15.0",
     "n64": "0.2.10",

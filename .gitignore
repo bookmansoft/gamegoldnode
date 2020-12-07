@@ -64,6 +64,7 @@ typings/
 .gamegold/main/
 .gamegold/htlc/
 *.encrypt
+*.keystore
 backup.txt
 package-lock.json
 testnet-genesis.params
