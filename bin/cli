@@ -122,9 +122,9 @@ class CLI
     if(this.args['network']) {
       network = this.args['network'];
     }
-    let rpcRemotePort = null;
+    let httpRemotePort = 2102; //testnet 的默认端口
     if(this.args['port']) {
-      rpcRemotePort = this.args['port'];
+      httpRemotePort = this.args['port'];
     }
     this.config.network = network;
     this.config.options['network'] = network;
@@ -139,15 +139,15 @@ class CLI
     let {token} = priv.getHMAC(util.hashInt(DefaultCid));
 
     let params = {
-      rpcHost: this.config.str('http-remote-host'), //RPC服务主机地址
-      rpcRemotePort: rpcRemotePort,
+      httpRemoteHost: this.config.str('http-remote-host'), //RPC服务主机地址
+      httpRemotePort,
       spv: this.config.spv,
       apiKey: this.config.str('api-key'),
       network: this.config.str('network'),
       id: this.config.str('wallet-id', 'primary'),
       //分为非限定模式(cid=consensus.ROOT)和限定模式(限定访问cid对应的子账户)
       cid: DefaultCid,  //授权节点编号，用于访问远程钱包时的认证
-      token: token,     //授权节点令牌固定量，用于访问远程钱包时的认证
+      token,            //授权节点令牌固定量，用于访问远程钱包时的认证
     };
     //通讯客户端组件，用于访问远程服务器
     this.accessWallet = new accessWallet(params);

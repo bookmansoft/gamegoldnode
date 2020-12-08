@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js --bip150=false --bip151=false --genesis --network=testnet --password=bookmansoft",
     "client": "node index.js --bip150=true --bip151=true --genesis --network=testnet --only=127.0.0.1:2100 --port-offset=10 --prefix=~/.gamegold/client --keystore=testnet-bookman-1.keystore --password=bookmansoft",
-    "cli": "node bin/cli",
+    "cli": "node bin/cli --port=2102",
     "test": "mocha --reporter spec test/*.js"
   },
   "bin": {
