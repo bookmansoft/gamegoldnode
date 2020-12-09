@@ -6,7 +6,7 @@
 
 1. 部署环境
 
-安装Node的指定版本: Nodejs@12.6.3, 安装过程中勾选'Automatically install the necessary tools'自动安装 Windows Chocolatey, python3.8.3 等辅助工具
+安装Node的指定版本: Nodejs@12.20.0, 安装过程中勾选'Automatically install the necessary tools'自动安装 Windows Chocolatey, python3.9.1 等辅助工具
 **注意：对14.x或更高版本的依赖库兼容性测试尚未完成，所以务请安装指定版本**
 
 安装Git工具: Git 2.28.0 64-bit version for Windows
