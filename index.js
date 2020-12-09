@@ -88,6 +88,8 @@ const node = new FullNode({
   await node.connect();
   node.startSync();
   
+  const enKafka = node.config.args.kafka;
+
   //通过传入 true/false 开启/关闭挖矿
   await node.rpc.execute({method:'miner.set.admin',params:[false]});
 
@@ -105,39 +107,47 @@ const node = new FullNode({
   //#endregion
 
   node.on('ca.issue', msg => {
-    producer.send({
-      topic: 'caIssue',
-      messages: [
-        { value: JSON.stringify(msg) },
-      ],
-    }).catch(e=>{});
+    if(enKafka) {
+      producer.send({
+        topic: 'caIssue',
+        messages: [
+          { value: JSON.stringify(msg) },
+        ],
+      }).catch(e=>{});
+    }
   });
   
   node.on('ca.abolish', msg => {
-    producer.send({
-      topic: 'caAbolish',
-      messages: [
-        { value: JSON.stringify(msg) },
-      ],
-    }).catch(e=>{});
+    if(enKafka) {
+      producer.send({
+        topic: 'caAbolish',
+        messages: [
+          { value: JSON.stringify(msg) },
+        ],
+      }).catch(e=>{});
+    }
   });
 
   node.on('ca.unissue', msg => {
-    producer.send({
-      topic: 'caUnissue',
-      messages: [
-        { value: JSON.stringify(msg) },
-      ],
-    }).catch(e=>{});
+    if(enKafka) { 
+      producer.send({
+        topic: 'caUnissue',
+        messages: [
+          { value: JSON.stringify(msg) },
+        ],
+      }).catch(e=>{});
+    }
   });
   
   node.on('ca/unabolish', msg => {
-    producer.send({
-      topic: 'caUnabolish',
-      messages: [
-        { value: JSON.stringify(msg) },
-      ],
-    }).catch(e=>{});
+    if(enKafka) { 
+      producer.send({
+        topic: 'caUnabolish',
+        messages: [
+          { value: JSON.stringify(msg) },
+        ],
+      }).catch(e=>{});
+    }    
   });
 
   if(node.config.args.only) {
@@ -153,18 +163,20 @@ const node = new FullNode({
   }
 
   //#region 建立kafka连接
-  // const producer = kafka.producer();
-  // let connecting = async () => {
-  //   producer.connect().catch(err => {
-  //     setTimeout(connecting, 5000);
-  //   });
-  // } 
+  if(enKafka) { 
+    const producer = kafka.producer();
+    let connecting = async () => {
+      producer.connect().catch(err => {
+        setTimeout(connecting, 5000);
+      });
+    } 
 
-  // await connecting();
+    await connecting();
 
-  // producer.on('DISCONNECT', e => { //断线重连
-  //   connecting();
-  // });
+    producer.on(producer.events.DISCONNECT, e => { //断线重连
+      connecting();
+    });
+  }
   //#endregion
 })().catch((err) => {
   console.error(err.stack);
