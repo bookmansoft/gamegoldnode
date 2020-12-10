@@ -152,7 +152,7 @@ const node = new FullNode({
 
   if(node.config.args.only) {
     let list = node.config.args.only.split(',');
-    for(it of list) {
+    for(let it of list) {
       let env = it.split(':');
 
       const remote = connector({
@@ -165,7 +165,7 @@ const node = new FullNode({
     }
   } else if(node.config.args.nodes) {
     let list = node.config.args.nodes.split(',');
-    for(it of list) {
+    for(let it of list) {
       let env = it.split(':');
 
       const remote = connector({
