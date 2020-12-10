@@ -151,15 +151,31 @@ const node = new FullNode({
   });
 
   if(node.config.args.only) {
-    let env = node.config.args.only.split(':');
+    let list = node.config.args.only.split(',');
+    for(it of list) {
+      let env = it.split(':');
 
-    const remote = connector({
-      type: node.network.type,
-      ip: env[0],
-      port: parseInt(env[1]) + 2,
-    });
-    let ret = await remote.execute('aliance.token', []);
-    await node.rpc.addPeer([node.config.args.only, ret.pub]);
+      const remote = connector({
+        type: node.network.type,
+        ip: env[0],
+        port: parseInt(env[1]) + 2,
+      });
+      let ret = await remote.execute('aliance.token', []);
+      await node.rpc.addPeer([it, ret.pub]);
+    }
+  } else if(node.config.args.nodes) {
+    let list = node.config.args.nodes.split(',');
+    for(it of list) {
+      let env = it.split(':');
+
+      const remote = connector({
+        type: node.network.type,
+        ip: env[0],
+        port: parseInt(env[1]) + 2,
+      });
+      let ret = await remote.execute('aliance.token', []);
+      await node.rpc.addPeer([it, ret.pub]);
+    }
   }
 
   //#region 建立kafka连接
