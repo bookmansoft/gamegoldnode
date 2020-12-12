@@ -109,7 +109,7 @@ const node = new FullNode({
   node.on('ca.issue', msg => {
     if(enKafka) {
       producer.send({
-        topic: 'caIssue',
+        topic: kafka.extraParams.topic,
         messages: [
           { value: JSON.stringify(msg) },
         ],
@@ -120,7 +120,7 @@ const node = new FullNode({
   node.on('ca.abolish', msg => {
     if(enKafka) {
       producer.send({
-        topic: 'caAbolish',
+        topic: kafka.extraParams.topic,
         messages: [
           { value: JSON.stringify(msg) },
         ],
@@ -131,7 +131,7 @@ const node = new FullNode({
   node.on('ca.unissue', msg => {
     if(enKafka) { 
       producer.send({
-        topic: 'caUnissue',
+        topic: kafka.extraParams.topic,
         messages: [
           { value: JSON.stringify(msg) },
         ],
@@ -142,7 +142,7 @@ const node = new FullNode({
   node.on('ca/unabolish', msg => {
     if(enKafka) { 
       producer.send({
-        topic: 'caUnabolish',
+        topic: kafka.extraParams.topic,
         messages: [
           { value: JSON.stringify(msg) },
         ],
@@ -152,7 +152,7 @@ const node = new FullNode({
 
   if(node.config.args.only) {
     let list = node.config.args.only.split(',');
-    for(it of list) {
+    for(let it of list) {
       let env = it.split(':');
 
       const remote = connector({
@@ -165,7 +165,7 @@ const node = new FullNode({
     }
   } else if(node.config.args.nodes) {
     let list = node.config.args.nodes.split(',');
-    for(it of list) {
+    for(let it of list) {
       let env = it.split(':');
 
       const remote = connector({
