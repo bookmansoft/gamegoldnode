@@ -234,4 +234,34 @@ describe('意愿存证', function() {
         let ret = await remote.execute('ca.verify', [env.alice.erid]);
         assert(ret && !ret.verify);
     });
+
+	it('核心节点吊销企业证书', async () => {
+        //查询并打印CP信息, 注意在CP数据上链前，查询将得不到正确结果
+        let ret = await remote.execute('cp.change', [
+            env.cp.id, ',,,forbidden'
+        ]);
+        assert(ret && env.cp.name == ret.newName); //断言名称相吻合
+        await remote.execute('miner.generate.admin', [1]); //确保数据上链
+    });
+
+    it('用户签发意愿存证 - 失败', async () => {
+        await remote.wait(3000); //钱包库同步需要一些时间
+
+        //生成真实意愿存证文件的哈希值，是对原始信息进行了两次标准 SHA256 运算所得结果
+		let hash = digest.hash256(Buffer.from(env.content)).toString('hex');
+
+		//签发意愿存证
+        let ret = await remote.execute('ca.issue', [
+            {
+                name: env.alice.name,   //存证名称
+                hash: hash,             //存证内容哈希
+                height: 5,              //相对有效期，填0表示使用默认值
+                cluster: env.cp.id,     //簇值
+            },
+            env.alice.address,          //见证地址
+            env.alice.pubkey,         	//存证地址公钥
+            env.cp.id,                  //见证地址归属账户
+        ]);
+        console.log(ret);
+    });
 });
