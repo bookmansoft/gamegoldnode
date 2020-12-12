@@ -262,6 +262,6 @@ describe('意愿存证', function() {
             env.alice.pubkey,         	//存证地址公钥
             env.cp.id,                  //见证地址归属账户
         ]);
-        console.log(ret);
+        assert(ret.error);
     });
 });
