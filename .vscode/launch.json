@@ -31,8 +31,11 @@
           "program": "${workspaceFolder}/index.js",
           "outputCapture": "std",
           "args": [                
-            //"--prefix=./.gamegold/testnet2",
-            //"--port-offset=50",
+            "--bip150=true",
+            "--bip151=true",
+            "--password=bookmansoft",
+            //"--nodes=127.0.0.1:2110",
+            "--kafka",
             "--debug",
             "--genesis",
             "--network=testnet"

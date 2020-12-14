@@ -107,6 +107,8 @@ const node = new FullNode({
   //#endregion
 
   node.on('ca.issue', msg => {
+    console.log('ca.issue', msg, enKafka, kafka.extraParams.topic);
+    
     if(enKafka) {
       producer.send({
         topic: kafka.extraParams.topic,
