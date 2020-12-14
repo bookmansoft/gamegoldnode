@@ -88,6 +88,22 @@ describe('意愿存证', function() {
                             "value": 100000000,     //通证数值
                             "account": env.cp.id,   //目标账户，注意不是用地址指定接收单位
                         },
+                        {
+                            "value": 100000000,     //通证数值
+                            "account": env.cp.id,   //目标账户，注意不是用地址指定接收单位
+                        },
+                        {
+                            "value": 100000000,     //通证数值
+                            "account": env.cp.id,   //目标账户，注意不是用地址指定接收单位
+                        },
+                        {
+                            "value": 100000000,     //通证数值
+                            "account": env.cp.id,   //目标账户，注意不是用地址指定接收单位
+                        },
+                        {
+                            "value": 100000000,     //通证数值
+                            "account": env.cp.id,   //目标账户，注意不是用地址指定接收单位
+                        },
                     ]
                 ]);
                 assert(!ret.error);
@@ -196,6 +212,30 @@ describe('意愿存证', function() {
                     env.alice.erid,        //存证编号
                 ]);
                 assert(ret && !ret.verify);
+            });
+
+            it('用户同时签发多张意愿存证', async () => {
+                //生成真实意愿存证文件的哈希值，是对原始信息进行了两次标准 SHA256 运算所得结果
+                let hash = digest.hash256(Buffer.from(env.content)).toString('hex');
+
+                for(let k = 0; k < 100; k++) {
+                    //签发意愿存证
+                    let ret = await remote.execute('ca.issue', [
+                        {
+                            name: env.alice.name,   //证书名称，可置空
+                            hash: hash,             //存证内容哈希
+                            height: 0,              //相对有效期，即当前高度往前推定指定区块。填0表示使用默认相对有效期
+                            cluster: env.cp.id,     //簇值
+                        },
+                        env.alice.address,          //见证地址
+                        env.alice.pubkey,         	//存证存储地址公钥
+                        env.cp.id,                  //见证地址归属账号
+                    ]);
+                    assert(ret.erid);               //断言正确生成了存证编号
+                }
+        
+                await remote.execute('miner.generate.admin', [1]);
+                await remote.wait(1000);
             });
         }
     
