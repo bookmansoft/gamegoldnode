@@ -158,14 +158,14 @@ const node = new FullNode({
     for(let it of node.config.args.only.split(',')) {
       let env = it.split(':');
       if(env.length == 2) {
-        hopes.push({connect: false, type: node.network.type, ip: env[0], port: parseInt(env[1]) + 2});
+        hopes.push({conn: it, connect: false, type: node.network.type, ip: env[0], port: parseInt(env[1]) + 2});
       }
     }
   } else if(node.config.args.nodes) {
     for(let it of node.config.args.nodes.split(',')) {
       let env = it.split(':');
       if(env.length == 2) {
-        hopes.push({connect: false, type: node.network.type, ip: env[0], port: parseInt(env[1]) + 2});
+        hopes.push({conn: it, connect: false, type: node.network.type, ip: env[0], port: parseInt(env[1]) + 2});
       }
     }
   }
@@ -185,14 +185,16 @@ const node = new FullNode({
       let ret = await remote.execute('aliance.token', []);
       if(!!ret && !ret.error) {
         it.connect = true;
-        node.rpc._addPeer([it, ret.pub]).catch();
+        node.rpc._addPeer([it.conn, ret.pub]).catch(e=>{
+          node.logger.error(e);
+        });
       } else {
         $time += 3000;
         setTimeout(remoteConn, $time);
       }
     }
   } 
-  await remoteConn($time);
+  await remoteConn();
 
   //#endregion
 
@@ -210,7 +212,7 @@ const node = new FullNode({
     await connecting();
 
     producer.on(producer.events.DISCONNECT, e => { //断线重连
-      $ktime = 15000,
+      $ktime = 30000;
       connecting();
     });
   }
