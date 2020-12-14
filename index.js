@@ -64,6 +64,7 @@ const node = new FullNode({
 
   await node.ensure();
   await node.open();
+  let producer;
 
   const wdb = node.require('walletdb');
   if (wdb) {
@@ -106,16 +107,17 @@ const node = new FullNode({
   });
   //#endregion
 
-  node.on('ca.issue', msg => {
+  node.on('ca.issue', async msg => {
     console.log('ca.issue', msg, enKafka, kafka.extraParams.topic);
     
     if(enKafka) {
-      producer.send({
+      let sendReuslt = producer.send({
         topic: kafka.extraParams.topic,
         messages: [
           { value: JSON.stringify(msg) },
         ],
       }).catch(e=>{});
+      console.log("send kafka ca.issue: " + JSON.stringify(sendReuslt));
     }
   });
   
@@ -182,7 +184,7 @@ const node = new FullNode({
 
   //#region 建立kafka连接
   if(enKafka) { 
-    const producer = kafka.producer();
+    producer = kafka.producer();
     let connecting = async () => {
       producer.connect().catch(err => {
         setTimeout(connecting, 5000);
