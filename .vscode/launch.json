@@ -34,7 +34,7 @@
             "--bip150=true",
             "--bip151=true",
             "--password=bookmansoft",
-            //"--nodes=127.0.0.1:2110",
+            "--nodes=127.0.0.1:2110",
             "--kafka",
             "--debug",
             "--genesis",

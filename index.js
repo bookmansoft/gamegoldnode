@@ -152,49 +152,70 @@ const node = new FullNode({
     }    
   });
 
-  if(node.config.args.only) {
-    let list = node.config.args.only.split(',');
-    for(let it of list) {
-      let env = it.split(':');
+  //#region 添加可信信道
 
-      const remote = connector({
-        type: node.network.type,
-        ip: env[0],
-        port: parseInt(env[1]) + 2,
-      });
-      let ret = await remote.execute('aliance.token', []);
-      await node.rpc.addPeer([it, ret.pub]);
+  let hopes = [], $time = 5000;
+  if(node.config.args.only) {
+    for(let it of node.config.args.only.split(',')) {
+      let env = it.split(':');
+      if(env.length == 2) {
+        hopes.push({connect: false, type: node.network.type, ip: env[0], port: parseInt(env[1]) + 2});
+      }
     }
   } else if(node.config.args.nodes) {
-    let list = node.config.args.nodes.split(',');
-    for(let it of list) {
+    for(let it of node.config.args.nodes.split(',')) {
       let env = it.split(':');
-
-      const remote = connector({
-        type: node.network.type,
-        ip: env[0],
-        port: parseInt(env[1]) + 2,
-      });
-      let ret = await remote.execute('aliance.token', []);
-      await node.rpc.addPeer([it, ret.pub]);
+      if(env.length == 2) {
+        hopes.push({connect: false, type: node.network.type, ip: env[0], port: parseInt(env[1]) + 2});
+      }
     }
   }
 
+  let remoteConn = async () => {
+    for(let it of hopes) {
+      if(it.connect) {
+        continue;
+      }
+
+      const remote = connector({
+        type: it.type,
+        ip: it.ip,
+        port: it.port,
+      });
+
+      let ret = await remote.execute('aliance.token', []);
+      if(!!ret && !ret.error) {
+        it.connect = true;
+        node.rpc._addPeer([it, ret.pub]).catch();
+      } else {
+        $time += 3000;
+        setTimeout(remoteConn, $time);
+      }
+    }
+  } 
+  await remoteConn($time);
+
+  //#endregion
+
   //#region 建立kafka连接
   if(enKafka) { 
+    let $ktime = 30000;
     const producer = kafka.producer();
     let connecting = async () => {
       producer.connect().catch(err => {
-        setTimeout(connecting, 5000);
+        $ktime += 3000;
+        setTimeout(connecting, $ktime);
       });
     } 
 
     await connecting();
 
     producer.on(producer.events.DISCONNECT, e => { //断线重连
+      $ktime = 15000,
       connecting();
     });
   }
+  
   //#endregion
 })().catch((err) => {
   console.error(err.stack);
