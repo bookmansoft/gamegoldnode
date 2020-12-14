@@ -27,6 +27,7 @@ const gamegold = require('gamegold');
 const startproxy = require('./lib/proxy/startproxy');
 const FullNode = gamegold.fullnode;
 const kafka = require('./lib/kafka/connector');
+let producer = null;
 const connector = require('./lib/remote/connector');
 
 const node = new FullNode({
@@ -106,9 +107,7 @@ const node = new FullNode({
   });
   //#endregion
 
-  node.on('ca.issue', msg => {
-    console.log('ca.issue', msg, enKafka, kafka.extraParams.topic);
-    
+  node.on('ca.issue', async msg => {
     if(enKafka) {
       producer.send({
         topic: kafka.extraParams.topic,
@@ -119,7 +118,7 @@ const node = new FullNode({
     }
   });
   
-  node.on('ca.abolish', msg => {
+  node.on('ca.abolish', async msg => {
     if(enKafka) {
       producer.send({
         topic: kafka.extraParams.topic,
@@ -130,7 +129,7 @@ const node = new FullNode({
     }
   });
 
-  node.on('ca.unissue', msg => {
+  node.on('ca.unissue', async msg => {
     if(enKafka) { 
       producer.send({
         topic: kafka.extraParams.topic,
@@ -141,7 +140,7 @@ const node = new FullNode({
     }
   });
   
-  node.on('ca/unabolish', msg => {
+  node.on('ca/unabolish', async msg => {
     if(enKafka) { 
       producer.send({
         topic: kafka.extraParams.topic,
@@ -200,7 +199,7 @@ const node = new FullNode({
   //#region 建立kafka连接
   if(enKafka) { 
     let $ktime = 30000;
-    const producer = kafka.producer();
+    producer = kafka.producer();
     let connecting = async () => {
       producer.connect().catch(err => {
         $ktime += 3000;
