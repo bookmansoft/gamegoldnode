@@ -154,15 +154,29 @@ const node = new FullNode({
   //#region 添加可信信道
 
   let hopes = [], $time = 5000;
-  if(node.config.args.only) {
-    for(let it of node.config.args.only.split(',')) {
+  //通过参数或环境变量读取only参数
+  let only = null;
+  if (node.config.args.only) {
+     only = node.config.args.only;
+  } else if (node.config.env.only) {
+    only = node.config.env.only;
+  }
+  //通过参数或环境变量读取nodes参数
+  let nodes = null;
+  if (node.config.args.nodes) {
+    nodes = node.config.args.nodes;
+  } else if (node.config.env.nodes) {
+    nodes = node.config.env.nodes;
+  }
+  if (only) {
+    for(let it of only.split(',')) {
       let env = it.split(':');
       if(env.length == 2) {
         hopes.push({conn: it, connect: false, type: node.network.type, ip: env[0], port: parseInt(env[1]) + 2});
       }
     }
-  } else if(node.config.args.nodes) {
-    for(let it of node.config.args.nodes.split(',')) {
+  } else if (nodes) {
+    for(let it of nodes.split(',')) {
       let env = it.split(':');
       if(env.length == 2) {
         hopes.push({conn: it, connect: false, type: node.network.type, ip: env[0], port: parseInt(env[1]) + 2});
