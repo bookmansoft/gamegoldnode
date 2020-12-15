@@ -25,7 +25,7 @@ EXPOSE 2102
 EXPOSE 2104
 EXPOSE 2105
 
-ENTRYPOINT node bin/node \
+ENTRYPOINT node /usr/gamegoldnode/index.js \
 --bip150=true --bip151=true \
 --genesis --network=testnet \
 --password=bookmansoft \
