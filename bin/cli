@@ -135,8 +135,7 @@ class CLI
     }
     this.config.open();
 
-    let priv = HDPrivateKey.fromKey(Buffer.from(encoding.ONE_HASH, 'hex'), Buffer.from(encoding.DefaultChainCode, 'hex'), network);
-    let {token} = priv.getHMAC(util.hashInt(DefaultCid));
+    let {token} = HDPrivateKey.getHmac(DefaultCid, Buffer.from(this.config.hmacSalt || encoding.DefaultChainCode, 'hex'));
 
     let params = {
       httpRemoteHost: this.config.str('http-remote-host'), //RPC服务主机地址
