@@ -51,6 +51,8 @@ class CLI
       '?': this.help,
       'encrypt': this.encrypt,
       'decrypt': this.decrypt,
+      'createAuthToken': this.createAuthToken,
+      'signObj': this.signObj,
       'sign': this.sign,
       'hash': this.getHash,
       'verify': this.verify,
@@ -198,7 +200,20 @@ class CLI
     let key = this.config.str(1);
     let iv = this.config.str(2);
 
+    if(!key || !iv) {
+      let buf = digest.hash256(Buffer.from(this.accessWallet.options.token));
+      key = buf.toString('base64').slice(0, 32);
+      buf = digest.hash256(buf);
+      iv = buf.toString('base64').slice(0, 16);
+    }
+
     console.log(decrypt(key, iv, content));
+  }
+
+  createAuthToken() {
+    let cid = this.config.str(0);
+    let {token} = HDPrivateKey.getHmac(cid, Buffer.from(this.config.hmacSalt || encoding.DefaultChainCode, 'hex'));
+    console.log(token);
   }
 
   /**
@@ -208,6 +223,19 @@ class CLI
     let msg = this.config.str(0);
     let priv = this.config.str(1);
     let key = utils.generateKey(priv);
+    let sig = utils.signObj(msg, key.private);
+
+    console.log({
+      msg: msg,
+      sig: sig.toString('base64'),
+      pub: key.public
+    });
+  }
+
+  signObj() {
+    let msg = this.config.obj(0);
+    let token = this.config.str(1);
+    let key = utils.generateKey(digest.hash256(Buffer.from(token)));
     let sig = utils.signObj(msg, key.private);
 
     console.log({
