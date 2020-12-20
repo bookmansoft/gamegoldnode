@@ -4,9 +4,9 @@
   "description": "Vallnet Node",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js --bip150=true --bip151=true --genesis --network=testnet --password=bookmansoft",
-    "master": "node index.js --bip150=true --bip151=true --genesis --network=testnet --password=bookmansoft --nodes=127.0.0.1:2110 --kafka",
-    "slaver": "node index.js --bip150=true --bip151=true --genesis --network=testnet --password=bookmansoft --nodes=127.0.0.1:2100 --port-offset=10 --prefix=~/.gamegold/client --keystore=testnet-bookman-1.keystore",
+    "start": "node index.js --bip150=true --bip151=true --genesis --network=testnet --password=bookmansoft --workers=true",
+    "master": "node index.js --bip150=true --bip151=true --genesis --network=testnet --password=bookmansoft --nodes=127.0.0.1:2110 --kafka --workers=true",
+    "slaver": "node index.js --bip150=true --bip151=true --genesis --network=testnet --password=bookmansoft --nodes=127.0.0.1:2100 --kafka --workers=true --port-offset=10 --prefix=~/.gamegold/client --keystore=testnet-bookman-1.keystore",
     "cli": "node bin/cli --port=2102",
     "test": "mocha --reporter spec test/*.js"
   },
