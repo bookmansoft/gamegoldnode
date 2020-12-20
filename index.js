@@ -107,49 +107,63 @@ const node = new FullNode({
   });
   //#endregion
 
-  node.on('ca.issue', async msg => {
-    if(enKafka) {
-      producer.send({
-        topic: kafka.extraParams.topic,
-        messages: [
-          { value: JSON.stringify(msg) },
-        ],
-      }).catch(e=>{});
-    }
-  });
+  // node.on('ca.issue', async msg => {
+  //   if(enKafka) {
+  //     producer.send({
+  //       topic: kafka.extraParams.topic,
+  //       messages: [
+  //         { value: JSON.stringify(msg) },
+  //       ],
+  //     }).catch(e=>{});
+  //   }
+  // });
   
-  node.on('ca.abolish', async msg => {
-    if(enKafka) {
-      producer.send({
-        topic: kafka.extraParams.topic,
-        messages: [
-          { value: JSON.stringify(msg) },
-        ],
-      }).catch(e=>{});
-    }
-  });
+  // node.on('ca.abolish', async msg => {
+  //   if(enKafka) {
+  //     producer.send({
+  //       topic: kafka.extraParams.topic,
+  //       messages: [
+  //         { value: JSON.stringify(msg) },
+  //       ],
+  //     }).catch(e=>{});
+  //   }
+  // });
 
-  node.on('ca.unissue', async msg => {
-    if(enKafka) { 
-      producer.send({
-        topic: kafka.extraParams.topic,
-        messages: [
-          { value: JSON.stringify(msg) },
-        ],
-      }).catch(e=>{});
-    }
-  });
+  // node.on('ca.unissue', async msg => {
+  //   if(enKafka) { 
+  //     producer.send({
+  //       topic: kafka.extraParams.topic,
+  //       messages: [
+  //         { value: JSON.stringify(msg) },
+  //       ],
+  //     }).catch(e=>{});
+  //   }
+  // });
   
-  node.on('ca/unabolish', async msg => {
-    if(enKafka) { 
-      producer.send({
-        topic: kafka.extraParams.topic,
-        messages: [
-          { value: JSON.stringify(msg) },
-        ],
-      }).catch(e=>{});
-    }    
-  });
+  // node.on('ca.unabolish', async msg => {
+  //   if(enKafka) { 
+  //     producer.send({
+  //       topic: kafka.extraParams.topic,
+  //       messages: [
+  //         { value: JSON.stringify(msg) },
+  //       ],
+  //     }).catch(e=>{});
+  //   }    
+  // });
+
+  const wdb = node.require('walletdb');
+  if (wdb) {
+    wdb.on('ca.issue.wallet', msg => {
+      if(enKafka) {
+        producer.send({
+          topic: kafka.extraParams.topic,
+          messages: [
+            { value: JSON.stringify(msg) },
+          ],
+        }).catch(e=>{});
+      }
+    });
+  }
 
   //#region 添加可信信道
 

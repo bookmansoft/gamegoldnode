@@ -11,6 +11,8 @@ const remote = (require('../lib/remote/connector'))({
 const gamegold = require('gamegold');
 const digest = gamegold.crypto.digest;
 
+let env = null;
+
 describe('意愿存证', function() {
     /**
      * 单元测试模块前置处理流程
@@ -35,40 +37,41 @@ describe('意愿存证', function() {
     });
 
     for(let i = 0; i < 100; i++) {
-        //设定测试所需的环境变量
-        let env = {
-            cp: {
-                name: "cp-"+ uuid().slice(0,33),    //企业名称，采用了随机生成字段 
-                id: '',                             //企业证书编号，初始为空
-                pubkey: '',                         //企业证书地址公钥，初始为空
-            },
-            alice: {
-                name: "alice-"+ uuid().slice(0,30), //用户名称，采用了随机生成字段 
-                address: '',                        //用户专属地址，充当见证人地址，初始为空
-                pubkey: '',                         //企业证书地址公钥，初始为空
-                erid:'',                            //缓存生成的存证编号，初始为空
-            },
-            content: 'hello world',                 //存证原始内容
-        };
         it('核心节点为企业注册证书', async () => {
-        //注册一个新的CP
-        let ret = await remote.execute('cp.create', [
-            env.cp.name, 
-            '127.0.0.1'
-        ]);
-        env.cp.id = ret.cid;             //填充企业证书编号
-        env.cp.address = ret.pubAddress; //填充企业证书地址
-        env.cp.pubkey = ret.pubKey;      //填充企业证书地址公钥
+            //设定测试所需的环境变量
+            env = {
+                cp: {
+                    name: "cp-"+ uuid().slice(0,33),    //企业名称，采用了随机生成字段 
+                    id: '',                             //企业证书编号，初始为空
+                    pubkey: '',                         //企业证书地址公钥，初始为空
+                },
+                alice: {
+                    name: String(((Math.random() * Math.pow(2, 32))|0)>>>0), //用户名称，采用了随机生成字段 
+                    address: '',                        //用户专属地址，充当见证人地址，初始为空
+                    pubkey: '',                         //企业证书地址公钥，初始为空
+                    erid:'',                            //缓存生成的存证编号，初始为空
+                },
+                content: 'hello world',                 //存证原始内容
+            };
 
-        //确保该CP数据上链
-        await remote.execute('miner.generate.admin', [1]);
-        await remote.wait(1000);
+            //注册一个新的CP
+            let ret = await remote.execute('cp.create', [
+                env.cp.name, 
+                '127.0.0.1'
+            ]);
+            env.cp.id = ret.cid;             //填充企业证书编号
+            env.cp.address = ret.pubAddress; //填充企业证书地址
+            env.cp.pubkey = ret.pubKey;      //填充企业证书地址公钥
 
-        //查询并打印CP信息, 注意在CP数据上链前，查询将得不到正确结果
-        ret = await remote.execute('cp.byName', [
-            env.cp.name
-        ]);
-        assert(env.cp.name == ret.name); //断言名称相吻合
+            //确保该CP数据上链
+            await remote.execute('miner.generate.admin', [1]);
+            await remote.wait(1000);
+
+            //查询并打印CP信息, 注意在CP数据上链前，查询将得不到正确结果
+            ret = await remote.execute('cp.byName', [
+                env.cp.name
+            ]);
+            assert(env.cp.name == ret.name); //断言名称相吻合
         });
 
         it('核心节点查询企业证书', async () => {
@@ -156,6 +159,8 @@ describe('意愿存证', function() {
                     env.cp.id, 
                     env.alice.name, 
                     [
+                        ['nodeid', null],               //联盟节点编号
+                        ['aliancename', null],          //联盟名称
                         ['page', 1],                    //可选项，指定显示页数
                         ['size', 10],                   //可选项，指定每页条数
                         ['source.cluster', env.cp.id],  //可选项，精确指定簇值，'source.cluster'表示是二级属性
@@ -170,6 +175,8 @@ describe('意愿存证', function() {
                     env.cp.id, 
                     env.alice.name, 
                     [
+                        ['nodeid', null],               //联盟节点编号
+                        ['aliancename', null],          //联盟名称
                         ['page', 1], 
                         ['size', 10],
                     ]
