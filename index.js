@@ -65,27 +65,6 @@ const node = new FullNode({
 
   await node.ensure();
   await node.open();
-
-  const wdb = node.require('walletdb');
-  if (wdb) {
-
-    wdb.on('prop/receive', msg => {
-      //console.log('prop/receive:', msg);
-    });
-
-    wdb.on('prop/auction', msg => {
-      //console.log('prop/auction:', msg);
-    });
-
-    wdb.on('cp/orderPay', msg => {
-      //console.log('cp/orderPay:', msg);
-    });
-
-    wdb.on('balance.client', msg => {
-      //console.log('balance.client', msg);
-    });
-  }
-
   await node.connect();
   node.startSync();
   
@@ -162,6 +141,22 @@ const node = new FullNode({
           ],
         }).catch(e=>{});
       }
+    });
+
+    wdb.on('prop/receive', msg => {
+      //console.log('prop/receive:', msg);
+    });
+
+    wdb.on('prop/auction', msg => {
+      //console.log('prop/auction:', msg);
+    });
+
+    wdb.on('cp/orderPay', msg => {
+      //console.log('cp/orderPay:', msg);
+    });
+
+    wdb.on('balance.client', msg => {
+      //console.log('balance.client', msg);
     });
   }
 
