@@ -1,6 +1,6 @@
 {
   "name": "gamegoldnode",
-  "version": "2.4.0",
+  "version": "2.5.1",
   "description": "Vallnet Node",
   "main": "index.js",
   "scripts": {
