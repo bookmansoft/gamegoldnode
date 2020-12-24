@@ -86,6 +86,18 @@ const node = new FullNode({
   });
   //#endregion
 
+  //#region 订阅链库模块抛出的消息 
+  node.on('ca.issue.aliance', async msg => {
+    if(enKafka) {
+      producer.send({
+        topic: kafka.extraParams.topic,
+        messages: [
+          { value: JSON.stringify(msg) },
+        ],
+      }).catch(e=>{});
+    }
+  });
+
   // node.on('ca.issue', async msg => {
   //   if(enKafka) {
   //     producer.send({
@@ -129,20 +141,10 @@ const node = new FullNode({
   //     }).catch(e=>{});
   //   }    
   // });
+  //#endregion
 
   const wdb = node.require('walletdb');
   if (wdb) {
-    wdb.on('ca.issue.wallet', msg => {
-      if(enKafka) {
-        producer.send({
-          topic: kafka.extraParams.topic,
-          messages: [
-            { value: JSON.stringify(msg) },
-          ],
-        }).catch(e=>{});
-      }
-    });
-
     wdb.on('prop/receive', msg => {
       //console.log('prop/receive:', msg);
     });
