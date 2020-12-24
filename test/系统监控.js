@@ -24,10 +24,10 @@ describe('意愿存证', function() {
 
     it('系统信息', async () => {
         while(true) {
-            let ret = await remote.execute('block.tips', []);
+            let ret = await remote.execute('block.count', []);
             console.log('master', ret);
     
-            ret = await remoteSlaver.execute('block.tips', []);
+            ret = await remoteSlaver.execute('block.count', []);
             console.log('slaver', ret);
 
             await remote.wait(3000);
