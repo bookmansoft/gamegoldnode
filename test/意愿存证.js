@@ -6,8 +6,8 @@
 const uuid = require('uuid/v1')
 const assert = require('assert');
 const remote = (require('../lib/remote/connector'))({
-    // ip: '127.0.0.1',
-    // port: 2122,
+    //ip: '127.0.0.1',
+    //port: 2112,
 });
 const gamegold = require('gamegold');
 const digest = gamegold.crypto.digest;
