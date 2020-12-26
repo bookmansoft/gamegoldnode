@@ -73,7 +73,7 @@
 <p>GIP0005 定义了玩家如何利用自己的钱包，向游戏传递互信的协议和流程，包括：
 1、认证：玩家钱包向游戏签发证书，游戏可以离线验证该证书，并获得玩家的可信信息
 2、授权：游戏根据证书信息，将链上资产和游戏内资产进行同步，之后玩家就可以在游戏内支配已确权的资产</p>
-</div></div><div data-title="token.user" class="keyline-top section contain clearfix " data-reactid="54"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="55"><h3 id="tokenuser">token.user</h3>
+</div></div><div data-title="user.token" class="keyline-top section contain clearfix " data-reactid="54"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="55"><h3 id="tokenuser">user.token</h3>
 <p>游戏客户端向钱包申领指定用户的登录令牌: 输入游戏编号和玩家编号，输出令牌对象。</p>
 <table>
 <thead>
@@ -1127,15 +1127,15 @@ ip是备用IP地址，支持IPV4和IPV6两种格式，在url无效的情况下�
 <p>2、特约全节点在特定事件（如支付确认等）发生时，会通过CP注册信息中的URL地址，向CP提交事件通知, 如下所示：</p>
 </div></div><div data-title="RPC通讯指令列表" class="keyline-top section contain clearfix " data-reactid="144"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="145"><h2 id="rpc通讯指令列表">RPC通讯指令列表</h2>
 </div></div><div data-title="客户端认证登录流程" class="keyline-top section contain clearfix " data-reactid="146"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="147"><h3 id="客户端认证登录流程">客户端认证登录流程</h3>
-<p>主要涉及指令： token.user game_id user_id open_id</p>
+<p>主要涉及指令： user.token game_id user_id open_id</p>
 <p>1、页游</p>
 <p>泛指运行于浏览器内的页面游戏，包括Flash游戏、HTML5游戏，运行环境包括PC、手机等</p>
 <ul>
 <li>页游客户端将随机用户码和CP编码，打包并生成二维码并显示在屏幕上</li>
 </ul>
 <ul>
-<li>钱包APP扫码后，在本地执行 token.user 指令，将生成的令牌以GET方式送入游戏服务器</li>
-<li>微信小程序扫码后，将信息送至小程序服务端，在服务端执行 token.user 指令，再将生成的令牌以GET方式送入游戏服务器
+<li>钱包APP扫码后，在本地执行 user.token 指令，将生成的令牌以GET方式送入游戏服务器</li>
+<li>微信小程序扫码后，将信息送至小程序服务端，在服务端执行 user.token 指令，再将生成的令牌以GET方式送入游戏服务器
 两者的区别是：
 钱包APP用HD钱包技术，本地生成并管理所有的地址。
 微信小程序则在服务端采用HD钱包技术，远程管理所有的地址，用户相关地址记录于和他的openid同名的账户下。
