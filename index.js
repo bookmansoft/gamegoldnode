@@ -86,7 +86,26 @@ const node = new FullNode({
   });
   //#endregion
 
-  //#region 订阅链库模块抛出的消息 
+  //#region 订阅链库模块抛出的消息
+  node.on('chain.connect', (entry, block) => {
+    if(enKafka) {
+      let blockId = entry.rhash();    //到达的区块的哈希值(作为区块唯一标识)
+      let curHeight = entry.height;   //到达的区块的高度
+      producer.send({
+        topic: kafka.extraParams.topic,
+        messages: [
+          {
+            value: JSON.stringify({
+              oper: 'block',
+              id: blockId,
+              height: curHeight, 
+            })
+          },
+        ],
+      }).catch(e=>{});
+    }
+  });
+
   node.on('ca.issue.aliance', async msg => {
     if(enKafka) {
       producer.send({
