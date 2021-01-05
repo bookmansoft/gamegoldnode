@@ -25,7 +25,14 @@ let env = {
         pubkey: '',                         //企业证书地址公钥，初始为空
         erid:'',                            //缓存生成的存证编号，初始为空
     },
-    content: 'hello world',                 //存证原始内容
+    get randomHash() {
+		//生成真实意愿存证文件的哈希值，是对原始信息进行了两次标准 SHA256 运算所得结果
+		return digest.hash256(Buffer.from(uuid())).toString('hex');
+    },
+    get sameHash() {
+		//生成真实意愿存证文件的哈希值，是对原始信息进行了两次标准 SHA256 运算所得结果
+		return digest.hash256(Buffer.from('helloworld')).toString('hex');
+    }
 };
 
 describe('意愿存证', function() {
@@ -74,15 +81,12 @@ describe('意愿存证', function() {
         assert(env.cp.name == ret.name); //断言名称相吻合
     });
 
-    it('用户签发意愿存证', async () => {
-		//生成真实意愿存证文件的哈希值，是对原始信息进行了两次标准 SHA256 运算所得结果
-		let hash = digest.hash256(Buffer.from(env.content)).toString('hex');
-
+    it('用户签发意愿存证 - 成功', async () => {
 		//签发意愿存证
         let ret = await remote.execute('ca.issue', [
             {
                 name: env.alice.name,   //证书名称，可置空
-                hash: hash,             //存证内容哈希
+                hash: env.sameHash,     //存证内容哈希
                 height: 0,              //相对有效期，即当前高度往前推定指定区块。填0表示使用默认相对有效期
                 cluster: env.cp.id,     //簇值
             },
@@ -92,9 +96,23 @@ describe('意愿存证', function() {
 		assert(ret.erid);               //断言正确生成了存证编号
         env.alice.erid = ret.erid;      //从返回值中获取存证编号
 
-		//确保存证上链
+        //确保存证上链
         await remote.execute('miner.generate.admin', [1]);
         await remote.wait(1000);
+    });
+
+    it('用户签发意愿存证 - 因为哈希冲突而失败', async () => {
+        let ret = await remote.execute('ca.issue', [
+            {
+                name: env.alice.name,   //证书名称，可置空
+                hash: env.sameHash,     //存证内容哈希
+                height: 0,              //相对有效期，即当前高度往前推定指定区块。填0表示使用默认相对有效期
+                cluster: env.cp.id,     //簇值
+            },
+            env.alice.name,             //见证用户
+            env.cp.id,                  //CPID
+        ]);
+		assert(ret.error);              //断言哈希冲突
     });
 
     it('查询存证：根据存证编号查询存证', async () => {
@@ -168,14 +186,11 @@ describe('意愿存证', function() {
     });
 
     it('用户签发意愿存证', async () => {
-		//生成真实意愿存证文件的哈希值，是对原始信息进行了两次标准 SHA256 运算所得结果
-		let hash = digest.hash256(Buffer.from(env.content)).toString('hex');
-
 		//签发意愿存证
         let ret = await remote.execute('ca.issue', [
             {
                 name: env.alice.name,   //存证名称
-                hash: hash,             //存证内容哈希
+                hash: env.randomHash,   //存证内容哈希
                 height: 2,              //相对有效期，填0表示使用默认值
                 cluster: env.cp.id,     //簇值
             },
@@ -218,14 +233,11 @@ describe('意愿存证', function() {
     it('用户签发意愿存证 - 失败', async () => {
         await remote.wait(3000); //钱包库同步需要一些时间
 
-        //生成真实意愿存证文件的哈希值，是对原始信息进行了两次标准 SHA256 运算所得结果
-		let hash = digest.hash256(Buffer.from(env.content)).toString('hex');
-
 		//签发意愿存证
         let ret = await remote.execute('ca.issue', [
             {
                 name: env.alice.name,   //存证名称
-                hash: hash,             //存证内容哈希
+                hash: env.randomHash,   //存证内容哈希
                 height: 5,              //相对有效期，填0表示使用默认值
                 cluster: env.cp.id,     //簇值
             },
