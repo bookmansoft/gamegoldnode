@@ -69,4 +69,5 @@ backup.txt
 package-lock.json
 testnet-genesis.params
 .gamegold/client/
+.gamegold/client2/
 lib/kafka/cert
