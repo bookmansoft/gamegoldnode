@@ -12,8 +12,9 @@ const gamegold = require('gamegold');
 const digest = gamegold.crypto.digest;
 
 let env = null;
+let blockHeight = 0;
 
-describe('意愿存证', function() {
+describe('压力测试 - 意愿存证', function() {
     /**
      * 单元测试模块前置处理流程
      */
@@ -21,9 +22,10 @@ describe('意愿存证', function() {
         //强制设定链态的状态为：数据同步已完成
         await remote.execute('miner.setsync.admin', [true]);
         //确保链态的区块高度达到100以上，以有效激活通证
-        let ret = await remote.execute('block.tips', []);
-        if(ret[0].height < 100) {
-            await remote.execute('miner.generate.admin', [100 - ret[0].height]);
+        let ret = await remote.execute('block.count', []);
+        blockHeight = ret;
+        if(blockHeight < 100) {
+            await remote.execute('miner.generate.admin', [100 - blockHeight]);
         }
         await remote.wait(1000);
     });
@@ -53,6 +55,9 @@ describe('意愿存证', function() {
                 content: 'hello world',                 //存证原始内容
             };
 
+            let r = await remote.execute('block.count', []);
+            blockHeight = r;
+
             //注册一个新的CP
             let ret = await remote.execute('cp.create', [
                 env.cp.name, 
@@ -62,11 +67,18 @@ describe('意愿存证', function() {
             env.cp.id = ret.cid;             //填充企业证书编号
             env.cp.address = ret.pubAddress; //填充企业证书地址
             env.cp.pubkey = ret.pubKey;      //填充企业证书地址公钥
+
+            while(true) {
+                let rt = await remote.execute('block.count', []);
+                if(rt > blockHeight) {
+                    blockHeight = rt;
+                    break;
+                }
+                await remote.wait(2000);
+            }
         });
 
         it('核心节点查询企业证书', async () => {
-            await remote.wait(180000);
-
             //查询并打印CP信息, 注意在CP数据上链前，查询将得不到正确结果
             let ret = await remote.execute('cp.byName', [
                 env.cp.name
@@ -75,6 +87,9 @@ describe('意愿存证', function() {
         });
 
         it('用户签发意愿存证', async () => {
+            let r = await remote.execute('block.count', []);
+            blockHeight = r;
+
             //生成真实意愿存证文件的哈希值，是对原始信息进行了两次标准 SHA256 运算所得结果
             let hash = digest.hash256(Buffer.from(env.content)).toString('hex');
     
@@ -92,8 +107,14 @@ describe('意愿存证', function() {
             assert(ret.erid);               //断言正确生成了存证编号
             env.alice.erid = ret.erid;      //从返回值中获取存证编号
     
-            //确保存证上链
-            await remote.wait(180000);
+            while(true) {
+                let rt = await remote.execute('block.count', []);
+                if(rt > blockHeight) {
+                    blockHeight = rt;
+                    break;
+                }
+                await remote.wait(2000);
+            }
         });
     
         it('查询存证：根据存证编号查询存证内容', async () => {
@@ -135,6 +156,9 @@ describe('意愿存证', function() {
         });
     
         it('废止存证：用户废止先前签发的意愿存证', async () => {
+            let r = await remote.execute('block.count', []);
+            blockHeight = r;
+
             //注意：入参现为二维数组形式，可一次性发起多笔废止交易
             let ret = await remote.execute('ca.abolish', [
                 [
@@ -148,7 +172,14 @@ describe('意愿存证', function() {
             ]);
             assert(!ret.error);
     
-            await remote.wait(180000);
+            while(true) {
+                let rt = await remote.execute('block.count', []);
+                if(rt > blockHeight) {
+                    blockHeight = rt;
+                    break;
+                }
+                await remote.wait(2000);
+            }
         });
     
         it('查询废止：查询存证废止列表', async () => {

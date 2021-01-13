@@ -6,8 +6,8 @@
 const uuid = require('uuid/v1')
 const assert = require('assert');
 const remote = (require('../lib/remote/connector'))({
-    //ip: '127.0.0.1',
-    //port: 2112,
+    ip: '127.0.0.1',
+    port: 2102,
 });
 const gamegold = require('gamegold');
 const digest = gamegold.crypto.digest;
@@ -43,9 +43,9 @@ describe('意愿存证', function() {
         //强制设定链态的状态为：数据同步已完成
         await remote.execute('miner.setsync.admin', [true]);
         //确保链态的区块高度达到100以上，以有效激活通证
-        let ret = await remote.execute('block.tips', []);
-        if(ret[0].height < 100) {
-            await remote.execute('miner.generate.admin', [100 - ret[0].height]);
+        let ret = await remote.execute('block.count', []);
+        if(ret < 100) {
+            await remote.execute('miner.generate.admin', [100 - ret]);
         }
         await remote.wait(1000);
     });
