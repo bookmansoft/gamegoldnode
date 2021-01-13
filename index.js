@@ -26,8 +26,6 @@ if (process.argv.indexOf('--version') !== -1 || process.argv.indexOf('-v') !== -
 const gamegold = require('gamegold');
 const startproxy = require('./lib/proxy/startproxy');
 const FullNode = gamegold.fullnode;
-const kafka = require('./lib/kafka/connector');
-let producer = null;
 const connector = require('./lib/remote/connector');
 
 const node = new FullNode({
@@ -68,11 +66,6 @@ const node = new FullNode({
   await node.connect();
   node.startSync();
   
-  const enKafka = node.config.args.kafka;
-
-  //通过传入 true/false 开启/关闭挖矿
-  await node.rpc.execute({method:'miner.set.admin',params:[false]});
-
   if(node.miner && (!node.miner.addresses || node.miner.addresses.length==0)) {
     await node.rpc.execute({method:'miner.setsync.admin',params:[]});
     await node.rpc.execute({method:'miner.setaddr.admin',params:[]});
@@ -84,82 +77,6 @@ const node = new FullNode({
     pow: process.argv.indexOf('--pow') !== -1,
     ports: [2000, 2100],
   });
-  //#endregion
-
-  //#region 订阅链库模块抛出的消息
-  node.on('chain.connect', (entry, block) => {
-    if(enKafka) {
-      let blockId = entry.rhash();    //到达的区块的哈希值(作为区块唯一标识)
-      let curHeight = entry.height;   //到达的区块的高度
-      producer.send({
-        topic: kafka.extraParams.topic,
-        messages: [
-          {
-            value: JSON.stringify({
-              oper: 'block',
-              id: blockId,
-              height: curHeight, 
-            })
-          },
-        ],
-      }).catch(e=>{});
-    }
-  });
-
-  node.on('ca.issue.aliance', async msg => {
-    if(enKafka) {
-      producer.send({
-        topic: kafka.extraParams.topic,
-        messages: [
-          { value: JSON.stringify(msg) },
-        ],
-      }).catch(e=>{});
-    }
-  });
-
-  // node.on('ca.issue', async msg => {
-  //   if(enKafka) {
-  //     producer.send({
-  //       topic: kafka.extraParams.topic,
-  //       messages: [
-  //         { value: JSON.stringify(msg) },
-  //       ],
-  //     }).catch(e=>{});
-  //   }
-  // });
-  
-  // node.on('ca.abolish', async msg => {
-  //   if(enKafka) {
-  //     producer.send({
-  //       topic: kafka.extraParams.topic,
-  //       messages: [
-  //         { value: JSON.stringify(msg) },
-  //       ],
-  //     }).catch(e=>{});
-  //   }
-  // });
-
-  // node.on('ca.unissue', async msg => {
-  //   if(enKafka) { 
-  //     producer.send({
-  //       topic: kafka.extraParams.topic,
-  //       messages: [
-  //         { value: JSON.stringify(msg) },
-  //       ],
-  //     }).catch(e=>{});
-  //   }
-  // });
-  
-  // node.on('ca.unabolish', async msg => {
-  //   if(enKafka) { 
-  //     producer.send({
-  //       topic: kafka.extraParams.topic,
-  //       messages: [
-  //         { value: JSON.stringify(msg) },
-  //       ],
-  //     }).catch(e=>{});
-  //   }    
-  // });
   //#endregion
 
   const wdb = node.require('walletdb');
@@ -240,27 +157,6 @@ const node = new FullNode({
   } 
   await remoteConn();
 
-  //#endregion
-
-  //#region 建立kafka连接
-  if(enKafka) { 
-    let $ktime = 30000;
-    producer = kafka.producer();
-    let connecting = async () => {
-      producer.connect().catch(err => {
-        $ktime += 3000;
-        setTimeout(connecting, $ktime);
-      });
-    } 
-
-    await connecting();
-
-    producer.on(producer.events.DISCONNECT, e => { //断线重连
-      $ktime = 30000;
-      connecting();
-    });
-  }
-  
   //#endregion
 })().catch((err) => {
   console.error(err.stack);
