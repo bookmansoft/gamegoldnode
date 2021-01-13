@@ -63,7 +63,7 @@ describe('意愿存证', function() {
             env.cp.address = ret.pubAddress; //填充企业证书地址
             env.cp.pubkey = ret.pubKey;      //填充企业证书地址公钥
 
-            await remote.wait(100000);
+            await remote.wait(150000);
         });
 
         it('核心节点查询企业证书', async () => {
@@ -94,7 +94,7 @@ describe('意愿存证', function() {
                 env.alice.erid = ret.erid;      //从返回值中获取存证编号
         
                 //确保存证上链
-                await remote.wait(100000);
+                await remote.wait(150000);
             });
         
             it('查询存证：根据存证编号查询存证内容', async () => {
@@ -149,7 +149,7 @@ describe('意愿存证', function() {
                 ]);
                 assert(!ret.error);
         
-                await remote.wait(100000);
+                await remote.wait(150000);
             });
         
             it('查询废止：查询存证废止列表', async () => {
@@ -185,7 +185,7 @@ describe('意愿存证', function() {
                     assert(ret.erid);               //断言正确生成了存证编号
                 }
         
-                await remote.wait(100000);
+                await remote.wait(150000);
             });
         }
     
@@ -210,7 +210,7 @@ describe('意愿存证', function() {
             env.alice.erid = ret.erid;
     
             //确保存证上链
-            await remote.wait(100000);
+            await remote.wait(150000);
         });
     
         it('验证存证：验证存证的有效性 - 成功', async () => {
@@ -227,7 +227,7 @@ describe('意愿存证', function() {
         });
     
         it('用户签发意愿存证 - 失败', async () => {
-            await remote.wait(100000);
+            await remote.wait(150000);
     
             //生成真实意愿存证文件的哈希值，是对原始信息进行了两次标准 SHA256 运算所得结果
             let hash = digest.hash256(Buffer.from(env.content)).toString('hex');
