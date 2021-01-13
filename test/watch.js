@@ -38,6 +38,8 @@ describe('系统监控', function() {
                 ret = await remoteSlaver2.execute('block.count', []);
                 console.log('slaver2', ret);
 
+                console.log('-------------------------');
+
                 await remote.wait(3000);
             } catch(e) {
             }
