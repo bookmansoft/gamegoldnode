@@ -76,6 +76,7 @@ describe('压力测试 - 意愿存证', function() {
                 }
                 await remote.wait(2000);
             }
+            await remote.wait(2000);
         });
 
         it('核心节点查询企业证书', async () => {
@@ -115,6 +116,7 @@ describe('压力测试 - 意愿存证', function() {
                 }
                 await remote.wait(2000);
             }
+            await remote.wait(2000);
         });
     
         it('查询存证：根据存证编号查询存证内容', async () => {
@@ -180,6 +182,7 @@ describe('压力测试 - 意愿存证', function() {
                 }
                 await remote.wait(2000);
             }
+            await remote.wait(2000);
         });
     
         it('查询废止：查询存证废止列表', async () => {
