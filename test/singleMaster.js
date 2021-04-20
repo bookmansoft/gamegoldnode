@@ -44,23 +44,23 @@
      });
  
      it('核心节点为企业注册证书', async () => {
-        // //注册一个新的CP
-        // let ret = await remote.execute('cp.create', [
-        //     env.cp.name, 
-        //     '127.0.0.1'
-        // ]);
-        // assert(!ret.error);
-        // env.cp.id = ret.cid;             //填充企业证书编号
-        // env.cp.address = ret.pubAddress; //填充企业证书地址
-        // env.cp.pubkey = ret.pubKey;      //填充企业证书地址公钥
+        //注册一个新的CP
+        let ret = await remote.execute('cp.create', [
+            env.cp.name, 
+            '127.0.0.1'
+        ]);
+        assert(!ret.error);
+        env.cp.id = ret.cid;             //填充企业证书编号
+        env.cp.address = ret.pubAddress; //填充企业证书地址
+        env.cp.pubkey = ret.pubKey;      //填充企业证书地址公钥
  
-        // //确保该CP数据上链
-        // await remote.execute('miner.generate.admin', [1]);
-        // await remote.wait(1000);
+        //确保该CP数据上链
+        await remote.execute('miner.generate.admin', [1]);
+        await remote.wait(1000);
  
-        env.cp.id = 'a73b7880-7ca6-11eb-b7e4-61db8602893d';             //填充企业证书编号
-        env.cp.address = 'tb1qhzpv7fenkhgjjzz6cvzugk4x0cqlm86p3tuuae'; //填充企业证书地址
-        env.cp.pubkey = '02aac8afca7b1a550262e58e449a3abf4b4dda42985737bce584c54c71df2c86ef';      //填充企业证书地址公钥
+        // env.cp.id = 'a73b7880-7ca6-11eb-b7e4-61db8602893d';             //填充企业证书编号
+        // env.cp.address = 'tb1qhzpv7fenkhgjjzz6cvzugk4x0cqlm86p3tuuae'; //填充企业证书地址
+        // env.cp.pubkey = '02aac8afca7b1a550262e58e449a3abf4b4dda42985737bce584c54c71df2c86ef';      //填充企业证书地址公钥
 	});
   
      for(let i = 0; i < 50000; i++) {

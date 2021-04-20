@@ -19,15 +19,25 @@ describe('系统监控', function() {
     });
 
     it('系统信息', async () => {
+        let rt, ret = {};
         while(true) {
-            try {
-                let ret = await remote.execute('block.count', []);
-                console.log('master', ret);
-                console.log('-------------------------');
+                try {
+                    rt = await remote.execute('block.count', []);
+                    ret.hi = rt;
+    
+                    rt = await remote.execute('mempool.info', []);
+                    ret.orp = rt.orphans;
+                    ret.ms = rt.size;
+                    ret.mb = rt.bytes;
+    
+                    rt = await remote.execute('tx.pending.count', []);
+                    ret.pend = rt;
+    
+                    console.log('master', ret);
+					console.log('----------------------------------------------------------------');
 
-                await remote.wait(3000);
-            } catch(e) {
-            }
+                    await remote.wait(3000);
+                } catch(e) {}
         }
      });
 });
