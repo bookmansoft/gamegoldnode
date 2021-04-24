@@ -20,7 +20,7 @@ describe('系统监控', function() {
     it('系统信息', async () => {
         while(true) {
             try {
-                let rt, ret = {}, retSlaver = {};
+                let rt, ret = {}, retC1 = {}, retC2 = {};
 
                 try {
                     const remoteSlaver = (require('../lib/remote/connector'))({
@@ -29,17 +29,37 @@ describe('系统监控', function() {
                     });
 
                     rt = await remoteSlaver.execute('block.count', []);
-                    retSlaver.hi = rt;
+                    retC1.hi = rt;
                         
                     rt = await remoteSlaver.execute('mempool.info', []);
-                    retSlaver.orp = rt.orphans;
-                    retSlaver.ms = rt.size;
-                    retSlaver.mb = rt.bytes;
+                    retC1.orp = rt.orphans;
+                    retC1.ms = rt.size;
+                    retC1.mb = rt.bytes;
     
                     rt = await remoteSlaver.execute('tx.pending.count', []);
-                    retSlaver.pend = rt;
+                    retC1.pend = rt;
     
-                    console.log('slaver', retSlaver);
+                    console.log('C1', retC1);
+                } catch(e) {}
+
+                try {
+                    const remoteSlaver1 = (require('../lib/remote/connector'))({
+                        ip: '127.0.0.1',
+                        port: 2122,
+                    });
+
+                    rt = await remoteSlaver1.execute('block.count', []);
+                    retC2.hi = rt;
+                        
+                    rt = await remoteSlaver1.execute('mempool.info', []);
+                    retC2.orp = rt.orphans;
+                    retC2.ms = rt.size;
+                    retC2.mb = rt.bytes;
+    
+                    rt = await remoteSlaver1.execute('tx.pending.count', []);
+                    retC2.pend = rt;
+    
+                    console.log('C2', retC2);
                 } catch(e) {}
 
                 try {
@@ -56,7 +76,7 @@ describe('系统监控', function() {
                     rt = await remote.execute('tx.pending.count', []);
                     ret.pend = rt;
     
-                    console.log('master', ret);
+                    console.log('M0', ret);
 					console.log('----------------------------------------------------------------');
 
                     await remote.wait(3000);
