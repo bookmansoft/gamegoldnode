@@ -44,6 +44,13 @@
      });
  
      it('核心节点为企业注册证书', async () => {
+        await remote.execute('miner.setsync.admin', [true]);
+        let ret = await remote.execute('block.tips', []);
+        if(ret.result[0].height < 100) {
+            await remote.execute('miner.generate.admin', [100 - ret.result[0].height]);
+        }
+        await remote.wait(500);
+
         //注册一个新的CP
         let ret = await remote.execute('cp.create', [
             env.cp.name, 
