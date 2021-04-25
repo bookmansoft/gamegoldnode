@@ -7,7 +7,7 @@
  const assert = require('assert');
  const remote = (require('../lib/remote/connector'))({
      ip: '127.0.0.1',
-     port: 2112,
+     port: 2102,
  });
  const gamegold = require('gamegold');
  const digest = gamegold.crypto.digest;
@@ -46,13 +46,13 @@
      it('核心节点为企业注册证书', async () => {
         await remote.execute('miner.setsync.admin', [true]);
         let ret = await remote.execute('block.tips', []);
-        if(ret.result[0].height < 100) {
-            await remote.execute('miner.generate.admin', [100 - ret.result[0].height]);
+        if(ret[0].height < 100) {
+            await remote.execute('miner.generate.admin', [100 - ret[0].height]);
         }
         await remote.wait(500);
 
         //注册一个新的CP
-        let ret = await remote.execute('cp.create', [
+        ret = await remote.execute('cp.create', [
             env.cp.name, 
             '127.0.0.1'
         ]);
@@ -68,7 +68,7 @@
         // env.cp.id = 'a73b7880-7ca6-11eb-b7e4-61db8602893d';             //填充企业证书编号
         // env.cp.address = 'tb1qhzpv7fenkhgjjzz6cvzugk4x0cqlm86p3tuuae'; //填充企业证书地址
         // env.cp.pubkey = '02aac8afca7b1a550262e58e449a3abf4b4dda42985737bce584c54c71df2c86ef';      //填充企业证书地址公钥
-	});
+    });
   
      for(let i = 0; i < 50000; i++) {
          it(`用户签发意愿存证 - 成功`, async () => {
@@ -89,4 +89,3 @@
          });
      }
  });
- 
