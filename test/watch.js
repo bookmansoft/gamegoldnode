@@ -10,12 +10,6 @@ let env = {
 };
 
 describe('系统监控', function() {
-    /**
-     * 单元测试模块后置处理流程
-     */
-    after(() => {
-        remote.close();
-    });
 
     it('系统信息', async () => {
         while(true) {
@@ -35,32 +29,36 @@ describe('系统监控', function() {
                     retC1.orp = rt.orphans;
                     retC1.ms = rt.size;
                     retC1.mb = rt.bytes;
-    
+
                     rt = await remoteSlaver.execute('tx.pending.count', []);
                     retC1.pend = rt;
-    
+
                     console.log('C1', retC1);
+                    //await remoteSlaver.wait(2000);
                 } catch(e) {}
 
-                try {
-                    const remoteSlaver1 = (require('../lib/remote/connector'))({
-                        ip: '127.0.0.1',
-                        port: 2122,
-                    });
+                // try {
+                //     const remoteSlaver1 = (require('../lib/remote/connector'))({
+                //         ip: '127.0.0.1',
+                //         port: 2111,
+                //     });
 
-                    rt = await remoteSlaver1.execute('block.count', []);
-                    retC2.hi = rt;
+                //     rt = await remoteSlaver1.execute('block.count', []);
+                //     retC2.hi = rt;
                         
-                    rt = await remoteSlaver1.execute('mempool.info', []);
-                    retC2.orp = rt.orphans;
-                    retC2.ms = rt.size;
-                    retC2.mb = rt.bytes;
-    
-                    rt = await remoteSlaver1.execute('tx.pending.count', []);
-                    retC2.pend = rt;
-    
-                    console.log('C2', retC2);
-                } catch(e) {}
+                //     rt = await remoteSlaver1.execute('mempool.info', []);
+                //     retC2.orp = rt.orphans;
+                //     retC2.ms = rt.size;
+                //     retC2.mb = rt.bytes;
+                //     retC2.orp = 0;
+                //     retC2.ms = 0;
+                //     retC2.mb = 0;
+
+                //     rt = await remoteSlaver1.execute('tx.pending.count', []);
+                //     retC2.pend = rt;
+
+                //     console.log('S1', retC2);
+                // } catch(e) {}
 
                 try {
                     const remote = (require('../lib/remote/connector'))();
@@ -79,7 +77,7 @@ describe('系统监控', function() {
                     console.log('M0', ret);
 					console.log('----------------------------------------------------------------');
 
-                    await remote.wait(3000);
+                    await remote.wait(2000);
                 } catch(e) {}
 
             } catch(e) {

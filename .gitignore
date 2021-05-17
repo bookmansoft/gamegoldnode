@@ -71,3 +71,4 @@ testnet-genesis.params
 .gamegold/client/
 .gamegold/client2/
 lib/kafka/cert
+docs/vallnet.md

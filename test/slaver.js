@@ -7,7 +7,7 @@
  const assert = require('assert');
  const remote = (require('../lib/remote/connector'))({
      ip: '127.0.0.1',
-     port: 2102,
+     port: 2112,
  });
  const gamegold = require('gamegold');
  const digest = gamegold.crypto.digest;
@@ -35,39 +35,34 @@
      }
  };
  
+ let recy = 300000;
+ 
  describe('意愿存证', function() {
-     /**
-      * 单元测试模块后置处理流程
-      */
  
      it('核心节点为企业注册证书', async () => {
-        // await remote.execute('miner.setsync.admin', [true]);
-        // let ret = await remote.execute('block.tips', []);
-        // if(ret[0].height < 100) {
-            // await remote.execute('miner.generate.admin', [100 - ret[0].height]);
-        // }
-        // await remote.wait(500);
+        let ret = await remote.execute('block.tips', []);
+        assert(ret[0].height >= 100);
 
-        // //注册一个新的CP
-        // ret = await remote.execute('cp.create', [
-            // env.cp.name, 
-            // '127.0.0.1'
-        // ]);
-        // assert(!ret.error);
-        // env.cp.id = ret.cid;             //填充企业证书编号
-        // env.cp.address = ret.pubAddress; //填充企业证书地址
-        // env.cp.pubkey = ret.pubKey;      //填充企业证书地址公钥
- 
-        // //确保该CP数据上链
-        // await remote.execute('miner.generate.admin', [1]);
-        // await remote.wait(1000);
- 
-        env.cp.id = '70d3dd30-aa84-11eb-bf85-4d315b27b84e';             //填充企业证书编号
-        env.cp.address = 'tb1qp0949pppkcwdvllw97e8z05qqh7x0dglqer6xr'; //填充企业证书地址
-        env.cp.pubkey = '0283774e7028af496c6556f0675d2e6a79976665350ebb6e337680046dbbe9ecc9';      //填充企业证书地址公钥
+        //注册一个新的CP
+        ret = await remote.execute('cp.create', [
+            env.cp.name, 
+            '127.0.0.1'
+        ]);
+        assert(!ret.error);
+
+        //确保该CP数据上链
+        await remote.wait(120000);
+
+        env.cp.id = ret.cid;             //填充企业证书编号
+        env.cp.address = ret.pubAddress; //填充企业证书地址
+        env.cp.pubkey = ret.pubKey;      //填充企业证书地址公钥
+
+        // env.cp.id = '70d3dd30-aa84-11eb-bf85-4d315b27b84e';             //填充企业证书编号
+        // env.cp.address = 'tb1qp0949pppkcwdvllw97e8z05qqh7x0dglqer6xr'; //填充企业证书地址
+        // env.cp.pubkey = '0283774e7028af496c6556f0675d2e6a79976665350ebb6e337680046dbbe9ecc9';      //填充企业证书地址公钥
     });
   
-     for(let i = 0; i < 300000; i++) {
+     for(let i = 0; i < recy; i++) {
          it(`用户签发意愿存证 - 成功`, async () => {
              console.time('issue');
              //签发意愿存证
