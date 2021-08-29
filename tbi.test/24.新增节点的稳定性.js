@@ -26,12 +26,12 @@ const uuid = require('uuid/v1')
 
 const remote = connector({
     ip: notes[0].ip,        //RPC地址
-    port: notes[0].port,    //RPC端口
+    port: notes[0].rpc,    //RPC端口
 });
 
 const remote1 = connector({
     ip: notes[1].ip,        //RPC地址
-    port: notes[1].port,    //RPC端口
+    port: notes[1].rpc,    //RPC端口
 });
 
 let timers = [];
@@ -105,7 +105,7 @@ describe('新增节点的稳定性', () => {
 
         let recy = true;
         while(recy) {
-            let ret = await remote.execute('sys.aliance.create', ['bookmansoft', 1, 'mchain', '127.0.0.1:2110']);
+            let ret = await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}${notes[1].tcp}`]);
             assert(!ret.error);
             await remote.wait(2000);
 

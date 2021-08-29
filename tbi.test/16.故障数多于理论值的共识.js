@@ -23,7 +23,7 @@ const {notes} = require('../lib/remote/common')
 const remote = connector({
     structured: true,
     ip: notes[2].ip,        //RPC地址
-    port: notes[2].port,    //RPC端口
+    port: notes[2].rpc,    //RPC端口
 });
 
 let env = {

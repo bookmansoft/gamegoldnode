@@ -17,7 +17,7 @@ const {notes} = require('../lib/remote/common')
 const remoteA = connector({
     structured: true,
     ip: notes[0].ip,        //RPC地址
-    port: notes[0].port,    //RPC端口
+    port: notes[0].rpc,    //RPC端口
 });
 
 describe('链上数据存储方式', () => {

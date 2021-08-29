@@ -25,7 +25,7 @@ const {notes} = require('../lib/remote/common')
 const remote = connector({
     structured: true,
     ip: notes[0].ip,        //RPC地址
-    port: notes[0].port,    //RPC端口
+    port: notes[0].rpc,    //RPC端口
 });
 
 const digest = remote.gamegold.crypto.digest;

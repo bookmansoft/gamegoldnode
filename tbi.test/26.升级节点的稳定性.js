@@ -24,12 +24,12 @@ const uuid = require('uuid/v1')
 
 const remote = connector({
     ip: notes[0].ip,        //RPC地址
-    port: notes[0].port,    //RPC端口
+    port: notes[0].rpc,    //RPC端口
 });
 
 const remote1 = connector({
     ip: notes[1].ip,        //RPC地址
-    port: notes[1].port,    //RPC端口
+    port: notes[1].rpc,    //RPC端口
 });
 
 let timers = [];

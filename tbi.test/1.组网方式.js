@@ -7,11 +7,10 @@
     其中A、B节点为共识节点，C、D节点为普通节点
 
     2.展示本测试网络的拓扑结构，标注各角色IP
-    A: 共识节点(IP 127.0.0.1:2100)，以对等网络协议连接B、C、D节点
-    B：共识节点(IP 127.0.0.1:2110)，以对等网络协议连接A、C、D节点
-    C：普通节点(IP 127.0.0.1:2120)，以对等网络协议连接A、B、D节点
-    D：普通节点(IP 127.0.0.1:2130)，以对等网络协议连接A、B、C节点
-    需要补充一张对应的网络拓扑图，标注各节点IP地址
+    A: 共识节点(58.220.61.35(172.16.247.177):2100)，以对等网络协议连接B、C、D节点
+    B：共识节点(58.220.61.36(172.16.247.178):2100)，以对等网络协议连接A、C、D节点
+    C：普通节点(58.220.61.37(172.16.247.179):2100)，以对等网络协议连接A、B、D节点
+    D：普通节点(58.220.61.38(172.16.247.180):2100)，以对等网络协议连接A、B、C节点
 
     测试思路
     针对本项的测试流程，如何设计测试步骤（简要描述）
@@ -26,22 +25,22 @@ const {notes} = require('../lib/remote/common')
 const remoteA = connector({
     structured: true,
     ip: notes[0].ip,        //RPC地址
-    port: notes[0].port,    //RPC端口
+    port: notes[0].rpc,    //RPC端口
 });
 const remoteB = connector({
     structured: true,
     ip: notes[1].ip,        //RPC地址
-    port: notes[1].port,    //RPC端口
+    port: notes[1].rpc,    //RPC端口
 });
 const remoteC = connector({
     structured: true,
     ip: notes[2].ip,        //RPC地址
-    port: notes[2].port,    //RPC端口
+    port: notes[2].rpc,    //RPC端口
 });
 const remoteD = connector({
     structured: true,
     ip: notes[3].ip,        //RPC地址
-    port: notes[3].port,    //RPC端口
+    port: notes[3].rpc,    //RPC端口
 });
   
 describe('组网方式', () => {
@@ -51,7 +50,12 @@ describe('组网方式', () => {
         if(ret.result[0].height < 100) {
             await remoteA.execute('miner.generate.admin', [100 - ret.result[0].height]);
         }
-        await remoteA.wait(500);
+        await remoteA.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}:${notes[1].tcp}`]);
+        await remoteA.execute('sys.aliance.create', ['bookmansoft', notes[2].id, notes[2].aliance, `${notes[2].ip}:${notes[2].tcp}`]);
+        await remoteA.execute('sys.aliance.create', ['bookmansoft', notes[3].id, notes[3].aliance, `${notes[3].ip}:${notes[3].tcp}`]);
+        await remoteA.execute('sys.aliance.refresh', [500000000]);
+        await remoteA.execute('miner.generate.admin', [1]);
+        await remoteA.wait(1000);
     });
 
     /** 连接节点, 查询并获取该节点当前网络拓扑信息, 预期结果：
@@ -64,7 +68,7 @@ describe('组网方式', () => {
 
         console.log(`共识节点${notes[0].name}的网络拓扑结构:`);
         for(let it of ret.result) {
-            console.log(`addresa: ${it.addr}, version: ${it.subver}, services: ${it.services}`);
+            console.log(`address: ${it.addr}, version: ${it.subver}, services: ${it.services}`);
         }
     });
     it(`连接节点${notes[1].name}, 查询并获取该节点当前网络拓扑信息`, async () => {
@@ -73,7 +77,7 @@ describe('组网方式', () => {
 
         console.log(`共识节点${notes[1].name}的网络拓扑结构:`);
         for(let it of ret.result) {
-            console.log(`addresa: ${it.addr}, version: ${it.subver}, services: ${it.services}`);
+            console.log(`address: ${it.addr}, version: ${it.subver}, services: ${it.services}`);
         }
     });
     it(`连接节点${notes[2].name}, 查询并获取该节点当前网络拓扑信息`, async () => {
@@ -82,7 +86,7 @@ describe('组网方式', () => {
 
         console.log(`共识节点${notes[2].name}的网络拓扑结构:`);
         for(let it of ret.result) {
-            console.log(`addresa: ${it.addr}, version: ${it.subver}, services: ${it.services}`);
+            console.log(`address: ${it.addr}, version: ${it.subver}, services: ${it.services}`);
         }
     });
     it(`连接节点${notes[3].name}, 查询并获取该节点当前网络拓扑信息`, async () => {
@@ -91,7 +95,7 @@ describe('组网方式', () => {
 
         console.log(`共识节点${notes[3].name}的网络拓扑结构:`);
         for(let it of ret.result) {
-            console.log(`addresa: ${it.addr}, version: ${it.subver}, services: ${it.services}`);
+            console.log(`address: ${it.addr}, version: ${it.subver}, services: ${it.services}`);
         }
     });
 });

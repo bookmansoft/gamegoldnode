@@ -21,13 +21,13 @@ const {notes} = require('../lib/remote/common')
 const remote = connector({
     structured: true,
     ip: notes[0].ip,        //RPC地址
-    port: notes[0].port,    //RPC端口
+    port: notes[0].rpc,    //RPC端口
 });
 //创建普通用户使用的连接器
 const remoteOperator = connector({
     structured: true,
     ip: notes[0].ip,        //RPC地址
-    port: notes[0].port,    //RPC端口
+    port: notes[0].rpc,    //RPC端口
 });
 
 //中间环境变量

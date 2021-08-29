@@ -27,12 +27,12 @@ const {notes} = require('../lib/remote/common')
 const remoteA = connector({
     structured: true,
     ip: notes[0].ip,        //RPC地址
-    port: notes[0].port,    //RPC端口
+    port: notes[0].rpc,    //RPC端口
 });
 const remoteB = connector({
     structured: true,
     ip: notes[1].ip,        //RPC地址
-    port: notes[1].port,    //RPC端口
+    port: notes[1].rpc,    //RPC端口
 });
 
 let env = {};
@@ -48,7 +48,7 @@ describe('通信机制', () => {
 
         console.log(`A节点的网络拓扑结构:`);
         for(let it of ret.result) {
-            console.log(`addresa: ${it.addr}, version: ${it.subver}, services: ${it.services}`);
+            console.log(`address: ${it.addr}, version: ${it.subver}, services: ${it.services}`);
         }
     });
 
