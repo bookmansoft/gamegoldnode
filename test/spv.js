@@ -7,7 +7,7 @@
  const assert = require('assert');
  const remote = (require('../lib/remote/connector'))({
      ip: '127.0.0.1',
-     port: 2111,
+     port: 2101,
  });
  const gamegold = require('gamegold');
  const digest = gamegold.crypto.digest;
@@ -38,6 +38,9 @@
  describe('意愿存证', function() {
  
      it('核心节点为企业注册证书', async () => {
+        let ret = await remote.execute('block.tips', []);
+		let cur = ret[0].height;
+
         //注册一个新的CP
         ret = await remote.execute('cp.create', [
             env.cp.name, 
@@ -49,7 +52,13 @@
         env.cp.pubkey = ret.pubKey;      //填充企业证书地址公钥
  
         //确保该CP数据上链
-        await remote.wait(120000);
+		while(true) {
+			ret = await remote.execute('block.tips', []);
+			if(ret[0].height >= cur+2) {
+				break;
+			}
+			await remote.wait(1000);
+		}
  
         // env.cp.id = '70d3dd30-aa84-11eb-bf85-4d315b27b84e';             //填充企业证书编号
         // env.cp.address = 'tb1qp0949pppkcwdvllw97e8z05qqh7x0dglqer6xr'; //填充企业证书地址

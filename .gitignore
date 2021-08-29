@@ -68,7 +68,6 @@ typings/
 backup.txt
 package-lock.json
 testnet-genesis.params
-.gamegold/client/
-.gamegold/client2/
+.gamegold/client*/
 lib/kafka/cert
 docs/vallnet.md

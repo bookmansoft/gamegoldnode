@@ -41,33 +41,35 @@
       */
  
      it('核心节点为企业注册证书', async () => {
-        // await remote.execute('miner.setsync.admin', [true]);
-        // let ret = await remote.execute('block.tips', []);
-        // if(ret[0].height < 100) {
-            // await remote.execute('miner.generate.admin', [100 - ret[0].height]);
-        // }
-        // await remote.wait(500);
+		let ret;
+        ret = await remote.execute('block.tips', []);
+        if(ret[0].height < 100) {
+            await remote.execute('miner.generate.admin', [100 - ret[0].height]);
+        }
+        await remote.wait(500);
 
-        // //注册一个新的CP
-        // ret = await remote.execute('cp.create', [
-            // env.cp.name, 
-            // '127.0.0.1'
-        // ]);
-        // assert(!ret.error);
-        // env.cp.id = ret.cid;             //填充企业证书编号
-        // env.cp.address = ret.pubAddress; //填充企业证书地址
-        // env.cp.pubkey = ret.pubKey;      //填充企业证书地址公钥
+        //注册一个新的CP
+        ret = await remote.execute('cp.create', [
+            env.cp.name, 
+            '127.0.0.1'
+        ]);
+		if(!!ret.error) {
+			console.log(ret.error);
+			assert(!ret.error);
+		}
+        env.cp.id = ret.cid;             //填充企业证书编号
+        env.cp.address = ret.pubAddress; //填充企业证书地址
+        env.cp.pubkey = ret.pubKey;      //填充企业证书地址公钥
+		
+        //确保该CP数据上链
+        await remote.wait(150000);
  
-        // //确保该CP数据上链
-        // await remote.execute('miner.generate.admin', [1]);
-        // await remote.wait(1000);
- 
-        env.cp.id = '70d3dd30-aa84-11eb-bf85-4d315b27b84e';             //填充企业证书编号
-        env.cp.address = 'tb1qp0949pppkcwdvllw97e8z05qqh7x0dglqer6xr'; //填充企业证书地址
-        env.cp.pubkey = '0283774e7028af496c6556f0675d2e6a79976665350ebb6e337680046dbbe9ecc9';      //填充企业证书地址公钥
+        // env.cp.id = '5acd8020-7d68-11eb-b7e4-61db8602893d';             //填充企业证书编号
+        // env.cp.address = 'tb1q953rkry9yxgt9yzmm2setxqyke9xgj2zwta5g0'; //填充企业证书地址
+        // env.cp.pubkey = '035b5da6f4c0f342b9ab1157cb6a172b46a8d394d1ec4e7f6422879bc149b95fbb';      //填充企业证书地址公钥
     });
   
-     for(let i = 0; i < 300000; i++) {
+     for(let i = 0; i < 990000; i++) {	
          it(`用户签发意愿存证 - 成功`, async () => {
              console.time('issue');
              //签发意愿存证
@@ -82,7 +84,7 @@
                  env.cp.id,                  //CPID
              ]);
              console.timeLog('issue', `第${i}条签署完成`);
-			 await remote.wait(50);
+			 //await remote.wait(50);
              console.timeEnd('issue');
          });
      }
