@@ -7,25 +7,37 @@
     3.查询账户的交易流水，应包含新增的交易信息
     
     预期结果：披露与演示一致，交易成功，资产信息更新成功，交易流水可追溯
+
+    操作流程：
+    1. 设立Alice和Bob两个账户，分别申请多个地址
+    2. 为上述账户地址转账以形成可用的UTXO
+    3. Alice先后采用1对1、1对多、多对多形式，向Bob名下地址转账
+    4. 查询Alice和Bob账户余额，持续观察变化
+    5. 查询账户交易流水列表
  */
 
 const assert = require('assert');
 const connector = require('../lib/remote/connector')
 const {notes} = require('../lib/remote/common')
+const uuid = require('uuid/v1')
 
 const remote = connector({
     structured: true,
     ip: notes[0].ip,        //RPC地址
     port: notes[0].rpc,    //RPC端口
 });
-const MTX = remote.gamegold.mtx;
 
 let env = {
     alice: {
-        name: 'alice',
+        name: uuid(),
         address: [],
+        utxo: [],
     },
-    tx: {},
+    bob: {
+        name: uuid(),
+        address: [],
+        utxo: [],
+    },
 }
 
 describe('账户类型及交易类型', () => {
@@ -42,36 +54,102 @@ describe('账户类型及交易类型', () => {
         remote.close();
     });
 
-    it('查询并获得当前可用的一笔UTXO', async () => {
-        let ret = await remote.execute('coin.selectone', [{'len':1, 'value': 500000}]);
-        assert(!ret.error);
-        env.utxo = ret.result[0];
+    it('为Alice和Bob设立账户，生成多个专属地址', async () => {
+        for(let i = 0; i < 5; i++) {
+            let ret = await remote.execute('address.create', [env.alice.name]);
+            assert(!ret.error);
+            env.alice.address.push(ret.result.address);
+
+            ret = await remote.execute('tx.send', [ret.result.address, 20000000]);
+            env.alice.utxo.push({hash: ret.result.hash, index: 0});
+
+            ret = await remote.execute('address.create', [env.bob.name]);
+            assert(!ret.error);
+            env.bob.address.push(ret.result.address);
+        }
     });
 
-    it('花费指定UTXO，向A节点提交一笔转账交易', async () => {
-        let ret = await remote.execute('address.create', []);
-        assert(!ret.error);
-        env.address = ret.result.address;
-        console.log(`将向地址${env.address}发起转账操作`);
+    it('查询账户余额', async () => {
+        console.log('查询账户余额');
+        let ret = await remote.execute('balance.unconfirmed', [env.alice.name]);
+        console.log(`  Alice: ${ret.result}}`);
+        ret = await remote.execute('balance.unconfirmed', [env.bob.name]);
+        console.log(`  Bob: ${ret.result}}`);
+    });
 
-        ret = await remote.execute('tx.create', [{'sendnow':true, in:[{hash: env.utxo.txid, index: env.utxo.vout}]},  [{address: env.address, value: 100000}]]);
+    it('1对1转账', async () => {
+        console.log(`Alice采用1对1形式，向地址${env.bob.address[0]}发起转账操作`);
+        let ret = await remote.execute('tx.create', [
+            {
+                'sendnow':true, 
+                in:[env.alice.utxo[0], ]
+            },
+            [{address: env.bob.address[0], value: 10000000}, ]
+        ]);
         assert(!ret.error);
+    });
+
+    it('查询账户余额', async () => {
+        console.log('查询账户余额');
+        let ret = await remote.execute('balance.unconfirmed', [env.alice.name]);
+        console.log(`  Alice: ${ret.result}}`);
+        ret = await remote.execute('balance.unconfirmed', [env.bob.name]);
+        console.log(`  Bob: ${ret.result}}`);
+    });
+
+    it('1对多转账', async () => {
+        console.log(`Alice采用1对多形式，向${env.bob.address[1]} ${env.bob.address[2]}发起转账操作`);
+        let ret = await remote.execute('tx.create', [
+            {
+                'sendnow':true, 
+                in:[env.alice.utxo[1], ]
+            },
+            [{address: env.bob.address[1], value: 5000000}, {address: env.bob.address[2], value: 5000000}, ]
+        ]);
+        assert(!ret.error);
+    });
+
+    it('查询账户余额', async () => {
+        console.log('查询账户余额');
+        let ret = await remote.execute('balance.unconfirmed', [env.alice.name]);
+        console.log(`  Alice: ${ret.result}}`);
+        ret = await remote.execute('balance.unconfirmed', [env.bob.name]);
+        console.log(`  Bob: ${ret.result}}`);
+    });
+
+    it('多对多转账', async () => {
+        console.log(`Alice采用多对多形式，向${env.bob.address[3]} ${env.bob.address[4]}发起转账操作`);
+        let ret = await remote.execute('tx.create', [
+            {
+                'sendnow':true, 
+                in:[env.alice.utxo[2], env.alice.utxo[3], env.alice.utxo[4], ]
+            },
+            [{address: env.bob.address[3], value: 20000000}, {address: env.bob.address[4], value: 20000000}, ]
+        ]);
+        assert(!ret.error);
+    });
+
+    it('查询账户余额', async () => {
+        console.log('查询账户余额:');
+        let ret = await remote.execute('balance.unconfirmed', [env.alice.name]);
+        console.log(`  Alice: ${ret.result}`);
+        ret = await remote.execute('balance.unconfirmed', [env.bob.name]);
+        console.log(`  Bob: ${ret.result}`);
+
+        await remote.execute('miner.generate.admin', [1]);
         await remote.wait(2000);
     });
 
-    it('创建一笔交易数据并签名', async () => {
-        let ret = await remote.execute('tx.create', [{"sendnow":false}, [{"value":2000000, "account": env.alice.name}]]);
-        assert(!ret.error);
-        env.tx = ret.result;
-    });
-
-    it('发送交易(正确性验证与一致性验证)', async () => {
-        env.tx.outputs[0].value = 2000000;
-        let ret = await remote.execute('tx.raw.send', [MTX.fromJSON(env.tx).toRaw().toString('hex')]);
-        assert(!ret.error);
-    });
-
-    it('共识与扩散', async () => {
-        await remote.execute('miner.generate.admin', [1]);
+    it('查询账户交易流水', async () => {
+        console.log('查询Alice账户交易流水:');
+        let ret = await remote.execute('tx.last', [env.alice.name]);
+        for(let item of ret.result) {
+            console.log({
+                hash: item.hash,
+                fee: item.fee,
+                inputs: item.inputs.map(it => { return {value:it.value, address:it.address}}),
+                outputs: item.outputs.map(it => { return {value:it.value, address:it.address}}),
+            });
+        }
     });
 });

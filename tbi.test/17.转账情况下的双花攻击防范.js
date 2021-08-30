@@ -54,7 +54,7 @@ describe('转账情况下的双花攻击防范', () => {
 
         ret = await remote.execute('tx.create', [{'sendnow':true, in:[{hash: env.utxo.txid, index: env.utxo.vout}]},  [{address: env.address, value: 100000}]]);
         assert(!ret.error);
-        await remote.wait(2000);
+        await remote.wait(3500);
     });
 
     it('再次花费指定UTXO，向B节点提交一笔转账交易：失败', async () => {
@@ -63,11 +63,14 @@ describe('转账情况下的双花攻击防范', () => {
         env.address = ret.result.address;
         console.log(`将向地址${env.address}发起转账操作`);
 
-        ret = await remote.execute('tx.create', [{'sendnow':false, in:[{hash: env.utxo.txid, index: env.utxo.vout}]},  [{address: env.address, value: 100000}]]);
+        ret = await remote.execute('tx.create', [{'sendnow':false, 
+            in:[{hash: env.utxo.txid, index: env.utxo.vout}]},  
+            [{address: env.address, value: 100000}]
+        ]);
         assert(!ret.error);
         env.tx = ret.result;
 
-        await remote.wait(2000); //由于节点间交易数据同步需要一定时间，此处稍微停顿下
+        await remote.wait(3500); //由于节点间交易数据同步需要一定时间，此处稍微停顿下
 
         ret = await remoteB.execute('tx.raw.send', [MTX.fromJSON(env.tx).toRaw().toString('hex')]);
         assert(!!ret.error);

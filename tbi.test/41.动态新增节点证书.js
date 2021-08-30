@@ -48,7 +48,7 @@ describe('动态新增节点证书', () => {
     });
 
     it(`系统管理员为节点${notes[1].name}颁发证书`, async () => {
-        let ret = await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}${notes[1].tcp}`]);
+        let ret = await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}:${notes[1].tcp}`]);
         assert(!ret.error);
         await remote.wait(1000);
 

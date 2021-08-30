@@ -64,7 +64,7 @@ describe('动态吊销节点证书', () => {
         let ret = await remote.execute('sys.aliance.delete', [1, 'mchain']);
         assert(!ret.error);
 
-        await remote.wait(3000);
+        await remote.wait(6000);
     });
 
     it('吊销证书后', async () => {
@@ -76,7 +76,7 @@ describe('动态吊销节点证书', () => {
 
     it('再次颁发证书', async () => {
         console.log(`系统管理员再次为节点${notes[1].name}颁发节点证书`);
-        let ret = await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}${notes[1].tcp}`]);
+        let ret = await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}:${notes[1].tcp}`]);
         assert(!ret.error);
 
         await remote.wait(3000);

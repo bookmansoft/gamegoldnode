@@ -130,6 +130,7 @@ describe('升级节点的稳定性', () => {
 
             if(_update == 3) {
                 if(env.n1.height == env.n2.height) {
+                    await remote.wait(5000);
                     console.log(`共识判定: ${notes[0].name}和${notes[1].name}再次达成共识`);
                     timers.map(t => {
                         clearInterval(t);

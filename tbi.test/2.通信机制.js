@@ -70,18 +70,18 @@ describe('通信机制', () => {
         let ret = await remoteB.execute('address.create', []);
         assert(!ret.error);
         env.address = ret.result.address;
-    });
+    }).timeout(10000);
 
     it('客户端采用HTTP连接A节点, 发送交易', async () => {
         //以节点B上的有效地址为接收地址，发送一笔交易
         let ret = await remoteA.execute('tx.send', [env.address, 1000000]);
         assert(!ret.error);
         assert(remoteA.verify(ret));
-    });
+    }).timeout(10000);
 
     it('A节点发起共识流程，数据传递给B节点并推送至客户端', async () => {
         //出块以确保交易上链
         await remoteA.execute('miner.generate.admin', [1]);
         await remoteA.wait(3000);
-    });
+    }).timeout(10000);
 });

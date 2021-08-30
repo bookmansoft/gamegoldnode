@@ -15,6 +15,7 @@
 const assert = require('assert');
 const connector = require('../lib/remote/connector')
 const {notes} = require('../lib/remote/common')
+const uuid = require('uuid/v1')
 
 //创建超级用户使用的连接器
 const remote = connector({
@@ -27,7 +28,7 @@ const remoteOperator = connector({
     port: notes[0].rpc,    //RPC端口
 });
 
-let env = {account: 'alice'};
+let env = {account: uuid(),};
 
 describe('节点证书权限管理方案', () => {
     before(async () => {
@@ -60,20 +61,20 @@ describe('节点证书权限管理方案', () => {
 
     it('不符合权限管理策略的操作', async () => {
         console.log(`普通用户新增节点${notes[1].name}证书: 失败`);
-        let ret = await remoteOperator.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}${notes[1].tcp}`]);
+        let ret = await remoteOperator.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}:${notes[1].tcp}`]);
         assert(!!ret.error);
         console.log(ret.error);
     });
 
     it('符合权限管理策略的操作', async () => {
         console.log(`系统管理员新增节点${notes[1].name}证书: 成功`);
-        let ret = await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}${notes[1].tcp}`]);
+        let ret = await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}:${notes[1].tcp}`]);
         assert(!ret.error);
     });
 
     it('符合权限管理策略的操作', async () => {
         console.log(`系统管理员新增节点${notes[2].name}证书: 成功`);
-        let ret = await remote.execute('sys.aliance.create', ['bookmansoft', notes[2].id, notes[2].aliance, `${notes[2].ip}${notes[2].tcp}`]);
+        let ret = await remote.execute('sys.aliance.create', ['bookmansoft', notes[2].id, notes[2].aliance, `${notes[2].ip}:${notes[2].tcp}`]);
         assert(!ret.error);
     });
 
@@ -103,10 +104,10 @@ describe('节点证书权限管理方案', () => {
             };
         }));
 
-        await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}${notes[1].tcp}`]);
+        await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}:${notes[1].tcp}`]);
         await remote.wait(1000);
-        await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}${notes[1].tcp}`]);
+        await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}:${notes[1].tcp}`]);
         await remote.wait(1000);
-        await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}${notes[1].tcp}`]);
+        await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}:${notes[1].tcp}`]);
     });
 });

@@ -14,6 +14,7 @@
 const assert = require('assert');
 const connector = require('../lib/remote/connector')
 const {notes} = require('../lib/remote/common')
+const uuid = require('uuid/v1')
 
 const remote = connector({
     structured: true,
@@ -23,7 +24,7 @@ const remote = connector({
 
 let env = {
     alice: {
-        name: 'alice',
+        name: uuid(),
         address: '',
     },
     tx: {},

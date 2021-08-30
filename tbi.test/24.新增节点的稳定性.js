@@ -105,7 +105,7 @@ describe('新增节点的稳定性', () => {
 
         let recy = true;
         while(recy) {
-            let ret = await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}${notes[1].tcp}`]);
+            let ret = await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}:${notes[1].tcp}`]);
             assert(!ret.error);
             await remote.wait(2000);
 
@@ -113,7 +113,7 @@ describe('新增节点的稳定性', () => {
             assert(!ret.error);
 
             for(let item of ret) {
-                if(item.subver == '/vallnet:v2.6.0/mchain.1' && !!item.inbound) {
+                if(item && item.subver && item.subver.indexOf('mchain.1') != -1 && !!item.inbound) {
                     recy = false;
                     break;
                 }
