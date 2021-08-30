@@ -60,6 +60,7 @@ describe('删除节点的稳定性', () => {
             console.log(`  ${notes[0].name}/${env.n1.height}`);
             console.log(`  ${notes[1].name}/${env.n2.height}`);
 
+            console.log(`执行共识流程，增加区块高度`);
             await remote.execute('miner.generate.admin', [1]);
             await remote.wait(2000);
         }
@@ -69,9 +70,7 @@ describe('删除节点的稳定性', () => {
         console.log(`吊销节点${notes[1].name}的证书, 节点间将无法同步区块`);
 
         await remote.execute('sys.aliance.delete', [notes[1].id, notes[1].aliance]);
-        await remote.wait(2000);
-        await remote.execute('sys.aliance.delete', [notes[1].id, notes[1].aliance]);
-        await remote.wait(2000);
+        await remote.wait(8000);
     });
 
     it('节点1为Alice账户持续转账', async () => {
@@ -96,9 +95,11 @@ describe('删除节点的稳定性', () => {
             ret = await remote1.execute('block.count', []);
             env.n2.height = ret;
     
-            console.log(`比较区块高度(节点间无法同步):`);
-            console.log(`  ${notes[0].name}/${env.n1.height}`);
-            console.log(`  ${notes[1].name}/${env.n2.height}`);
+            if(env.n1.height != env.n2.height) {
+                console.log(`比较区块高度(节点间无法同步):`);
+                console.log(`  ${notes[0].name}/${env.n1.height}`);
+                console.log(`  ${notes[1].name}/${env.n2.height}`);
+            }
         }
 
         let recy = true, count = 0;

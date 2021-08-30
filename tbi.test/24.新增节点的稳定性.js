@@ -58,9 +58,9 @@ describe('新增节点的稳定性', () => {
 
     it('系统管理员吊销节点2证书', async () => {
         console.log(`吊销节点${notes[1].name}的证书, 节点间将无法同步区块`);
-        let ret = await remote.execute('sys.aliance.delete', [notes[1].id, notes[1].aliance]);
-        assert(!ret.error);
-        await remote.wait(3000);
+        
+        await remote.execute('sys.aliance.delete', [notes[1].id, notes[1].aliance]);
+        await remote.wait(8000);
     });
 
     it('节点1为Alice账户持续转账', async () => {
