@@ -43,8 +43,8 @@ describe('升级节点的稳定性', () => {
     before(async () => {
         await remote.execute('miner.setsync.admin', [true]);
         let ret = await remote.execute('block.tips', []);
-        if(ret[0].height < 100) {
-            await remote.execute('miner.generate.admin', [100 - ret[0].height]);
+        if(ret[0].height < 120) {
+            await remote.execute('miner.generate.admin', [120 - ret[0].height]);
         }
         await remote.execute('sys.aliance.refresh', [500000000]);
         await remote.execute('miner.generate.admin', [1]);

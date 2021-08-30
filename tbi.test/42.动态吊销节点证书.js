@@ -40,8 +40,8 @@ describe('动态吊销节点证书', () => {
         //提前配置好节点1和节点2，都拥有合法证书，运行节点1和节点2
         await remote.execute('miner.setsync.admin', [true]);
         let ret = await remote.execute('block.tips', []);
-        if(ret.result[0].height < 100) {
-            await remote.execute('miner.generate.admin', [100 - ret.result[0].height]);
+        if(ret.result[0].height < 120) {
+            await remote.execute('miner.generate.admin', [120 - ret.result[0].height]);
         }
 
         await remote.execute('sys.aliance.refresh', [500000000]);
@@ -76,7 +76,7 @@ describe('动态吊销节点证书', () => {
 
     it('再次颁发证书', async () => {
         console.log(`系统管理员再次为节点${notes[1].name}颁发节点证书`);
-        let ret = await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}:${notes[1].tcp}`]);
+        let ret = await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].inner}:${notes[1].tcp}`]);
         assert(!ret.error);
 
         await remote.wait(5000);

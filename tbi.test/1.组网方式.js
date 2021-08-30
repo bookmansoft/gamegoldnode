@@ -47,15 +47,19 @@ describe('组网方式', () => {
     before(async () => {
         await remoteA.execute('miner.setsync.admin', [true]);
         let ret = await remoteA.execute('block.tips', []);
-        if(ret.result[0].height < 100) {
-            await remoteA.execute('miner.generate.admin', [100 - ret.result[0].height]);
+        if(ret.result[0].height < 120) {
+            await remoteA.execute('miner.generate.admin', [120 - ret.result[0].height]);
         }
-        await remoteA.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}:${notes[1].tcp}`]);
-        await remoteA.execute('sys.aliance.create', ['bookmansoft', notes[2].id, notes[2].aliance, `${notes[2].ip}:${notes[2].tcp}`]);
-        await remoteA.execute('sys.aliance.create', ['bookmansoft', notes[3].id, notes[3].aliance, `${notes[3].ip}:${notes[3].tcp}`]);
-        await remoteA.execute('sys.aliance.refresh', [500000000]);
-        await remoteA.execute('miner.generate.admin', [1]);
+        await remoteA.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].inner}:${notes[1].tcp}`]);
         await remoteA.wait(1000);
+        await remoteA.execute('sys.aliance.create', ['bookmansoft', notes[2].id, notes[2].aliance, `${notes[2].inner}:${notes[2].tcp}`]);
+        await remoteA.wait(1000);
+        await remoteA.execute('sys.aliance.create', ['bookmansoft', notes[3].id, notes[3].aliance, `${notes[3].inner}:${notes[3].tcp}`]);
+        await remoteA.wait(1000);
+        await remoteA.execute('sys.aliance.refresh', [500000000]);
+        await remoteA.wait(1000);
+        await remoteA.execute('miner.generate.admin', [1]);
+        await remoteA.wait(3000);
     });
 
     /** 连接节点, 查询并获取该节点当前网络拓扑信息, 预期结果：

@@ -33,8 +33,8 @@ describe('故障数少于理论值的共识', () => {
     before(async () => {
         await remote.execute('miner.setsync.admin', [true]);
         let ret = await remote.execute('block.tips', []);
-        if(ret.result[0].height < 100) {
-            await remote.execute('miner.generate.admin', [100 - ret.result[0].height]);
+        if(ret.result[0].height < 120) {
+            await remote.execute('miner.generate.admin', [120 - ret.result[0].height]);
         }
         await remote.wait(500);
     });

@@ -38,8 +38,8 @@ describe('动态新增节点证书', () => {
     before(async () => {
         await remote.execute('miner.setsync.admin', [true]);
         let ret = await remote.execute('block.tips', []);
-        if(ret[0].height < 100) {
-            await remote.execute('miner.generate.admin', [100 - ret[0].height]);
+        if(ret[0].height < 120) {
+            await remote.execute('miner.generate.admin', [120 - ret[0].height]);
         }
 
         await remote.execute('sys.aliance.delete', [notes[1].id, notes[1].aliance]);
@@ -88,7 +88,7 @@ describe('动态新增节点证书', () => {
         console.log(`系统管理员为节点${notes[1].name}颁发证书`);
         await remote.wait(3000);
 
-        let ret = await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}:${notes[1].tcp}`]);
+        let ret = await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].inner}:${notes[1].tcp}`]);
         assert(!ret.error);
 
         console.log(`${notes[1].name}即将上线`);

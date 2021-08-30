@@ -36,8 +36,8 @@ describe('节点证书权限管理方案', () => {
 
         await remote.execute('miner.setsync.admin', [true]);
         let ret = await remote.execute('block.tips', []);
-        if(ret[0].height < 100) {
-            await remote.execute('miner.generate.admin', [100 - ret[0].height]);
+        if(ret[0].height < 120) {
+            await remote.execute('miner.generate.admin', [120 - ret[0].height]);
         }
         await remote.wait(500);
     });
@@ -61,20 +61,20 @@ describe('节点证书权限管理方案', () => {
 
     it('不符合权限管理策略的操作', async () => {
         console.log(`普通用户新增节点${notes[1].name}证书: 失败`);
-        let ret = await remoteOperator.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}:${notes[1].tcp}`]);
+        let ret = await remoteOperator.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].inner}:${notes[1].tcp}`]);
         assert(!!ret.error);
         console.log(ret.error);
     });
 
     it('符合权限管理策略的操作', async () => {
         console.log(`系统管理员新增节点${notes[1].name}证书: 成功`);
-        let ret = await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}:${notes[1].tcp}`]);
+        let ret = await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].inner}:${notes[1].tcp}`]);
         assert(!ret.error);
     });
 
     it('符合权限管理策略的操作', async () => {
         console.log(`系统管理员新增节点${notes[2].name}证书: 成功`);
-        let ret = await remote.execute('sys.aliance.create', ['bookmansoft', notes[2].id, notes[2].aliance, `${notes[2].ip}:${notes[2].tcp}`]);
+        let ret = await remote.execute('sys.aliance.create', ['bookmansoft', notes[2].id, notes[2].aliance, `${notes[2].inner}:${notes[2].tcp}`]);
         assert(!ret.error);
     });
 
@@ -104,10 +104,10 @@ describe('节点证书权限管理方案', () => {
             };
         }));
 
-        await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}:${notes[1].tcp}`]);
+        await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].inner}:${notes[1].tcp}`]);
         await remote.wait(1000);
-        await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}:${notes[1].tcp}`]);
+        await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].inner}:${notes[1].tcp}`]);
         await remote.wait(1000);
-        await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}:${notes[1].tcp}`]);
+        await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].inner}:${notes[1].tcp}`]);
     });
 });

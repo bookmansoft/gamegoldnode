@@ -22,8 +22,8 @@ describe('意愿存证', function() {
         await remote.execute('miner.setsync.admin', [true]);
         //确保链态的区块高度达到100以上，以有效激活通证
         let ret = await remote.execute('block.tips', []);
-        if(ret[0].height < 100) {
-            await remote.execute('miner.generate.admin', [100 - ret[0].height]);
+        if(ret[0].height < 120) {
+            await remote.execute('miner.generate.admin', [120 - ret[0].height]);
         }
         await remote.wait(1000);
     });

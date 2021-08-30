@@ -37,8 +37,8 @@ describe('删除节点的稳定性', () => {
     before(async () => {
         await remote.execute('miner.setsync.admin', [true]);
         let ret = await remote.execute('block.tips', []);
-        if(ret[0].height < 100) {
-            await remote.execute('miner.generate.admin', [100 - ret[0].height]);
+        if(ret[0].height < 120) {
+            await remote.execute('miner.generate.admin', [120 - ret[0].height]);
         }
         await remote.wait(500);
     });
@@ -101,9 +101,9 @@ describe('删除节点的稳定性', () => {
             console.log(`  ${notes[1].name}/${env.n2.height}`);
         }
 
-        let recy = true;
-        while(recy) {
-            ret = await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}:${notes[1].tcp}`]);
+        let recy = true, count = 0;
+        while(recy && count++ < 10) {
+            ret = await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].inner}:${notes[1].tcp}`]);
             assert(!ret.error);
             await remote.wait(2000);
 

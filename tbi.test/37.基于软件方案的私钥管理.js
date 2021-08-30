@@ -33,8 +33,8 @@ describe('基于软件方案的私钥管理', () => {
     before(async () => {
         await remote.execute('miner.setsync.admin', [true]);
         let ret = await remote.execute('block.tips', []);
-        if(ret.result[0].height < 100) {
-            await remote.execute('miner.generate.admin', [100 - ret.result[0].height]);
+        if(ret.result[0].height < 120) {
+            await remote.execute('miner.generate.admin', [120 - ret.result[0].height]);
         }
         await remote.wait(500);
     });
