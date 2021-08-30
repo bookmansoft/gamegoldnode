@@ -80,14 +80,14 @@ describe('节点证书权限管理方案', () => {
 
     it('不符合权限管理策略的操作', async () => {
         console.log(`普通用户吊销节点${notes[1].name}证书: 失败`);
-        let ret = await remoteOperator.execute('sys.aliance.delete', [1, 'mchain']);
+        let ret = await remoteOperator.execute('sys.aliance.delete', [notes[1].id, notes[1].aliance]);
         assert(!!ret.error);
         console.log(ret.error);
     });
 
     it('符合权限管理策略的操作', async () => {
         console.log(`系统管理员吊销节点${notes[1].name}证书: 成功`);
-        let ret = await remote.execute('sys.aliance.delete', [1, 'mchain']);
+        let ret = await remote.execute('sys.aliance.delete', [notes[1].id, notes[1].aliance]);
         assert(!ret.error);
     });
 

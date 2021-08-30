@@ -96,7 +96,7 @@ describe('智能合约的全生命周期管理', () => {
             let ret = await remote.execute('sys.peerinfo', []);
             for(let item of ret) {
                 if(!!item && item.subver) {
-                    if(item.subver.indexOf('/mchain.1') != -1 && !!item.inbound) {
+                    if(item.subver.indexOf(notes[1].name) != -1 && !!item.inbound) {
                         _find = true;
 
                         //首次监测到指定节点在线

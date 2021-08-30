@@ -86,7 +86,7 @@ describe('升级节点的稳定性', () => {
             ret = await remote.execute('sys.peerinfo', []);
             for(let item of ret) {
                 if(!!item && item.subver) {
-                    if(item.subver.indexOf('/mchain.2') != -1 && !!item.inbound) {
+                    if(item.subver.indexOf(notes[2].name) != -1 && !!item.inbound) {
                         //监测到指定节点在线
                         _find = true;
                         if(_update == 0) {
@@ -97,10 +97,14 @@ describe('升级节点的稳定性', () => {
 
                         //监控节点2
                         ret = await remote1.execute('block.count', []);
-                        env.n3.height = ret;
+                        if(!ret.error) {
+                            env.n3.height = ret;
+                        }
 
                         ret = await remote1.execute('sys.info', []);
-                        env.n3.version = `/vallnet:${ret.version}/${notes[2].name}`;
+                        if(!ret.error) {
+                            env.n3.version = `/vallnet:${ret.version}/${notes[2].name}`;
+                        }
 
                         break;
                     }

@@ -61,7 +61,7 @@ describe('动态吊销节点证书', () => {
 
     it('吊销证书', async () => {
         console.log(`系统管理员吊销节点${notes[1].name}的节点证书`);
-        let ret = await remote.execute('sys.aliance.delete', [1, 'mchain']);
+        let ret = await remote.execute('sys.aliance.delete', [notes[1].id, notes[1].aliance]);
         assert(!ret.error);
 
         await remote.wait(6000);

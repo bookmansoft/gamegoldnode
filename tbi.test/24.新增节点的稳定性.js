@@ -80,10 +80,14 @@ describe('新增节点的稳定性', () => {
             console.log(`查询账户余额: ${env.alice.name} / ${ret}`);
     
             ret = await remote.execute('block.count', []);
-            env.n1.height = ret;
+            if(!ret.error) {
+                env.n1.height = ret;
+            }
 
             ret = await remote1.execute('block.count', []);
-            env.n2.height = ret;
+            if(!ret.error) {
+                env.n2.height = ret;
+            }
 
             console.log(`比较区块高度:`);
             console.log(`  ${notes[0].name}/${env.n1.height}`);
@@ -95,9 +99,9 @@ describe('新增节点的稳定性', () => {
                     clearInterval(t);
                 });
             }
-        }, 3000));
+        }, 5000));
 
-        await remote.wait(10000);
+        await remote.wait(15000);
     });
 
     it('系统管理员再次为节点2颁发证书', async () => {
