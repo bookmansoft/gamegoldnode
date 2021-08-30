@@ -41,29 +41,22 @@ describe('动态新增节点证书', () => {
         if(ret[0].height < 100) {
             await remote.execute('miner.generate.admin', [100 - ret[0].height]);
         }
+
+        await remote.execute('sys.aliance.delete', [notes[1].id, notes[1].aliance]);
+        await remote.wait(3000);
     });
 
     after(()=>{
         remote.close();
     });
 
-    it(`系统管理员为节点${notes[1].name}颁发证书`, async () => {
-        let ret = await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}:${notes[1].tcp}`]);
-        assert(!ret.error);
-        await remote.wait(1000);
-
-        await remote.execute('sys.aliance.refresh', [500000000]);
-        await remote.wait(1000);
-        await remote.execute('miner.generate.admin', [1]);
-    });
-
-    it(`监测节点${notes[1].name}，当该节点上线时发送一笔交易`, async () => {
+    it(`监测节点${notes[1].name}在线状态`, async () => {
         timers.push(setInterval(async ()=>{
             let ret = await remote.execute('sys.peerinfo', []);
             for(let item of ret) {
                 if(!!item && item.subver) {
                     //监测到指定节点上线
-                    if(item.subver.indexOf('/mchain.1') != -1 && !!item.inbound) {
+                    if(item.subver.indexOf(notes[1].name) != -1 && !!item.inbound) {
                         timers.map(t => {
                             clearInterval(t);
                         });
@@ -89,5 +82,19 @@ describe('动态新增节点证书', () => {
                 }
             }
         }, 3000));
+    });
+
+    it(`系统管理员为节点${notes[1].name}颁发证书`, async () => {
+        console.log(`系统管理员为节点${notes[1].name}颁发证书`);
+        await remote.wait(3000);
+
+        let ret = await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}:${notes[1].tcp}`]);
+        assert(!ret.error);
+
+        console.log(`${notes[1].name}即将上线`);
+        await remote.wait(2000);
+
+        await remote.execute('sys.aliance.refresh', [500000000]);
+        await remote.execute('miner.generate.admin', [1]);
     });
 });

@@ -12,9 +12,9 @@
     3.在升级节点过程中，应用层服务可用
 
     操作流程：
-    1. 运行单元测试，自动开始监控节点2
-    2. 升级节点2后重启
-    3. 监测到节点2上线，持续监测直至双方数据完成同步后退出
+    1. 运行单元测试，自动开始监控节点3
+    2. 升级节点3后重启
+    3. 监测到节点3上线，持续监测直至双方数据完成同步后退出
  */
 
 const assert = require('assert')
@@ -28,15 +28,15 @@ const remote = connector({
 });
 
 const remote1 = connector({
-    ip: notes[1].ip,        //RPC地址
-    port: notes[1].rpc,    //RPC端口
+    ip: notes[2].ip,        //RPC地址
+    port: notes[2].rpc,    //RPC端口
 });
 
 let timers = [];
 let env = {
     alice : {name: uuid(), },
     n1: {},
-    n2: {},
+    n3: {},
 };
 
 describe('升级节点的稳定性', () => {
@@ -52,8 +52,8 @@ describe('升级节点的稳定性', () => {
     
         env.n1.height = 0;
         env.n1.version = '';
-        env.n2.height = 0;
-        env.n2.version = '';
+        env.n3.height = 0;
+        env.n3.version = '';
     });
 
     after(() => {
@@ -80,13 +80,13 @@ describe('升级节点的稳定性', () => {
             assert(!ret.error);
             console.log(`查账: ${env.alice.name} / ${ret}`);
 
-            //监测节点2升级进程
+            //监测节点3升级进程
             let _find = false;
 
             ret = await remote.execute('sys.peerinfo', []);
             for(let item of ret) {
                 if(!!item && item.subver) {
-                    if(item.subver.indexOf('/mchain.1') != -1 && !!item.inbound) {
+                    if(item.subver.indexOf('/mchain.2') != -1 && !!item.inbound) {
                         //监测到指定节点在线
                         _find = true;
                         if(_update == 0) {
@@ -97,10 +97,10 @@ describe('升级节点的稳定性', () => {
 
                         //监控节点2
                         ret = await remote1.execute('block.count', []);
-                        env.n2.height = ret;
+                        env.n3.height = ret;
 
                         ret = await remote1.execute('sys.info', []);
-                        env.n2.version = `/vallnet:${ret.version}/${notes[1].name}`;
+                        env.n3.version = `/vallnet:${ret.version}/${notes[2].name}`;
 
                         break;
                     }
@@ -126,12 +126,12 @@ describe('升级节点的稳定性', () => {
 
             console.log(`比较节点们的区块高度:`);
             console.log(`  ${env.n1.height}${env.n1.version}`);
-            console.log(`  ${env.n2.height}${env.n2.version}`);
+            console.log(`  ${env.n3.height}${env.n3.version}`);
 
             if(_update == 3) {
-                if(env.n1.height == env.n2.height) {
+                if(env.n1.height == env.n3.height) {
                     await remote.wait(5000);
-                    console.log(`共识判定: ${notes[0].name}和${notes[1].name}再次达成共识`);
+                    console.log(`共识判定: ${notes[0].name}和${notes[2].name}再次达成共识`);
                     timers.map(t => {
                         clearInterval(t);
                     });
@@ -139,6 +139,6 @@ describe('升级节点的稳定性', () => {
             }
         }, 3000));
 
-        console.log(`！！！请手工关闭节点${notes[1].name}，升级并重启！！！`);
+        console.log(`！！！请手工关闭节点${notes[2].name}，升级并重启！！！`);
     });
 });

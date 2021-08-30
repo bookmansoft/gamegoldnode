@@ -79,7 +79,7 @@ describe('动态吊销节点证书', () => {
         let ret = await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].ip}:${notes[1].tcp}`]);
         assert(!ret.error);
 
-        await remote.wait(3000);
+        await remote.wait(5000);
     });
 
     it('再次颁发后', async () => {

@@ -37,8 +37,8 @@ const remote1 = connector({
 let timers = [];
 let env = {
     alice : {name: uuid(), },
-    n1: {name: 'mchain-0', },
-    n2: {name: 'mchain-1', },
+    n1: {},
+    n2: {},
 };
 
 describe('新增节点的稳定性', () => {
@@ -57,8 +57,8 @@ describe('新增节点的稳定性', () => {
     });
 
     it('系统管理员吊销节点2证书', async () => {
-        console.log(`吊销节点${env.n2.name}的证书, 节点间将无法同步区块`);
-        let ret = await remote.execute('sys.aliance.delete', [1, 'mchain']);
+        console.log(`吊销节点${notes[1].name}的证书, 节点间将无法同步区块`);
+        let ret = await remote.execute('sys.aliance.delete', [notes[1].id, notes[1].aliance]);
         assert(!ret.error);
         await remote.wait(3000);
     });
@@ -86,11 +86,11 @@ describe('新增节点的稳定性', () => {
             env.n2.height = ret;
 
             console.log(`比较区块高度:`);
-            console.log(`  ${env.n1.name}/${env.n1.height}`);
-            console.log(`  ${env.n2.name}/${env.n2.height}`);
+            console.log(`  ${notes[0].name}/${env.n1.height}`);
+            console.log(`  ${notes[1].name}/${env.n2.height}`);
 
             if(env.n1.height == env.n2.height) {
-                console.log(`共识判定: ${env.n1.name}和${env.n2.name}再次达成共识`);
+                console.log(`共识判定: ${notes[0].name}和${notes[1].name}再次达成共识`);
                 timers.map(t => {
                     clearInterval(t);
                 });
@@ -101,7 +101,7 @@ describe('新增节点的稳定性', () => {
     });
 
     it('系统管理员再次为节点2颁发证书', async () => {
-        console.log(`恢复节点${env.n2.name}的证书, 节点间开始重新同步区块`);
+        console.log(`恢复节点${notes[1].name}的证书, 节点间开始重新同步区块`);
 
         let recy = true;
         while(recy) {
@@ -113,7 +113,7 @@ describe('新增节点的稳定性', () => {
             assert(!ret.error);
 
             for(let item of ret) {
-                if(item && item.subver && item.subver.indexOf('mchain.1') != -1 && !!item.inbound) {
+                if(item && item.subver && item.subver.indexOf(notes[1].name) != -1 && !!item.inbound) {
                     recy = false;
                     break;
                 }

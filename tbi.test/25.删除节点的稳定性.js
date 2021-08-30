@@ -29,8 +29,8 @@ const remote1 = connector({
 
 let env = {
     alice : {name: uuid(), },
-    n1: {name: 'mchain-0', },
-    n2: {name: 'mchain-1', },
+    n1: { },
+    n2: { },
 };
 
 describe('删除节点的稳定性', () => {
@@ -57,8 +57,8 @@ describe('删除节点的稳定性', () => {
             env.n2.height = ret;
     
             console.log(`比较区块高度(节点间保持同步):`);
-            console.log(`  ${env.n1.name}/${env.n1.height}`);
-            console.log(`  ${env.n2.name}/${env.n2.height}`);
+            console.log(`  ${notes[0].name}/${env.n1.height}`);
+            console.log(`  ${notes[1].name}/${env.n2.height}`);
 
             await remote.execute('miner.generate.admin', [1]);
             await remote.wait(2000);
@@ -66,10 +66,12 @@ describe('删除节点的稳定性', () => {
     });
 
     it('系统管理员吊销节点2证书', async () => {
-        console.log(`吊销节点${env.n2.name}的证书, 节点间将无法同步区块`);
-        let ret = await remote.execute('sys.aliance.delete', [1, 'mchain']);
-        assert(!ret.error);
-        await remote.wait(3000);
+        console.log(`吊销节点${notes[1].name}的证书, 节点间将无法同步区块`);
+
+        await remote.execute('sys.aliance.delete', [notes[1].id, notes[1].aliance]);
+        await remote.wait(2000);
+        await remote.execute('sys.aliance.delete', [notes[1].id, notes[1].aliance]);
+        await remote.wait(2000);
     });
 
     it('节点1为Alice账户持续转账', async () => {
@@ -78,7 +80,7 @@ describe('删除节点的稳定性', () => {
         assert(!ret.error);
         env.alice.address = ret;
 
-        for(let i = 0; i < 4; i++) {
+        for(let i = 0; i < 5; i++) {
             console.log(`转账: ${env.alice.name} `);
             await remote.execute('tx.send', [env.alice.address, 1000000]);
             await remote.execute('miner.generate.admin', [1]);
@@ -95,8 +97,8 @@ describe('删除节点的稳定性', () => {
             env.n2.height = ret;
     
             console.log(`比较区块高度(节点间无法同步):`);
-            console.log(`  ${env.n1.name}/${env.n1.height}`);
-            console.log(`  ${env.n2.name}/${env.n2.height}`);
+            console.log(`  ${notes[0].name}/${env.n1.height}`);
+            console.log(`  ${notes[1].name}/${env.n2.height}`);
         }
 
         let recy = true;
@@ -109,7 +111,7 @@ describe('删除节点的稳定性', () => {
             assert(!ret.error);
 
             for(let item of ret) {
-                if(item && item.subver && item.subver.indexOf('mchain.1') != -1 && !!item.inbound) {
+                if(item && item.subver && item.subver.indexOf(notes[1].name) != -1 && !!item.inbound) {
                     recy = false;
                     break;
                 }
