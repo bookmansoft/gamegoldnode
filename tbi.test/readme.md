@@ -28,20 +28,20 @@ mocha --timeout=80000 tbi.test/16.*
 7. 单独执行 '20.智能合约运行机制的前向兼容'
 ```bash
 # 确保1号、2号节点正常运作
-# 确保2号节点版本号为 2.6.5, 可通过 'vc sys.info --http-remote-host=58.220.61.36' 指令查看
+# 确保2号节点版本号为 2.7.0(1.0.0), 可通过 'vc sys.info --http-remote-host=58.220.61.36' 指令查看
 # 执行如下命令
 mocha --timeout=80000 tbi.test/20.*
-# 关闭2号节点，将其从 2.6.5 升级为 2.6.6, 升级完成后重启
+# 关闭2号节点，将其从 2.7.0(1.0.0) 升级为 2.7.1(1.0.1), 升级完成后重启
 # 观测到当前测试自动结束
 ```
 
 8. 单独执行 '26.升级节点的稳定性'
 ```bash
 # 确保1号、3号节点正常运作
-# 确保3号节点版本号为 2.6.5, 可通过 'vc sys.info --http-remote-host=58.220.61.37' 指令查看
+# 确保3号节点版本号为 2.7.0(1.0.0), 可通过 'vc sys.info --http-remote-host=58.220.61.37' 指令查看
 # 执行如下命令
 mocha --timeout=80000 tbi.test/26.*
-# 关闭3号节点，将其从 2.6.5 升级为 2.6.6, 升级完成后重启
+# 关闭3号节点，将其从 2.7.0(1.0.0) 升级为 2.7.1(1.0.1), 升级完成后重启
 # 观测到当前测试自动结束
 ```
 
@@ -50,7 +50,7 @@ mocha --timeout=80000 tbi.test/26.*
 1. sys.info, 用于查看当前系统的版本号，例如查看3号节点版本号
 
 ```bash
-# 从应答中可以查看到 result.version: 'v2.6.1' 
+# 从应答中可以查看到 result.version 
 vc sys.info --http-remote-host=58.220.61.37
 ```
 
@@ -63,6 +63,6 @@ npm un gamegold
 
 - 安装引擎特定版本
 ```bash
-npm i gamegold@2.6.5
-npm i gamegold@2.6.6
+npm i gamegold@2.7.0
+npm i gamegold@2.7.1
 ```
