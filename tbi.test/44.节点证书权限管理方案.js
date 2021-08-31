@@ -89,6 +89,7 @@ describe('节点证书权限管理方案', () => {
         console.log(`系统管理员吊销节点${notes[1].name}证书: 成功`);
         let ret = await remote.execute('sys.aliance.delete', [notes[1].id, notes[1].aliance]);
         assert(!ret.error);
+        await remote.wait(10000);
     });
 
     it('查看节点证书列表', async () => {
@@ -105,9 +106,8 @@ describe('节点证书权限管理方案', () => {
         }));
 
         await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].inner}:${notes[1].tcp}`]);
-        await remote.wait(1000);
+        await remote.wait(2000);
         await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].inner}:${notes[1].tcp}`]);
-        await remote.wait(1000);
-        await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].inner}:${notes[1].tcp}`]);
+        await remote.wait(2000);
     });
 });

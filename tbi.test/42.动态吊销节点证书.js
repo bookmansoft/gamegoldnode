@@ -44,6 +44,9 @@ describe('动态吊销节点证书', () => {
             await remote.execute('miner.generate.admin', [120 - ret.result[0].height]);
         }
 
+        await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].inner}:${notes[1].tcp}`]);
+        await remote.wait(3000);
+
         await remote.execute('sys.aliance.refresh', [500000000]);
         await remote.execute('miner.generate.admin', [1]);
         await remote.wait(2000);
@@ -64,7 +67,7 @@ describe('动态吊销节点证书', () => {
         let ret = await remote.execute('sys.aliance.delete', [notes[1].id, notes[1].aliance]);
         assert(!ret.error);
 
-        await remote.wait(6000);
+        await remote.wait(10000);
     });
 
     it('吊销证书后', async () => {
@@ -76,15 +79,14 @@ describe('动态吊销节点证书', () => {
 
     it('再次颁发证书', async () => {
         console.log(`系统管理员再次为节点${notes[1].name}颁发节点证书`);
-        let ret = await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].inner}:${notes[1].tcp}`]);
-        assert(!ret.error);
-
-        await remote.wait(5000);
+        await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].inner}:${notes[1].tcp}`]);
+        await remote.wait(3000);
+        await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].inner}:${notes[1].tcp}`]);
+        await remote.wait(3000);
     });
 
     it('再次颁发后', async () => {
         console.log(`节点${notes[1].name}向账户${env.alice.name}发起一笔转账: 成功`);
-        let ret = await remote1.execute('tx.create', [{"sendnow":true}, [{"value":2000000, "account": env.alice.name}]]);
-        assert(!ret.error);
+        await remote1.execute('tx.create', [{"sendnow":true}, [{"value":2000000, "account": env.alice.name}]]);
     });
 });

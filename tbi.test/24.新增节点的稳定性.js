@@ -60,7 +60,7 @@ describe('新增节点的稳定性', () => {
         console.log(`吊销节点${notes[1].name}的证书, 节点间将无法同步区块`);
         
         await remote.execute('sys.aliance.delete', [notes[1].id, notes[1].aliance]);
-        await remote.wait(8000);
+        await remote.wait(10000);
     });
 
     it('节点1为Alice账户持续转账', async () => {
@@ -109,16 +109,18 @@ describe('新增节点的稳定性', () => {
 
         let recy = true, count = 0;
         while(recy && count++ < 10) {
-            let ret = await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].inner}:${notes[1].tcp}`]);
-            assert(!ret.error);
+            await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].inner}:${notes[1].tcp}`]);
+            await remote.wait(2000);
+            await remote.execute('sys.aliance.create', ['bookmansoft', notes[1].id, notes[1].aliance, `${notes[1].inner}:${notes[1].tcp}`]);
             await remote.wait(2000);
 
-            ret = await remote.execute('sys.peerinfo', []);
+            let ret = await remote.execute('sys.peerinfo', []);
             assert(!ret.error);
 
             for(let item of ret) {
                 if(item && item.subver && item.subver.indexOf(notes[1].name) != -1 && !!item.inbound) {
                     recy = false;
+                    await remote.wait(5000);
                     break;
                 }
             }
