@@ -13,9 +13,9 @@
  */
 
 const assert = require('assert')
-const connector = require('../lib/remote/connector')
+const connector = require('../../lib/remote/connector')
+const {notes} = require('../../lib/remote/common')
 const uuid = require('uuid/v1')
-const {notes} = require('../lib/remote/common')
 
 const remote = connector({
     ip: notes[0].ip,        //RPC地址

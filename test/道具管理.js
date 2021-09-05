@@ -10,7 +10,7 @@
 
 const uuid = require('uuid/v1')
 const assert = require('assert')
-const remote = (require('../test/online/connector'))();
+const remote = (require('../lib/remote/connector'))();
 
 let env = {
     alice: {

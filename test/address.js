@@ -3,7 +3,7 @@
  * Creted by liub 2018.9.11
  */
 
-const remote = (require('./connector'))();
+const remote = (require('../lib/remote/connector'))();
 
 /**
  * 测试所用的地址

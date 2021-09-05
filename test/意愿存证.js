@@ -5,9 +5,9 @@
 
 const assert = require('assert');
 const uuid = require('uuid/v1')
-const gamegold = require('../lib/gamegold');
+const gamegold = require('gamegold');
 const digest = gamegold.crypto.digest;
-const remote = (require('../test/online/connector'))();
+const remote = (require('../lib/remote/connector'))();
 
 //设定测试所需的环境变量
 let env = {

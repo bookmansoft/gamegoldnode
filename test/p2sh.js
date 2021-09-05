@@ -3,7 +3,7 @@
  * Creted by liub 2018.12.13
  */
 
-const remote = (require('./connector'))();
+const remote = (require('../lib/remote/connector'))();
 const assert = require('assert');
 
 //建立上下文对象

@@ -4,7 +4,7 @@
  */
 
 const assert = require('assert')
-const remote = (require('./connector'))();
+const remote = (require('../lib/remote/connector'))();
 
 describe.skip('区块相关的JSONP', function() {
     it('RESTFUL/GET 查询区块信息', async () => {

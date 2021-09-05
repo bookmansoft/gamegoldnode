@@ -4,7 +4,7 @@
 const uuid = require('uuid/v1');
 const assert = require('assert');
 //创建授权式连接器实例
-const remote = (require('./connector'))({structured: true})
+const remote = (require('../lib/remote/connector'))({structured: true})
 
 /**
  * 交易对合约的状态

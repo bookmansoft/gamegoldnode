@@ -7,8 +7,8 @@
  */
 
 const assert = require('assert')
-const connector = require('../lib/remote/connector')
-const {notes} = require('../lib/remote/common')
+const connector = require('../../lib/remote/connector')
+const {notes} = require('../../lib/remote/common')
 
 const remoteA = connector({
     structured: true,

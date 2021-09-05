@@ -4,7 +4,7 @@
 
 const uuid = require('uuid/v1')
 const assert = require('assert');
-const remote = (require('./connector'))({structured: true});
+const remote = (require('../lib/remote/connector'))({structured: true});
 
 describe.skip('厂商管理流程', () => {
     let cp = {};

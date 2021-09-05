@@ -11,8 +11,8 @@
 
 const assert = require('assert')
 const uuid = require('uuid/v1');
-const connector = require('../lib/remote/connector')
-const {notes} = require('../lib/remote/common')
+const connector = require('../../lib/remote/connector')
+const {notes} = require('../../lib/remote/common')
 
 let env = {
     bossOid: 'xxxxxxxx-vallnet-boss-tokenxxxxx0000',

@@ -4,12 +4,12 @@
 
 const assert = require('assert')
 const uuid = require('uuid/v1');
-const gamegold = require('../lib/gamegold')
+const gamegold = require('gamegold')
 const Address = gamegold.address;
 const digest = gamegold.crypto.digest;
 const KeyRing = gamegold.keyring;
 
-const connector = require('../test/online/connector')
+const connector = require('../lib/remote/connector')
 const remote = connector();
 
 //建立上下文对象

@@ -9,7 +9,7 @@
  */
 
 const uuid = require('uuid/v1');
-const remote = (require('./connector'))();
+const remote = (require('../lib/remote/connector'))();
 
 let env = {}; //在多个测试用例间传递中间结果的缓存变量
 let oid = "propBid-oid"+ uuid().slice(0,25);

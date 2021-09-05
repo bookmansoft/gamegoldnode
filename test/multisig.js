@@ -3,7 +3,7 @@
  */
 
 const assert = require('assert')
-const remote = (require('./connector'))();
+const remote = (require('../lib/remote/connector'))();
 
 //声明中间环境变量
 let env = {

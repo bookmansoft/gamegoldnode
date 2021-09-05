@@ -10,10 +10,10 @@
 
 const assert = require('assert')
 const uuid = require('uuid/v1');
-const connector = require('../test/online/connector');
+const connector = require('../lib/remote/connector');
 
 //引入核心库，在包引入模式下直接使用 require('gamegold')
-const gamegold = require('../lib/gamegold');
+const gamegold = require('gamegold');
 const consensus = gamegold.consensus;
 
 let env = {

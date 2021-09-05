@@ -1,5 +1,5 @@
 const assert = require('assert');
-const remote = (require('./connector'))();
+const remote = (require('../lib/remote/connector'))();
 
 let env = {
     address: [],

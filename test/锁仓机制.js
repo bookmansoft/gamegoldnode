@@ -6,10 +6,10 @@
 
 const assert = require('assert');
 const uuidv1 = require('uuid/v1');
-const remote = (require('../test/online/connector'))({structured: true});
+const remote = (require('../lib/remote/connector'))({structured: true});
 
 //引入核心库，在包引入模式下直接使用 require('gamegold')
-const gamegold = require('../lib/gamegold');
+const gamegold = require('gamegold');
 const consensus = gamegold.consensus;
 const {outputLockType} = gamegold.script;
 

@@ -5,8 +5,8 @@
 const uuid = require('uuid/v1')
 const uuidv1 = require('uuid/v1');
 const assert = require('assert');
-const remote = (require('./connector'))({structured: true});
-const gamegold = require('../../lib/gamegold');
+const remote = (require('../lib/remote/connector'))({structured: true});
+const gamegold = require('gamegold');
 const digest = gamegold.crypto.digest;
 const Address = gamegold.address;
 

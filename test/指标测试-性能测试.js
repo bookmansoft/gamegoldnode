@@ -3,7 +3,7 @@
  */
 
 const uuid = require('uuid/v1')
-const remote = (require('../test/online/connector'))();
+const remote = (require('../lib/remote/connector'))();
 
 let env = {
     alice: {name: uuid()},

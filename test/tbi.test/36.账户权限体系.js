@@ -14,8 +14,8 @@
 
 const assert = require('assert')
 const uuid = require('uuid/v1');
-const connector = require('../lib/remote/connector')
-const {notes} = require('../lib/remote/common')
+const connector = require('../../lib/remote/connector')
+const {notes} = require('../../lib/remote/common')
 
 //创建超级用户使用的连接器
 const remote = connector({

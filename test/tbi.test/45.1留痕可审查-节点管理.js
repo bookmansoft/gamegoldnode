@@ -11,9 +11,8 @@
     预期结果：披露信息完整，演示与披露一致，关键操作均有留痕。
  */
 
-const assert = require('assert');
-const connector = require('../lib/remote/connector')
-const {notes} = require('../lib/remote/common')
+const connector = require('../../lib/remote/connector')
+const {notes} = require('../../lib/remote/common')
 
 const remote = connector({
     structured: true,

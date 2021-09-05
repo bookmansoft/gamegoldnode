@@ -3,7 +3,7 @@
  * Creted by liub 2018.9.11
  */
 
-const remote = (require('./connector'))();
+const remote = (require('../lib/remote/connector'))();
 
 describe.skip('交易相关的JSONP', function() {
     it('获取相关的交易信息', async () => {

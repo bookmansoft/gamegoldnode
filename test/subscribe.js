@@ -3,7 +3,7 @@
  * Creted by liub 2018.9.11
  */
 
-const remote = (require('./connector'))();
+const remote = (require('../lib/remote/connector'))();
 
 describe.skip('订阅与退订', function() {
     it('订阅区块消息', async () => {

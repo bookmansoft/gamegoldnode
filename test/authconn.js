@@ -3,7 +3,7 @@
  */
 
 const toolkit = require('gamerpc')
-const remote = (require('./connector'))();
+const remote = (require('../lib/remote/connector'))();
 
 describe.skip('授权式连接器测试', () => {
     it('打印厂商列表', async () => {

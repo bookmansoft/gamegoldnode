@@ -9,7 +9,7 @@
 
 const assert = require('assert');
 const uuid = require('uuid/v1')
-const connector = require('../test/online/connector')
+const connector = require('../lib/remote/connector')
 
 //连接Alice的全节点
 const remoteA = connector({

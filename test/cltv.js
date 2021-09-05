@@ -6,9 +6,9 @@
 
 const assert = require('assert');
 const uuidv1 = require('uuid/v1');
-const remote = (require('./connector'))({structured: true});
-const {outputLockType} = require('../../lib/script/script');
-const {SEQUENCE_GRANULARITY} = require('../../lib/protocol/consensus');
+const remote = (require('../lib/remote/connector'))({structured: true});
+const {outputLockType} = gamegold.script;
+const consensus = gamegold.consensus;
 
 let env = {
     alice: {},
@@ -128,7 +128,7 @@ describe.skip('GIP0027', function() {
                 }
 
                 case outputLockType.CHECKRELATIVETIME: {
-                    await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})((1<<SEQUENCE_GRANULARITY)*1000);
+                    await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})((1<<consensus.SEQUENCE_GRANULARITY)*1000);
                     //为满足中值时间的要求，多挖了几个块
                     let ret = await remote.execute('miner.generate.admin', [15]);
                     assert(ret.code == 0);

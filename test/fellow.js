@@ -4,7 +4,7 @@
 
 const uuid = require('uuid/v1');
 const assert = require('assert');
-const remote = (require('./connector'))({structured: true});
+const remote = (require('../lib/remote/connector'))({structured: true});
 // 超级节点Cp编号,由它发行所有的矿产证
 let bossCid = 'xxxxxxxx-vallnet-boss-xxxxxxxxxxxxxx';
 let bossOid = 'xxxxxxxx-vallnet-boss-tokenxxxxx0000';
