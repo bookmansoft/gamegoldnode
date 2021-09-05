@@ -1,6 +1,6 @@
 {
   "name": "gamegoldnode",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Vallnet Node",
   "main": "index.js",
   "scripts": {
@@ -9,6 +9,7 @@
     "slaver": "node index.js --genesis --bip150=true --bip151=true --network=testnet --dev-mode=false --password=bookmansoft --workers=true --mining=false --workers-timeout=60000 --coin-cache=100000 --nodes=127.0.0.1:2100 --port-offset=10 --prefix=~/.gamegold/client1 --keystore=testnet-mchain-1.keystore",
     "slaver2": "node index.js --genesis --bip150=true --bip151=true --network=testnet --dev-mode=false --password=bookmansoft --workers=true --mining=false --workers-timeout=60000 --coin-cache=100000 --nodes=127.0.0.1:2100 --port-offset=20 --prefix=~/.gamegold/client2 --keystore=testnet-mchain-2.keystore",
     "slaver3": "node index.js --genesis --bip150=true --bip151=true --network=testnet --dev-mode=false --password=bookmansoft --workers=true --mining=false --workers-timeout=60000 --coin-cache=100000 --nodes=127.0.0.1:2100 --port-offset=30 --prefix=~/.gamegold/client3 --keystore=testnet-mchain-3.keystore",
+    "main": "node index.js --genesis --debug=true --mining=false --network=main --password=bookmansoft --log-file=true --workers=true --workers-timeout=60000 --coin-cache=100000",
     "cli": "node bin/cli --port=2102",
     "test": "mocha --reporter spec test/*.js"
   },

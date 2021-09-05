@@ -1,5 +1,5 @@
 /**
- * 联机单元测试：智能合约的全生命周期管理
+ * 联机单元测试：跨合约调用
  * @description
     验证系统是否支跨合约调用
     1. 披露系统跨合约调用的规则
@@ -27,7 +27,7 @@ let env = {
     alice: {},
 };
 
-describe('智能合约的全生命周期管理', () => {
+describe('跨合约调用', () => {
     before(async () => {
         await remote.execute('miner.setsync.admin', [true]);
         let ret = await remote.execute('block.tips', []);
