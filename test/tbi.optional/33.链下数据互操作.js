@@ -24,22 +24,28 @@ const remoteA = connector({
 });
 
 describe('链下数据互操作', () => {
-    it('加密钱包', async () => {
-        let ret = await remoteA.execute('wallet.encrypt', ['hello']);
+    before(async () => {
+        await remoteA.execute('miner.setsync.admin', [true]);
+        let ret = await remoteA.execute('block.tips', []);
+        if(ret.result[0].height < 120) {
+            await remoteA.execute('miner.generate.admin', [120 - ret.result[0].height]);
+        }
+        await remoteA.wait(500);
+    });
+
+    it('链上从链下获取数据', async () => {
+        let ret = await remoteA.execute('oracle.send', ['state', 100, 1000000]);
         assert(!ret.error);
     });
-    it('打印处于加密状态的主私钥', async () => {
-        let ret = await remoteA.execute('key.master.admin', []);
-        assert(!ret.error);
-        console.log(ret.result);
+
+    it('形成共识', async () => {
+        await remoteA.execute('miner.generate.admin', [70]);
+        await remoteA.wait(1000);
     });
-    it('解密钱包', async () => {
-        let ret = await remoteA.execute('wallet.decrypt', ['hello']);
+
+    it('链下从链上获取数据', async () => {
+        let ret = await remoteA.execute('oracle.check', ['state']);
         assert(!ret.error);
-    });
-    it('打印处于解密状态的主私钥和助记词', async () => {
-        let ret = await remoteA.execute('key.master.admin', []);
-        assert(!ret.error);
-        console.log(ret.result);
+        assert(ret.result.k == 'state' && ret.result.v == 100);
     });
 });

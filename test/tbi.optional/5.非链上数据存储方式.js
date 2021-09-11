@@ -5,7 +5,9 @@
     披露内容包括：
     1.支持的数据库类型，支持数据库类型灵活配置
     系统当前支持[leveldb]和[indexeddb] lib/db/backends.js lib/db/backends-browser.js
-    非链上数据采用哈希前缀树模式存储，例如:
+
+    2.敏感数据加密存储
+    非链上数据采用哈希前缀树模式存储，其索引定义文件为 lib/wallet/layout.js，形式如下所示:
         // const layout = {
         //     binary: true,
         //     * CP[cid] -> cpItem  使用长度36的生产者编码cid生成键, 映射到生产者注册信息
@@ -28,8 +30,8 @@
         //     },
         // }
 
-    2.敏感数据加密存储
-    
+    钱包中的私钥信息属于非链上数据，以哈希前缀树模式，加密存储于专用库文件中。
+
     代码及配置项展示验证：
     1. 披露内容详尽
  */
@@ -44,20 +46,46 @@ const remoteA = connector({
     port: notes[0].rpc,    //RPC端口
 });
 
+const env = {};
+
 describe('非链上数据存储方式', () => {
     it('加密钱包', async () => {
         let ret = await remoteA.execute('wallet.encrypt', ['hello']);
         assert(!ret.error);
     });
+
     it('打印处于加密状态的主私钥', async () => {
         let ret = await remoteA.execute('key.master.admin', []);
         assert(!ret.error);
         console.log(ret.result);
     });
+
+    it('执行一笔交易: 失败', async () => {
+        let ret = await remoteA.execute('address.create', []);
+        env.address = ret.result.address;
+
+        ret = await remoteA.execute('tx.send', [ret.result.address, 1000000]);
+        assert(!!ret.error);
+    });
+
+    it('解锁钱包', async () => {
+        let ret = await remoteA.execute('wallet.unlock', ['hello', 0]);
+        assert(!ret.error);
+    });
+
+    it('执行一笔交易: 成功', async () => {
+        let ret = await remoteA.execute('address.create', []);
+        env.address = ret.result.address;
+
+        ret = await remoteA.execute('tx.send', [ret.result.address, 1000000]);
+        assert(!ret.error);
+    });
+
     it('解密钱包', async () => {
         let ret = await remoteA.execute('wallet.decrypt', ['hello']);
         assert(!ret.error);
     });
+
     it('打印处于解密状态的主私钥和助记词', async () => {
         let ret = await remoteA.execute('key.master.admin', []);
         assert(!ret.error);

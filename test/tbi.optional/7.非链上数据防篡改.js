@@ -24,10 +24,6 @@ const remote = connector({
 });
 
 let env = {
-    eve: {
-        name: uuid(),
-        address: '',
-    },
     bob: {
         name: uuid(),
         address: '',
@@ -48,14 +44,17 @@ describe('非链上数据防篡改', () => {
         await remote.wait(500);
     });
 
-    it('创建Eve账户', async () => {
-        await remote.execute('account.create', [{name: env.eve.name}]);
+    it('创建测试用账户', async () => {
         await remote.execute('account.create', [{name: env.bob.name}]);
         await remote.execute('account.create', [{name: env.eve.name}]);
 
         let ret = await remote.execute('address.receive', [env.eve.name]);
         assert(!ret.error);
         env.eve.address = ret.result;
+
+        ret = await remote.execute('address.receive', [env.bob.name]);
+        assert(!ret.error);
+        env.bob.address = ret.result;
     });
 
     it('查询Eve账户的余额：0', async () => {
@@ -76,12 +75,12 @@ describe('非链上数据防篡改', () => {
     });
 
     it('从改变的Eve账户向外部转账：失败', async () => {
-        let ret = await remote.execute('tx.send', [env.eve.address, 100000000 , env.eve.name]);
+        let ret = await remote.execute('tx.send', [env.eve.address, 10000000 , env.eve.name]);
         assert(!!ret.error);
     });
 
     it('从正常账户向外部转账：成功', async () => {
-        let ret = await remote.execute('tx.send', [env.eve.address, 100000000]);
+        let ret = await remote.execute('tx.send', [env.bob.address, 10000000]);
         assert(!ret.error);
     });
 

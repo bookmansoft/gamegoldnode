@@ -3,6 +3,23 @@
  * @description
     验证系统是否支跨合约调用
     1. 披露系统跨合约调用的规则
+        //跨合约调用原理描述：在A合约内，通过发起一笔附加留言交易来调用B合约
+        await send(
+            {
+                outputs: [{
+                    address: dstAddress,    //B合约地址
+                    value: value,           //调用费用
+                }],
+                comment: JSON.stringify({
+                    oper: 'scrun',          //调用操作符
+                    $tag: 'inner',          //嵌套标志
+                    params: {},             //B合约传入参数
+                }),
+            }, 
+            srcAddress,                     //A合约地址
+        );
+        //只有原始合约会通过网络传播，嵌套合约由共识节点本地计算并核验
+
     2. 创建合约A和B
     3. 在合约A中调用合约B的方法
 
@@ -21,7 +38,7 @@ const remote = connector({
 });
 
 let env = {
-    recy: 10,               //单元测试循环次数
+    recy: 3,               //单元测试循环次数
     contractA: {},
     contractB: {},
     alice: {},

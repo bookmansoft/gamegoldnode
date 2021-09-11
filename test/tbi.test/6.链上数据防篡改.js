@@ -29,10 +29,6 @@ let env = {
         name: uuid(),
         address: '',
     },
-    bob: {
-        name: uuid(),
-        address: '',
-    },
     eve: {
         name: uuid(),
         address: '',
@@ -51,7 +47,6 @@ describe('链上数据防篡改', () => {
 
     it('创建Alice账户', async () => {
         await remote.execute('account.create', [{name: env.alice.name}]);
-        await remote.execute('account.create', [{name: env.bob.name}]);
         await remote.execute('account.create', [{name: env.eve.name}]);
 
         let ret = await remote.execute('address.receive', [env.eve.name]);
@@ -60,7 +55,7 @@ describe('链上数据防篡改', () => {
     });
 
     it('查询Alice账户的余额：0', async () => {
-        let ret = await remote.execute('balance.unconfirmed', [env.alice.name]);
+        let ret = await remote.execute('balance.confirmed', [env.alice.name]);
         assert(!ret.error);
         assert(ret.result == 0);
     });
@@ -71,18 +66,18 @@ describe('链上数据防篡改', () => {
     });
 
     it('查询Alice账户的余额：5', async () => {
-        ret = await remote.execute('balance.unconfirmed', [env.alice.name]);
+        ret = await remote.execute('balance.confirmed', [env.alice.name]);
         assert(!ret.error);
         assert(ret.result == 5);
     });
 
     it('从篡改的Alice账户向外部转账：失败', async () => {
-        let ret = await remote.execute('tx.send', [env.eve.address, 100000000 , env.alice.name]);
+        let ret = await remote.execute('tx.send', [env.eve.address, 10000000, env.alice.name]);
         assert(!!ret.error);
     });
 
     it('从正常账户向外部转账：成功', async () => {
-        let ret = await remote.execute('tx.send', [env.eve.address, 100000000]);
+        let ret = await remote.execute('tx.send', [env.eve.address, 10000000]);
         assert(!ret.error);
     });
 
@@ -92,7 +87,7 @@ describe('链上数据防篡改', () => {
     });
 
     it('查询Alice账户的余额：0', async () => {
-        ret = await remote.execute('balance.unconfirmed', [env.alice.name]);
+        ret = await remote.execute('balance.confirmed', [env.alice.name]);
         assert(!ret.error);
         assert(ret.result == 0);
     });
