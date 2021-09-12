@@ -16,6 +16,9 @@
 const assert = require('assert');
 const connector = require('../../lib/remote/connector')
 const {notes} = require('../../lib/remote/common')
+//引入核心库，在包引入模式下直接使用 require('gamegold')
+const gamegold = require('gamegold');
+const consensus = gamegold.consensus;
 
 const remoteA = connector({
     structured: true,
@@ -39,7 +42,7 @@ describe('链下数据互操作', () => {
     });
 
     it('形成共识', async () => {
-        await remoteA.execute('miner.generate.admin', [70]);
+        await remoteA.execute('miner.generate.admin', [consensus.retargetInterval]);
         await remoteA.wait(1000);
     });
 
