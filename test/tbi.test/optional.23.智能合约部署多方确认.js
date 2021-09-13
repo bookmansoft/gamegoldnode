@@ -69,7 +69,7 @@ describe('智能合约部署多方确认', () => {
 
         //上链
         await remote.execute('miner.generate.admin', [1]);
-        await remote.wait(2000);
+        await remote.wait(3000);
     });
 
     it('查询公共服务列表，上述合约尚未上榜', async () => {
@@ -81,7 +81,7 @@ describe('智能合约部署多方确认', () => {
 
     it('管理员的投票结果经过一个投票周期后形成共识', async () => {
         await remote.execute('miner.generate.admin', [consensus.retargetInterval]);
-        await remote.wait(1000);
+        await remote.wait(3000);
 
         let ret = await remote.execute('sc.query', [[['options.dst', env.contract.address], ['options.consensus', 1]]]);
         assert(ret.list.length == 1);
