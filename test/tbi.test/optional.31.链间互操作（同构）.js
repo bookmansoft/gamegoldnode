@@ -56,7 +56,7 @@
    });
  
    before(async ()=>{
-     net_main = exec(`npm run main`, function(err, stdout, stderr) {
+     net_main = exec(`node index.js --genesis --debug=true --mining=false --network=main --password=bookmansoft --log-file=true --workers=true --workers-timeout=60000 --coin-cache=100000`, function(err, stdout, stderr) {
        if(err) {
            console.log(stderr);
        } else {
