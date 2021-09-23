@@ -124,7 +124,7 @@ class CLI
     if(this.args['network']) {
       network = this.args['network'];
     }
-    let httpRemotePort = 2102; //testnet 的默认端口
+    let httpRemotePort = 2002; //testnet 的默认端口
     if(this.args['port']) {
       httpRemotePort = this.args['port'];
     }
