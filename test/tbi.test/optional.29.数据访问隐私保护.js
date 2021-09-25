@@ -1,41 +1,58 @@
 /**
- * 联机单元测试：数据访问隐私保护
- * @description
-    披露区块链系统数据访问隐私保护方案，如数据存储隔离，数据加密存储，数据访问权限管理等
-    
-    预期结果：展示结果与披露项一致
+ * 可信区块链功能测试
+ * 检验项目：
+ *  (29). 数据访问隐私保护
+ * 测试目的：
+ *  披露区块链系统数据访问隐私保护方案
+ * 前置条件：
+ *  部署1、2、3、4共四个节点，确保其稳定运行
+ * 测试流程：
+ *  1. 数据存储隔离
+ *  2. 数据加密存储
+ *  3. 数据访问权限管理
+ * 预期结果：展示结果与披露项一致
  */
 
+//#region 引入SDK
 const assert = require('assert')
 const uuid = require('uuid/v1')
 const connector = require('../../lib/remote/connector')
 const {notes} = require('../../lib/remote/common')
+const exec = require('child_process').exec; 
+let net_main = null;
+//#endregion
 
-//创建超级用户使用的连接器
+//#region 生成远程连接组件
 const remote = connector({
     structured: true,
     ip: notes[0].ip,        //RPC地址
     port: notes[0].rpc,    //RPC端口
 });
-//创建普通用户使用的连接器
 const remoteOperator = connector({
     structured: true,
     ip: notes[0].ip,        //RPC地址
     port: notes[0].rpc,    //RPC端口
 });
+const remoteClone = connector({
+    structured: true,
+    type: 'main',
+});
+//#endregion
 
-//中间环境变量
+//#region 申明环境变量
 let env = {
     alice: {name: `Alice-${uuid()}`,},
     bob: {name: `Bob-${uuid()}`,},
     account: "oper-"+ uuid().slice(0,31), //生成随机的操作员账号
     amount: 100000000,
 };
+//#endregion
 
-
-describe('链上数据存储方式', function() {
+describe('数据访问隐私保护', function() {
     after(()=>{
         remote.close();
+        remoteOperator.close();
+        remoteClone.close();
     });
 
     before(async () => {
@@ -50,96 +67,89 @@ describe('链上数据存储方式', function() {
         }
         await remote.execute('miner.generate.admin', [1]);
         await remote.wait(500);
-
-        //设置长连模式
-        remote.setmode(remote.CommMode.ws, async () => { });
-        //设置事件处理句柄
-        remote.watch(async msg => {
-            console.log('[收到一个加密消息]');
-            console.log(`发送:${msg.from}`);
-            console.log(`接收:${msg.to}`);
-            console.log(`内容:${msg.content}`);
-
-            console.log('[查看链上消息记录]');
-            let ret = await remote.execute('comm.listNotify', [[['body.dst', env.bob.address]]]);
-            for(let item of ret.result.list) {
-                if(!!item.body.content.packet) {
-                    console.log(`发送:${item.body.src}`);
-                    console.log(`接收:${item.body.dst}`);
-                    console.log(`内容:${item.body.content.packet}`);
-                    console.log(`序号:${item.sn}`);
-                    console.log(`高度:${item.h}`);
-                }
-            }
-        }, 'notify.secret');
     });
 
-    it('发送加密消息：Alice发送消息给Bob', async () => {
-        let ret = await remote.execute('address.create', [env.bob.name]);
-        assert(ret.code == 0);
-        env.bob.address = ret.result.address;
-        console.log(`Bob的收信地址: ${env.bob.address}`);
-
-        //通讯握手，消息内容可设置为空
-        await remote.execute('comm.secret', [
-            env.bob.address,
-            '',
-            env.alice.name,
-        ]);
-        await remote.wait(1000);
-
-        await remote.execute('comm.secret', [
-            env.bob.address,
-            `${env.bob.name}, 您好！`,
-            env.alice.name,
-        ]);
-        await remote.wait(3000);
+    it('数据存储隔离', async () => {
+       //启动一个进程，运行一个新的节点，可以观测到，新的节点所有数据独立保存在 /clone 目录下
+       net_main = exec(`node index.js --network=main --prefix=~/.gamegold/clone`, function(err, stdout, stderr) {
+        if(err) {
+            console.log(stderr);
+        }
+      });
+      net_main.on('exit', () => { });
+      await remoteClone.wait(3000);
+      await remoteClone.execute('sys.stop.admin', []);
+      await remoteClone.wait(6000);
     });
 
-    it('分配令牌：超级用户为普通用户映射账户并分配令牌', async () => {
-        //超级用户执行指令，为普通用户分配令牌
+    it('数据加密存储', async () => {
+        //连接节点1，使用指定密码加密钱包
+        let ret = await remoteA.execute('wallet.encrypt', ['hello']);
+        assert(!ret.error);
+
+        //查询并打印处于加密状态的钱包主私钥
+        ret = await remoteA.execute('key.master.admin', []);
+        assert(!ret.error);
+        console.log(ret.result);
+
+        //执行一笔转账交易
+        ret = await remoteA.execute('address.create', []);
+        env.address = ret.result.address;
+        ret = await remoteA.execute('tx.send', [ret.result.address, 1000000]);
+        //断言失败，因为钱包处于加密状态
+        assert(!!ret.error);
+
+        //执行钱包永久解锁操作，必须使用加密时相同的密码
+        ret = await remoteA.execute('wallet.decrypt', ['hello']);
+        assert(!ret.error);
+
+        //执行一笔转账交易
+        ret = await remoteA.execute('address.create', []);
+        env.address = ret.result.address;
+        ret = await remoteA.execute('tx.send', [ret.result.address, 1000000]);
+        //断言操作成功
+        assert(!ret.error);
+
+        //连接节点1，查询并打印处于解密状态的钱包主私钥
+        ret = await remoteA.execute('key.master.admin', []);
+        assert(!ret.error);
+        console.log(ret.result);
+    });
+
+    it('数据访问权限管理', async () => {
+        //系统管理员使用SDK连接节点1，为普通用户分配令牌
         let ret = await remote.execute('sys.createAuthToken', [env.account]);
         //解密得到令牌明文，分配给普通用户
         env.opToken = remote.decryptToken(ret.result[0].encry);
 
-        //普通用户使用令牌信息设置连接器属性
+        //普通用户使用令牌信息设置连接器属性，连接节点1，执行受限指令失败(添加权限前)
         remoteOperator.setup({
             type: 'testnet', 
             cid: env.account, 
             token: env.opToken,
         });
-    });
-
-    it('添加权限前：普通用户执行受限指令 - 失败', async () => {
-        console.log(`生成地址`);
-        let ret = await remoteOperator.execute('address.create', []);
+        ret = await remoteOperator.execute('address.create', []);
         assert(ret.error);
         console.log(ret.error);
-    });
 
-    it('添加成员：超级用户将指定用户加入指定角色的成员列表', async () => {
+        //系统管理员连接节点1，为普通用户分配权限
         await remote.execute('sys.groupPrefix', [[['address', env.account]]]);
         await remote.execute('sys.groupSuffix', [[['admin', env.account]]]);
-    });
 
-    it('添加权限后：普通用户执行受限指令 - 成功', async () => {
-        let ret = await remoteOperator.execute('address.create', []);
+        //普通用户连接节点1，执行受限指令成功(添加权限后)
+        ret = await remoteOperator.execute('address.create', []);
         assert(!ret.error);
         console.log(`生成地址:${ret.result.address}`);
-
         ret = await remoteOperator.execute('address.key.admin', [ret.result.address]);
         assert(!ret.error);
         console.log(`查询私钥:${ret.result.privateKey}`);
-    });
 
-    it('移除成员：超级用户将指定用户移出指定角色的成员列表', async () => {
+        //系统管理员连接节点1，移除普通用户相关权限
         await remote.execute('sys.groupPrefix', [[['address', env.account]], true]);
         await remote.execute('sys.groupSuffix', [[['admin', env.account]], true]);
-    });
 
-    it('移除权限后：普通用户执行受限指令 - 失败', async () => {
-        console.log(`生成地址`);
-        let ret = await remoteOperator.execute('address.create', []);
+        //普通用户连接节点1，执行受限指令失败(已被移除权限)
+        ret = await remoteOperator.execute('address.create', []);
         assert(!!ret.error);
         console.log(ret.error);
     });
