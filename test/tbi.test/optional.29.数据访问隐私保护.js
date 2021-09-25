@@ -84,34 +84,34 @@ describe('数据访问隐私保护', function() {
 
     it('数据加密存储', async () => {
         //连接节点1，使用指定密码加密钱包
-        let ret = await remoteA.execute('wallet.encrypt', ['hello']);
+        let ret = await remote.execute('wallet.encrypt', ['hello']);
         assert(!ret.error);
 
         //查询并打印处于加密状态的钱包主私钥
-        ret = await remoteA.execute('key.master.admin', []);
+        ret = await remote.execute('key.master.admin', []);
         assert(!ret.error);
         console.log(ret.result);
 
         //执行一笔转账交易
-        ret = await remoteA.execute('address.create', []);
+        ret = await remote.execute('address.create', []);
         env.address = ret.result.address;
-        ret = await remoteA.execute('tx.send', [ret.result.address, 1000000]);
+        ret = await remote.execute('tx.send', [ret.result.address, 1000000]);
         //断言失败，因为钱包处于加密状态
         assert(!!ret.error);
 
         //执行钱包永久解锁操作，必须使用加密时相同的密码
-        ret = await remoteA.execute('wallet.decrypt', ['hello']);
+        ret = await remote.execute('wallet.decrypt', ['hello']);
         assert(!ret.error);
 
         //执行一笔转账交易
-        ret = await remoteA.execute('address.create', []);
+        ret = await remote.execute('address.create', []);
         env.address = ret.result.address;
-        ret = await remoteA.execute('tx.send', [ret.result.address, 1000000]);
+        ret = await remote.execute('tx.send', [ret.result.address, 1000000]);
         //断言操作成功
         assert(!ret.error);
 
         //连接节点1，查询并打印处于解密状态的钱包主私钥
-        ret = await remoteA.execute('key.master.admin', []);
+        ret = await remote.execute('key.master.admin', []);
         assert(!ret.error);
         console.log(ret.result);
     });
