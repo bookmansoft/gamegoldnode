@@ -4,9 +4,8 @@
   "description": "Vallnet Node",
   "main": "index.js",
   "scripts": {
-    "start":  "node index.js --genesis --debug=true --mining=false --network=testnet --password=bookmansoft --log-file=true --workers=true --workers-timeout=60000 --coin-cache=100000",
-    "master": "node index.js --genesis --bip150=false --bip151=false --network=main --dev-mode=false --workers=true --mining=false --nodes=127.0.0.1:2000",
-    "slaver": "node index.js --genesis --bip150=false --bip151=false --network=main --dev-mode=false --workers=true --mining=false --nodes=127.0.0.1:2100 --port-offset=10 --prefix=~/.gamegold/client1 --keystore=testnet-mchain-1.keystore --password=bookmansoft",
+    "start":  "node index.js --genesis --workers=false --network=testnet --dev-mode=true --mining=false --debug=true --log-file=true",
+    "master": "node index.js --genesis --workers=true --network=main --dev-mode=false  --mining=false",
     "cli": "node bin/cli --port=2002"
   },
   "bin": {
