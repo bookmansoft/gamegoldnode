@@ -4,9 +4,9 @@
   "description": "Vallnet Node",
   "main": "index.js",
   "scripts": {
-    "start":  "node index.js --genesis --workers=false --network=testnet --dev-mode=true --mining=false --debug=true --log-file=true",
-    "master": "node index.js --genesis --network=main --mining=false --workers=false --bip150=true --bip151=true --password=bookman --keystore=main-bookman-1.keystore",
-    "slaver": "node index.js --genesis --network=main --mining=false --workers=false --bip150=true --bip151=true --password=bookman --keystore=main-bookman-2.keystore --nodes=127.0.0.1:2000 --port-offset=10 --prefix=~/.gamegold/slaver",
+    "start":  "node index.js --workers=false --network=testnet --dev-mode=true --mining=false --debug=true --log-file=true",
+    "master": "node index.js --network=main --mining=false --workers=false --bip150=true --bip151=true",
+    "slaver": "node index.js --network=main --mining=false --workers=false --bip150=true --bip151=true --nodes=127.0.0.1:2000 --password=bookman --keystore=main-bookman-1.keystore --port-offset=10 --prefix=~/.gamegold/slaver",
     "cli": "node bin/cli --port=2002"
   },
   "bin": {
