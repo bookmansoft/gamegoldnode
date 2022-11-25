@@ -1,0 +1,408 @@
+#!/usr/bin/env node
+
+'use strict';
+
+const gamegold = require('gamegold');
+
+const digest = gamegold.crypto.digest;
+const accessWallet = gamegold.accessWallet;
+const Mnemonic = gamegold.hd.Mnemonic;
+const Config = gamegold.config;
+const utils = gamegold.utils;
+const route = gamegold.route;
+const util = gamegold.util;
+const encrypt = util.encrypt;
+const decrypt = util.decrypt;
+const encoding = gamegold.encoding;
+const HDPrivateKey = gamegold.hd.PrivateKey;
+
+//默认连接的网络
+const DefaultNetworktype = 'testnet';
+const DefaultCid = gamegold.consensus.ROOT;
+
+/**
+ * 控制台行命令工具
+ * @note 可以在键入行命令时引入环境变量, 例如:
+ *  'gg block.tips --network=testnet --spv=true'
+ *  - 环境变量'--spv=true'可以简写为'--spv'
+ *  - 指定 network 变量后，cli自动从配置文件中读取对应端口设置并连接节点
+ */
+class CLI
+{
+  /**
+   * 构造函数
+   */
+  constructor() {
+    this.config = new Config({module: 'gamegold'});
+
+    this.config.load({
+      argv: true,
+      env: true
+    }); 
+    //@note this.config.args 至此才会载入
+
+    this.argv = this.config.argv;
+    this.args = this.config.args;
+
+    /**
+     * 命令行关键字对应函数映射表
+     */
+    this.nodeFunc = {
+      '?': this.help,
+      'encrypt': this.encrypt,
+      'decrypt': this.decrypt,
+      'createAuthToken': this.createAuthToken,
+      'signObj': this.signObj,
+      'sign': this.sign,
+      'hash': this.getHash,
+      'verify': this.verify,
+      'revHex': this.revHex,
+      'showHex': this.showHex,
+      'wallet.create': this.mkwallet,
+      'wallet.select': this.selectwallet,
+      'mnemonic.create': this.createMnemonic,
+      'hmac.calc': this.hmacCalc,
+      'listen': this.listen,
+      'default': this.rpc
+    };  
+  }
+
+  async help() {
+    this.log('Commands:');
+    this.log('  $ wallet.create [args]: create new wallet.');
+    this.log('  $ wallet.select id: select a wallet and use it.');
+    this.log('  $ mnemonic.create [args]: create new random mnemonic.');
+    this.log('  $ encrypt content key iv: encrypt content.');
+    this.log('  $ decrypt content key iv: decrypt content.');
+    this.log('  $ sign content [prikey]: sign content.');
+    this.log('  $ hash content: get hashHex of content.');
+    this.log('  $ verify content sig [pubKey]: verify sig of content.');
+    this.log('  $ revHex content: exchange content between Big-Endian and Little-Endian.');
+    this.log('  $ hmac.calc [cid token random]: create hmac calc.');
+    this.log('  $ listen: Listen for events.');
+    this.log('  $ command [args]: Execute RPC command.');
+  }
+
+  async hmacCalc() {
+    let params = {};
+
+    params.cid = this.config.str(0);
+    params.token = this.config.str(1);
+    params.random = this.config.str(2);
+
+    //计算并附加访问令牌
+    params.calc = gamegold.crypto.hmac('sha256', params.token, params.random).toString('hex');
+
+    console.log(params);
+  }
+
+  /**
+   * 日志打印
+   */
+  log(json) {
+    if (typeof json === 'string') {
+      return console.log.apply(console, arguments);
+    }
+    return console.log(JSON.stringify(json, null, 2));
+  };
+  
+  /**
+   * 销毁客户端组件
+   */
+  destroy() {
+    if (this.accessWallet)
+      this.accessWallet.destroy();
+  
+    return Promise.resolve();
+  };
+
+  /**
+   * 解析控制台输入，发起相应调用
+   */
+  async open() {
+    let network = DefaultNetworktype;
+    if(this.args['network']) {
+      network = this.args['network'];
+    }
+    let httpRemotePort = 2102; //testnet 的默认端口
+    if(this.args['port']) {
+      httpRemotePort = this.args['port'];
+    }
+    this.config.network = network;
+    this.config.options['network'] = network;
+    this.config.env['GAMEGOLD_NETWORK'] = network;
+    this.config.spv = false;
+    if(this.args['spv']) {
+      this.config.spv = true;
+    }
+    this.config.open();
+
+    let {token} = HDPrivateKey.getHmac(DefaultCid, Buffer.from(this.config.hmacSalt || encoding.DefaultChainCode, 'hex'));
+
+    let params = {
+      httpRemoteHost: this.config.str('http-remote-host'), //RPC服务主机地址
+      httpRemotePort,
+      spv: this.config.spv,
+      apiKey: this.config.str('api-key'),
+      network: this.config.str('network'),
+      id: this.config.str('wallet-id', 'primary'),
+      //分为非限定模式(cid=consensus.ROOT)和限定模式(限定访问cid对应的子账户)
+      cid: DefaultCid,  //授权节点编号，用于访问远程钱包时的认证
+      token,            //授权节点令牌固定量，用于访问远程钱包时的认证
+    };
+    //通讯客户端组件，用于访问远程服务器
+    this.accessWallet = new accessWallet(params);
+    //@note 钱包作为插件运行和作为节点时端口号并不一样，有一个偏移调整
+
+    if(this.args['wid']) {
+        this.accessWallet.client.id = this.args['wid'];
+    }
+
+    let cmd = this.argv.shift();
+    if(!!this.nodeFunc[cmd]) {
+      await this.nodeFunc[cmd].apply(this);
+    }
+    else {
+      this.argv.unshift(cmd);
+      await this.nodeFunc['default'].apply(this);
+    }
+  };
+
+  /**
+   * 创建助记词
+   */
+  async createMnemonic() {
+    if(this.argv.length != 3) {
+      this.log('Command Format: mnemonic.create language bits passphrase');
+      this.log('  language  : "simplified chinese", "traditional chinese", english, french, italian, japanese, spanish');
+      this.log('  bits      : 128 | 256 | 512');
+      this.log('  passphrase: random string');
+      return;
+    }
+    const m1 = Mnemonic.fromOptions({
+      language: this.argv[0],
+      bits: parseInt(this.argv[1]),
+      passphrase: this.argv[2],
+    });
+    console.log(m1.toJSON());
+  }
+
+  encrypt() {
+    let content = this.config.str(0);
+    let key = this.config.str(1);
+    let iv = this.config.str(2);
+
+    console.log(encrypt(key, iv, content));
+  }
+
+  decrypt() {
+    let content = this.config.str(0);
+    let key = this.config.str(1);
+    let iv = this.config.str(2);
+
+    if(!key || !iv) {
+      let buf = digest.hash256(Buffer.from(this.accessWallet.options.token));
+      key = buf.toString('base64').slice(0, 32);
+      buf = digest.hash256(buf);
+      iv = buf.toString('base64').slice(0, 16);
+    }
+
+    console.log(decrypt(key, iv, content));
+  }
+
+  createAuthToken() {
+    let cid = this.config.str(0);
+    let {token} = HDPrivateKey.getHmac(cid, Buffer.from(this.config.hmacSalt || encoding.DefaultChainCode, 'hex'));
+    console.log(token);
+  }
+
+  /**
+   * 对数据进行签名，数据以字符串形式输入，对象需要序列化。缺省使用系统默认私钥
+   */
+  sign() {
+    let msg = this.config.str(0);
+    let priv = this.config.str(1);
+    let key = utils.generateKey(priv);
+    let sig = utils.signObj(msg, key.private);
+
+    console.log({
+      msg: msg,
+      sig: sig.toString('base64'),
+      pub: key.public
+    });
+  }
+
+  signObj() {
+    let msg = this.config.obj(0);
+    let token = this.config.str(1);
+    let key = utils.generateKey(digest.hash256(Buffer.from(token)));
+    let sig = utils.signObj(msg, key.private);
+
+    console.log({
+      msg: msg,
+      sig: sig.toString('base64'),
+      pub: key.public
+    });
+  }
+
+  /**
+   * 对数据签名进行校验，签名需要序列化后输入。缺省使用系统默认公钥
+   */
+  verify() {
+    let msg = this.config.str(0);
+    let sig = this.config.buf(1, null, 'base64');
+    let pub = this.config.str(2, null);
+    console.log(utils.verifyObj(msg, sig, Buffer.from(pub, 'hex')));
+  }
+
+  revHex() {
+    let content = this.config.str(0);
+    console.log(util.revHex(content));
+  }
+
+  getHash() {
+    let content = this.config.str(0);
+    console.log(digest.hash256(Buffer.from(content)).toString('hex'));
+  }
+
+  showHex() {
+    let content = this.config.str(0);
+    console.log(Buffer.from(content, 'hex').toString());
+  }
+
+  /**
+   * 创建钱包的入口函数
+   */
+  async mkwallet() {
+    let options = this.config.obj(0); 
+    // id         //Wallet ID (used for storage)
+    // type       //Type of wallet (pubkeyhash, multisig) (default=pubkeyhash).
+    // m          //`m` value for multisig.
+    // n          //`n` value for multisig.
+    // mnemonic   //mnemonic phrase to use to instantiate an hd private key for wallet
+    // passphrase //passphrase to encrypt wallet
+    // master     //Master HD key. If not present, it will be generated.
+    // witness    //Whether to use witness programs.
+    // watch      //set true to create a watch-only wallet
+    // key        //public key used for multisig wallet
+
+    let wallet = await this.accessWallet.create(options);
+    this.accessWallet.client.id = wallet.id;
+    this.log(wallet);
+  }
+  
+  /**
+   * 选取钱包的入口函数
+   */
+  async selectwallet() {
+    //发起远程调用
+    let jsonp = await this.accessWallet.execute('wallet.info', [this.config.str([0, 'id'])]);
+    if(!jsonp.error) {
+      let wallet = jsonp.result;
+      //根据返回，设置新的当前钱包编号
+      this.accessWallet.client.id = wallet.id;
+      this.log(wallet);
+    } else {
+      this.log(jsonp.error.message);
+    }
+  }
+
+  async listen(){
+    await this.accessWallet.open();
+  
+    this.accessWallet.on('tx', (details) => {
+      this.log('TX:');
+      this.log(details);
+    });
+  
+    this.accessWallet.on('confirmed', (details) => {
+      this.log('TX confirmed:');
+      this.log(details);
+    });
+  
+    this.accessWallet.on('unconfirmed', (details) => {
+      this.log('TX unconfirmed:');
+      this.log(details);
+    });
+  
+    this.accessWallet.on('conflict', (details) => {
+      this.log('TX conflict:');
+      this.log(details);
+    });
+  
+    //开启监听模式后，收到 'address' 事件的时序：
+    //1、钱包节点监控到主链上相应的变化后，向客户端下发 'address.client' 事件
+    //2、ws client 收到服务端下发的 'address.client' 事件后抛出 'address' 事件
+    //3、accessWallet 中继抛出 'address' 事件
+    //4、此处捕获到 accessWallet 抛出的 'address' 事件
+    this.accessWallet.on('address', (receive) => {
+      this.log('New addresses allocated:');
+      this.log(receive);
+    });
+  
+    this.accessWallet.on('balance', (balance) => {
+      this.log('Balance:');
+      this.log(balance);
+    });
+  
+    return await this.accessWallet.onDisconnect();
+  }
+  
+  /**
+   * RPC调用的入口函数
+   */
+  async rpc() {
+    const method = this.argv.shift();
+    const params = [];
+  
+    for (const arg of this.argv) {
+      let param;
+      try {
+        param = JSON.parse(arg);
+      } catch (e) {
+        param = String(arg);
+      }
+      params.push(param);
+    }
+  
+    let response = await this.accessWallet.execute(method, params);
+
+    // 内部不再抛出异常,出现错误由错误代码判断 
+    if(response.code != 0) {
+      let error = response.error;
+      if (error.type === 'RPCError') {
+        this.log('Command Format:', error.message);
+        return;
+      }
+      else{
+        this.log('Command execute error:', error.type, error.message);
+        return;
+      }
+    }      
+
+    if(typeof response.result == 'undefined' || response.result == null) {
+      this.log(response);
+    } else if(!!route.openapi[method]){
+      // 如果是openapi直接返回的,没有带sig,也直接打印结果
+      this.log(response);
+    } else{
+      let priv = digest.hash256(Buffer.from(this.accessWallet.client.token));
+      let key = utils.generateKey(priv);
+      if(utils.verifyObj(response.result, response.sig, key.public)) {
+        this.log(response);
+      } else {
+        this.log('Sign Verify Failed');
+      }
+    }
+  }  
+}
+
+(async () => {
+  const cli = new CLI();
+  await cli.open();
+  await cli.destroy();
+  process.exit(0);
+})().catch((err) => {
+  console.error(err.stack);
+  process.exit(1);
+});
