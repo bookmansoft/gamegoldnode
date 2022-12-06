@@ -7,6 +7,7 @@
     "start":  "node index.js --genesis --workers=false --network=testnet --dev-mode=false --mining=false --debug=true --log-file=true",
     "master": "node index.js --network=main --mining=false --workers=false --bip150=true --bip151=true",
     "slaver": "node index.js --network=main --mining=false --workers=false --bip150=true --bip151=true --password=bookman --keystore=main-bookman-1.keystore --port-offset=10 --prefix=~/.gamegold/slaver",
+    "slaver2": "node index.js --network=main --mining=false --workers=false --bip150=true --bip151=true --password=bookman --keystore=main-bookman-2.keystore --port-offset=20 --prefix=~/.gamegold/slaver2",
     "cli-testnet": "node bin/cli --port=2102",
     "cli": "node bin/cli --port=2002"
   },
