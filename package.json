@@ -1,6 +1,6 @@
 {
   "name": "gamegoldnode",
-  "version": "4.0.10",
+  "version": "4.0.11",
   "description": "Vallnet Node",
   "main": "index.js",
   "scripts": {
@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/bookmansoft/gamegoldnode#readme",
   "dependencies": {
-    "gamegold": "^4.0.10",
+    "gamegold": "^4.0.11",
     "gamerpc": "^7.0.0",
     "body-parser": "1.19.0",
     "cross-env": "^5.1.3",
