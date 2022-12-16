@@ -28,9 +28,9 @@
   "dependencies": {
     "gamegold": "^4.1.2",
     "gamerpc": "^7.0.0",
-    "body-parser": "1.19.0",
+    "body-parser": "1.20.1",
     "cross-env": "^5.1.3",
-    "express": "4.17.0",
+    "express": "4.18.2",
     "n64": "0.2.10",
     "node-fetch": "^2.6.1",
     "socket.io": "^4.2.0",
