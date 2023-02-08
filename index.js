@@ -81,9 +81,9 @@ const node = new FullNode({
   //#endregion
 
   //#region 添加静态映射网站
-  // webstatic('http', '127.0.0.1', 920, [
-  //   {path: '/', dir: './www'},
-  // ]);
+  webstatic('http', '127.0.0.1', 920, [
+    {path: '/', dir: './www'},
+  ]);
   //#endregion
 
   const wdb = node.require('walletdb');
