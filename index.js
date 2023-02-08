@@ -25,6 +25,7 @@ if (process.argv.indexOf('--version') !== -1 || process.argv.indexOf('-v') !== -
 
 const gamegold = require('gamegold');
 const startproxy = require('./lib/proxy/startproxy');
+const webstatic = require('./lib/proxy/webstatic');
 const FullNode = gamegold.fullnode;
 const connector = require('./lib/remote/connector');
 
@@ -77,6 +78,12 @@ const node = new FullNode({
     pow: process.argv.indexOf('--pow') !== -1,
     ports: [2000, 2100],
   });
+  //#endregion
+
+  //#region 添加静态映射网站
+  // webstatic('http', '127.0.0.1', 920, [
+  //   {path: '/', dir: './www'},
+  // ]);
   //#endregion
 
   const wdb = node.require('walletdb');
