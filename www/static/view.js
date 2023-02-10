@@ -153,7 +153,6 @@ function formatWallet() {
     }).then(function(txs) {
       return wallet.toDetails(txs);
     }).then(function(txs) {
-      html += '交易列表:\n';
       wdiv.innerHTML = html;
   
       wtx.innerHTML = '';
@@ -275,6 +274,9 @@ send.onsubmit = function(ev) {
 
 //#region 远程命令
 var rpc = document.getElementById('rpc');
+//输入的指令字符串中，空格被当作分割符，因此即使是双引号包裹的内容也不要包含空格。
+//命令实例如下，表示通过参数数组传递了一个参数，该参数是一个复合查询数组，只包括一个查询条件 ["name","ATHENA"]:
+//cp.query.remote [[["name","ATHENA"]]]
 var cmd = document.getElementById('cmd');
 
 rpc.onsubmit = function(ev) {

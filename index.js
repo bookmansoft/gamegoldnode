@@ -46,11 +46,6 @@ const node = new FullNode({
     gamegold.contractPlugin,    //合约账户管理插件，可以在全节点加载
     gamegold.wallet.plugin,     //钱包管理插件，可以在全节点或SPV节点加载
   ],
-  // mnemonic: {
-  //   passphrase: 'bookmansoft',
-  //   language: 'english',
-  //   bits: 256,
-  // },
 });
 
 (async () => {
