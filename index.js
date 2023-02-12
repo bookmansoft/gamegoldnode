@@ -46,6 +46,8 @@ const node = new FullNode({
     gamegold.contractPlugin,    //合约账户管理插件，可以在全节点加载
     gamegold.wallet.plugin,     //钱包管理插件，可以在全节点或SPV节点加载
   ],
+  wshost: '127.0.0.1',
+  wsport: '2104',
 });
 
 (async () => {

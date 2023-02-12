@@ -31,8 +31,8 @@
           "program": "${workspaceFolder}/index.js",
           "outputCapture": "std",
           "args": [                
-            "--bip150=true",
-            "--bip151=true",
+            "--bip150=false",
+            "--bip151=false",
             "--password=bookmansoft",
             "--nodes=127.0.0.1:2110",
             "--kafka",
@@ -46,6 +46,25 @@
           ]
       },
       {
+        "type": "node",
+        "request": "launch",
+        "name": "MASTER",
+        "program": "${workspaceFolder}/index.js",
+        "outputCapture": "std",
+        "args": [                
+          "--bip150=false",
+          "--bip151=false",
+          //"--nodes=127.0.0.1:2010",
+          "--workers=false",
+          "--genesis",
+          "--network=main"
+        ],
+        "skipFiles": [
+          "${workspaceFolder}/node_modules/**/*.js",
+          "<node_internals>/**/*.js"
+        ]
+    },
+    {
           "type": "node",
           "request": "launch",
           "name": "CLI Test",
