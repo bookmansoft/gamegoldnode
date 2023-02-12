@@ -59,3 +59,39 @@ vc balance.all bookman
 ## 接口说明文档
 
 接口说明文档位于 ./docs
+
+## SPV钱包线上参数配置(以main网络为例)
+
+***注: innerIP 指目标服务器内网地址, outerIP 指目标服务器对外展示的虚拟地址***
+
+./.gamegold/main/gamegold.conf
+```bash
+wshost: innerIP
+```
+
+./index.js: 
+```js
+new FullNode({
+  wshost: `${innerIP}`,     //当前节点提供代理服务的守护地址
+  wsport: '2004',           //当前节点提供代理服务的守护端口
+})
+//静态网站服务的守护地址和端口
+webstatic('http', `${innerIP}`, 2009, [
+  {path: '/', dir: './www'},
+]);
+```
+
+./static/view.js: 
+```js
+new gamegold.spvnode({
+  network: 'main',                          //网络类型
+  seeds:
+  [
+    `${outerIP}:2000`,                      //透过代理服务器实际连接的远程服务器的地址
+  ],
+  'http-remote-host': `${outerIP}`,         //提供开放式RPC调用接口的远程服务器的地址
+  proxy: `${outerIP}`,                      //代理服务器地址
+  wsport: '2004',                           //代理服务器端口
+  genesisParams: {"mainAddresses":"..."},   //必须和创世参数保持一致
+})
+```
