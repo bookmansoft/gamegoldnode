@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>百谷王收藏家</title>
+<style>
+  html {
+    height: 100%;
+  }
+  body {
+    height: 90%;
+    padding: 20px;
+  }
+  .zone {
+    margin-left: 10px;
+    font: 1em monospace;
+  }
+  .log {
+    padding: 5px;
+    margin-left: 10px;
+    overflow-y: scroll;
+    border: 1px solid black;
+    white-space: pre-wrap;
+    height: 55%;
+    width: 52%;
+    font: 1em monospace;
+    margin-top: 10px;
+  }
+  .wallet {
+    padding: 3px;
+    margin-left: 5px;
+    margin-top: 3px;
+    font: 1em monospace;
+  }
+  .wtx {
+    overflow-y: scroll;
+    margin-left: 10px;
+    height: 60px;
+    width: 53%;
+    font: 1em monospace;
+  }
+  .tx {
+    float: right;
+    font: 1em monospace;
+    padding: 5px;
+    border: 1px solid black;
+    margin-top: 10px;
+  }
+  .floating {
+    font: 1em monospace;
+    white-space: pre-wrap;
+    position: absolute;
+    display: none;
+    padding: 5px;
+    background: white;
+    border: 1px solid black;
+    width: 40%;
+    height: 30%;
+    top: 50%;
+    left: 50%;
+    margin-left: -20%;
+    margin-top: -15%;
+    overflow-y: scroll;
+  }
+</style>
+<script src="static/gamegold.js"></script>
+</head>
+<body>
+<div>
+  <table>
+    <tr>
+      <td>
+        <form id="send" action="#">
+          <input type="text" name="address" id="address" placeholder="地址">
+          <input type="text" name="amount" id="amount" placeholder="金额(VNC)">
+          <input type="submit" value="发送交易">
+        </form>
+      </td>
+      <td>
+        <form id="rpc" action="#">
+          <input type="text" name="cmd" id="cmd" placeholder="输入指令回车执行">
+        </form>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <input type="button" id="newwallet" value="生成新钱包">
+        <select id="selwallet" title="切换钱包"></select>
+      </td>
+      <td>
+        <input class="zone" type="button" id="newaddr" value="生成新地址">
+      </td>
+      <td>
+      </td>
+    </tr>
+  </table>
+</div>
+<table>
+  <tr>
+    <td span="2">
+      <div id="wallet" class="wallet"></div>
+    </td>
+  </tr>
+  <tr>
+    <td><span  class="zone">交易列表</span></td>
+    <td><input type="button" value="查询CP" class="zone" /></td>
+  </tr>
+  <tr>
+    <td>
+      <div id="wtx" class="wtx"></div>
+    </td>
+    <td>
+      <div id="wprop" class="wtx"></div>
+    </td>
+  </tr>
+</table>
+<div id="log" class="log"></div>
+<div id="floating" class="floating"></div>
+<script src="static/view.js"></script>
+</body>
+</html>

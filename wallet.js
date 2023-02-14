@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
-'use strict';
-process.title = 'gamegold';
+process.title = 'gamegold-wallet';
 // Uncaught exception handler
 process.on('unhandledRejection', (err, promise) => {
   console.error(err);
@@ -10,28 +9,13 @@ process.on('uncaughtException', (err) => {
   console.error(` Caught exceptio n: ${err.stack}`);
 });
 
-if (process.argv.indexOf('--help') !== -1 || process.argv.indexOf('-h') !== -1) {
-  console.error('See the wiki at: https://github.com/bookmanSoft/');
-  process.exit(1);
-  throw new Error('Could not exit.');
-}
-
-if (process.argv.indexOf('--version') !== -1 || process.argv.indexOf('-v') !== -1) {
-  const pkg = require('../package.json');
-  console.log(pkg.version);
-  process.exit(0);
-  throw new Error('Could not exit.');
-}
-
 const gamegold = require('gamegold');
-const spvnode = gamegold.spvnode;
-const connector = require('./lib/remote/connector');
 
 /**
  * 对并发运行的节点组进行集中配置
  */
 const nodes = [
-  new spvnode({
+  new gamegold.walletnode({
     network: 'testnet',
     config: true,
     argv: true,
@@ -53,7 +37,8 @@ const nodes = [
 
 (async () => {
   for(let node of nodes) {
-    await node.bootstrap();
+    await node.ensure();
+    await node.open();
   }
 })().catch((err) => {
   console.error(err.stack);

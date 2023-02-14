@@ -4,6 +4,11 @@
 
 //#region 基本设定和功能函数
 
+var outerIP = '127.0.0.1';
+var outerPort = 2100;
+var genesisParams = {"testnetAddresses":"tb1qraxs23kt2e25vqda75ar7tu74spgp79uydp8h6,tb1q9jwv284q4s6v53w2elw376mv9vhywxcalvvy6d,tb1qx5rfdglg2s5xgzfcle0w92qmxfc2va40962c7u,tb1q87n5y76g20z8ch3tpvg2lddv4utp0tqk0fg6lh,tb1qdhjuwnrgfx37f6g0f79dhhakkhgu5sr2je9e6n,tb1q0sg06l6fjz8kgqmgkl3ep3flk6v848z5zqfgjj,tb1qjle37mptvmpgpt4rjtzgp0k4scjxdqdjjnd9pv,tb1qh6m8nk24535p9uznjpj22nhhe9mtrzaxe9pnyd,tb1qetv22rl9hhv5c9qzfn8rukp67a3a0n39hy43nl,tb1q63xh7684y5n8c2nywtxndw9crjs5awh4v0e2ek,tb1qa9sg9r0zwf4x6dxy8kyt3wzqq7ehj0aq64hgl8","coinbaseAddress":"tb1q9jwv284q4s6v53w2elw376mv9vhywxcalvvy6d","notifyAddress":"tb1qcjx9y0h27zs86mjd8a4syphyaq0njtwpxvk3sc"};
+var network = 'testnet';
+
 window.onunhandledrejection = function(event) {
   throw event.reason;
 };
@@ -315,19 +320,16 @@ var node = new gamegold.spvnode({
   hash: true,
   query: true,
   prune: true,
-  network: 'testnet',
+  network,
   db: 'leveldb',
   coinCache: 30000000,
   logConsole: true,
   workers: true,
   logger: logger,
-  seeds: //为浏览器版本的SPV节点传入seeds列表。SPV节点先连到远程服务器WS代理，透过该代理和seeds列表中的服务器交换信息
-  [
-    `127.0.0.1:2000`
-  ],
-  'http-remote-host': '127.0.0.1',
-  proxy: '127.0.0.1',
-  genesisParams: {"testnetAddresses":"tb1qqs9ukw0d2qj0c9g6r9p4dhq4udwv3w6rthjea3,tb1qz8a4k0tnt4h2rlkytmwpr852lx2axcsm6y0f8k,tb1qygp2elgytweemm0dn3c86h9fca4uqp0wturr37,tb1qyg60w2jfupvw7hly7xy4uk80tz3nw2y5zl6ql3,tb1q26q3sdrggljqwngr4d720yv0cxhspz3s203cj0,tb1qvrqnr8rwsprv56x9c84pu78luqv0q8z6dvgfza,tb1qvr4w68htxe4dgdlj08wphpv3eqvdzh3kuqh5n3,tb1qk8pu6l2p6pgurmv78g58p0m68qx6ruyajtycz0,tb1qe93naxmxw2hghp0u4qg482w0ejx5qf4mt7gxrw,tb1qekvy3jrlzj84dweepgj7cz05x4xnwq8rxy8qz8,tb1qlhj7hmwy3g5zfth6q0j0zpyulm6ywd4s90payp","coinbaseAddress":"tb1qz8a4k0tnt4h2rlkytmwpr852lx2axcsm6y0f8k","notifyAddress":"tb1qgzsw56uk75taxfhty2ncdwqpurmltwywn9mlnv"},
+  seeds: [`${outerIP}:${outerPort}`],
+  'http-remote-host': outerIP,
+  proxy: outerIP,
+  genesisParams,
 });
 
 //获取钱包容器对象

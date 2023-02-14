@@ -70,3 +70,4 @@ package-lock.json
 .gamegold/client*/
 lib/kafka/cert
 docs/vallnet.md
+testnet-genesis.params

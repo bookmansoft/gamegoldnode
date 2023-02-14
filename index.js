@@ -46,8 +46,6 @@ const node = new FullNode({
     gamegold.contractPlugin,    //合约账户管理插件，可以在全节点加载
     gamegold.wallet.plugin,     //钱包管理插件，可以在全节点或SPV节点加载
   ],
-  wshost: '127.0.0.1',
-  wsport: '2104',
 });
 
 (async () => {
@@ -78,8 +76,9 @@ const node = new FullNode({
   //#endregion
 
   //#region 添加静态映射网站
-  webstatic('http', '127.0.0.1', 920, [
-    {path: '/', dir: './www'},
+  webstatic('http', node.config.str('wshost', '127.0.0.1'), 2009, [
+    {path: '/', dir: './www/wallet'},
+    {path: '/spv', dir: './www/spv'},
   ]);
   //#endregion
 
