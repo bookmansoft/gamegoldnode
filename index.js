@@ -13,14 +13,14 @@ process.on('uncaughtException', (err) => {
 if (process.argv.indexOf('--help') !== -1 || process.argv.indexOf('-h') !== -1) {
   console.error('See the wiki at: https://github.com/bookmanSoft/');
   process.exit(1);
-  throw new Error('Could not exit.');
+  //throw new Error('Could not exit.');
 }
 
 if (process.argv.indexOf('--version') !== -1 || process.argv.indexOf('-v') !== -1) {
   const pkg = require('../package.json');
   console.log(pkg.version);
   process.exit(0);
-  throw new Error('Could not exit.');
+  //throw new Error('Could not exit.');
 }
 
 const gamegold = require('gamegold');
@@ -46,6 +46,9 @@ const node = new FullNode({
     gamegold.contractPlugin,    //合约账户管理插件，可以在全节点加载
     gamegold.wallet.plugin,     //钱包管理插件，可以在全节点或SPV节点加载
   ],
+  //wshost,      //当前节点提供代理服务的守护地址, 采用行命令传入！！！注意需使用内网地址而非外网地址
+  //wsport,      //当前节点提供代理服务的守护端口，采用行命令传入
+  //network,    //试图连接的对等网络的类型，采用行命令传入
 });
 
 (async () => {
@@ -67,39 +70,20 @@ const node = new FullNode({
     await node.rpc.execute({method:'miner.setaddr.admin',params:[]});
   }
 
-  //#region 建立代理服务
+  //#region 建立代理服务, 直接使用 node 设定的通讯参数
   startproxy({
     node: node, 
     pow: process.argv.indexOf('--pow') !== -1,
-    ports: [2000, 2100],
+    ports: [2000, 2100], //允许代理连接的端口号
   });
   //#endregion
 
-  //#region 添加静态映射网站
-  webstatic('http', node.config.str('wshost', '127.0.0.1'), 2009, [
-    {path: '/', dir: './www/wallet'},
-    {path: '/spv', dir: './www/spv'},
+  //#region 添加静态映射网站，使用 node 设定的通讯参数，端口固定为 2009
+  webstatic('http', node.config.str('wshost'), 2009, [
+    {path: '/', dir: './www/wallet'},   //轻钱包，密钥本地存储
+    {path: '/spv', dir: './www/spv'},   //SPV钱包，密钥本地存储，默克尔树校验交易
   ]);
   //#endregion
-
-  const wdb = node.require('walletdb');
-  if (wdb) {
-    wdb.on('prop/receive', msg => {
-      //console.log('prop/receive:', msg);
-    });
-
-    wdb.on('prop/auction', msg => {
-      //console.log('prop/auction:', msg);
-    });
-
-    wdb.on('cp/orderPay', msg => {
-      //console.log('cp/orderPay:', msg);
-    });
-
-    wdb.on('balance.client', msg => {
-      //console.log('balance.client', msg);
-    });
-  }
 
   //#region 添加可信信道
 

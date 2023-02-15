@@ -4,10 +4,20 @@
 
 //#region 基本设定和功能函数
 
-var outerIP = '127.0.0.1';
-var outerPort = 2100;
-var genesisParams = {"testnetAddresses":"tb1qraxs23kt2e25vqda75ar7tu74spgp79uydp8h6,tb1q9jwv284q4s6v53w2elw376mv9vhywxcalvvy6d,tb1qx5rfdglg2s5xgzfcle0w92qmxfc2va40962c7u,tb1q87n5y76g20z8ch3tpvg2lddv4utp0tqk0fg6lh,tb1qdhjuwnrgfx37f6g0f79dhhakkhgu5sr2je9e6n,tb1q0sg06l6fjz8kgqmgkl3ep3flk6v848z5zqfgjj,tb1qjle37mptvmpgpt4rjtzgp0k4scjxdqdjjnd9pv,tb1qh6m8nk24535p9uznjpj22nhhe9mtrzaxe9pnyd,tb1qetv22rl9hhv5c9qzfn8rukp67a3a0n39hy43nl,tb1q63xh7684y5n8c2nywtxndw9crjs5awh4v0e2ek,tb1qa9sg9r0zwf4x6dxy8kyt3wzqq7ehj0aq64hgl8","coinbaseAddress":"tb1q9jwv284q4s6v53w2elw376mv9vhywxcalvvy6d","notifyAddress":"tb1qcjx9y0h27zs86mjd8a4syphyaq0njtwpxvk3sc"};
-var network = 'testnet';
+//#region 通讯端口配置 
+var commJson = {
+  //外网地址
+  outerIP: '127.0.0.1',
+  //对等网络服务端口
+  tcpPort: 2100,
+  //远程代理服务端口
+  wsport: 2104,
+  //对等网络类型
+  network: 'testnet',
+  //创世参数
+  genesisParams: {"testnetAddresses":"tb1qraxs23kt2e25vqda75ar7tu74spgp79uydp8h6,tb1q9jwv284q4s6v53w2elw376mv9vhywxcalvvy6d,tb1qx5rfdglg2s5xgzfcle0w92qmxfc2va40962c7u,tb1q87n5y76g20z8ch3tpvg2lddv4utp0tqk0fg6lh,tb1qdhjuwnrgfx37f6g0f79dhhakkhgu5sr2je9e6n,tb1q0sg06l6fjz8kgqmgkl3ep3flk6v848z5zqfgjj,tb1qjle37mptvmpgpt4rjtzgp0k4scjxdqdjjnd9pv,tb1qh6m8nk24535p9uznjpj22nhhe9mtrzaxe9pnyd,tb1qetv22rl9hhv5c9qzfn8rukp67a3a0n39hy43nl,tb1q63xh7684y5n8c2nywtxndw9crjs5awh4v0e2ek,tb1qa9sg9r0zwf4x6dxy8kyt3wzqq7ehj0aq64hgl8","coinbaseAddress":"tb1q9jwv284q4s6v53w2elw376mv9vhywxcalvvy6d","notifyAddress":"tb1qcjx9y0h27zs86mjd8a4syphyaq0njtwpxvk3sc"},
+}
+//#endregion
 
 window.onunhandledrejection = function(event) {
   throw event.reason;
@@ -320,16 +330,16 @@ var node = new gamegold.spvnode({
   hash: true,
   query: true,
   prune: true,
-  network,
   db: 'leveldb',
   coinCache: 30000000,
   logConsole: true,
   workers: true,
   logger: logger,
-  seeds: [`${outerIP}:${outerPort}`],
-  'http-remote-host': outerIP,
-  proxy: outerIP,
-  genesisParams,
+  seeds: [`${commJson.outerIP}:${commJson.tcpPort}`],
+  network: commJson.network,
+  'http-remote-host': commJson.outerIP,
+  proxy: commJson.outerIP,
+  genesisParams: commJson.genesisParams,
 });
 
 //获取钱包容器对象
