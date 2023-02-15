@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>百谷王收藏家</title>
+<title>百谷王收藏家 - 交易</title>
 <style>
   html {
     height: 100%;
@@ -34,7 +34,7 @@
   .wtx {
     overflow-y: scroll;
     margin-left: 10px;
-    height: 360px;
+    height: 60px;
     width: 53%;
     font: 1em monospace;
   }
@@ -71,34 +71,12 @@
     <a id='page1'>交易</a> |
     <a id='page2'>命令</a>
   </div>
-  <table>
-    <tr>
-      <td>
-        <input type="button" id="newwallet" value="生成新钱包">
-        <select id="selwallet" title="切换钱包"></select>
-      </td>
-      <td>
-        <input class="zone" type="button" id="newaddr" value="生成新地址">
-      </td>
-      <td>
-      </td>
-    </tr>
-  </table>
+  <form id="send" action="#">
+    <input type="text" name="address" id="address" placeholder="地址">
+    <input type="text" name="amount" id="amount" placeholder="金额(VNC)">
+    <input type="submit" value="发送交易">
+  </form>
 </div>
-<table>
-  <tr>
-    <td span="2">
-      <div id="wallet" class="wallet"></div>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <div id="wtx" class="wtx"></div>
-    </td>
-    <td>
-    </td>
-  </tr>
-</table>
 <div id="floating" class="floating"></div>
 <script src="static/view.js"></script>
 </body>

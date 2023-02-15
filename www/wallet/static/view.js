@@ -17,96 +17,81 @@ var commJson = {
 }
 //#endregion
 
-//#region 基本设定和功能函数
-
+//#region 窗体基本设定
 window.onunhandledrejection = function(event) {
   throw event.reason;
 };
-
-var util = gamegold.util; //通用函数集合
-
 var body = document.getElementsByTagName('body')[0];
 body.onmouseup = function() {
   floating.style.display = 'none';
 };
-
-//将数值转为KB为单位
-function kb(size) {
-  size /= 1000;
-  return size.toFixed(2) + 'kb';
-}
-
-//创建一个DIV容器
-function createDiv(html) {
-  var el = document.createElement('div');
-  el.innerHTML = html;
-  return el.firstChild;
-}
-
-//实体符号转换
-function escape(html, encode) {
-  return html
-    .replace(!encode ? /&(?!#?\w+;)/g : /&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
-
-function setMouseup(el, obj) {
-  el.onmouseup = function(ev) {
-    showObject(obj);
-    ev.stopPropagation();
-    return false;
-  };
-}
 //#endregion
 
-//#region 日志窗口
-var scrollback = 0;
-var log = document.getElementById('log');
+//#region SPV节点
+var util = gamegold.util; //通用函数集合
+var node = new gamegold.walletnode({
+  config: true,
+  argv: true,
+  env: true,
+  logFile: false,
+  logConsole: true,
+  logLevel: 'debug',
+  db: 'leveldb',
+  persistent: true,
+  workers: false,
+  listen: true,
+  plugins: [
+    gamegold.wallet.plugin,
+  ],
+  network: commJson.network,
+  seeds: [`${commJson.outerIP}:${commJson.tcpPort}`],
+  'http-remote-host': `${commJson.outerIP}`,
+  proxy: commJson.outerIP,
+  genesisParams: commJson.genesisParams,
+});
 
-var logger = new gamegold.logger({ level: 'debug', console: true });
-logger.writeConsole = function(level, module, args) {
-  var name = gamegold.logger.levelsByVal[level];
-  var msg = util.format(args, false);
-  if (++scrollback > 1000) {
-    log.innerHTML = '';
-    scrollback = 1;
+//获取钱包容器对象
+var defaultWalletId = getQueryString('wid');
+if(defaultWalletId == 'undefined' || !defaultWalletId) {
+  defaultWalletId = 'primary';
+}
+var wdb = node.require('walletdb');
+var defaultWallet = null;
+
+(async () => {
+  await node.ensure();
+  await node.open();
+
+  navigator(defaultWalletId).then(()=>{
+    listWallet();
+    formatWallet();
+  });
+})().catch(err => {
+  console.error(err.stack);
+})
+
+//#region 导航条
+var page0, page1, page2;
+function navigator(wid) {
+  defaultWalletId = wid;
+
+  page0 = document.getElementById('page0');
+  if(page0) {
+    page0.href = 'index.html?wid=' + defaultWalletId;
   }
-  log.innerHTML += '<span style="color:blue;">' + new Date((util.now() + 8*3600)*1000).toISOString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '') + '</span> ';
-  if (name === 'error') {
-    log.innerHTML += '<span style="color:red;">';
-    log.innerHTML += '[';
-    log.innerHTML += name
-    log.innerHTML += '] ';
-    if (module)
-      log.innerHTML += '(' + module + ') ';
-    log.innerHTML += '</span>';
-  } else {
-    log.innerHTML += '[';
-    log.innerHTML += name
-    log.innerHTML += '] ';
-    if (module)
-      log.innerHTML += '(' + module + ') ';
+  page1 = document.getElementById('page1');
+  if(page1) {
+    page1.href = 'trans.html?wid=' + defaultWalletId;
   }
-  log.innerHTML += escape(msg) + '\n';
-  log.scrollTop = log.scrollHeight;
-};
-//#endregion
+  page2 = document.getElementById('page2');
+  if(page2) {
+    page2.href = 'cmd.html?wid=' + defaultWalletId;
+  }
 
-//#region 弹窗
-var floating = document.getElementById('floating');
-
-floating.onmouseup = function(ev) {
-  ev.stopPropagation();
-  return false;
-};
-
-function showObject(obj) {
-  floating.innerHTML = escape(util.inspectify(obj, false));
-  floating.style.display = 'block';
+  return wdb.get(defaultWalletId).then(wallet=>{
+    defaultWallet = wallet;
+    return defaultWallet;
+  });
 }
 //#endregion
 
@@ -116,6 +101,10 @@ var wtx = document.getElementById('wtx');
 
 //列表所有钱包
 function listWallet() {
+  if(!wdiv) {
+    return false;
+  }
+
   selwallet.innerHTML = '';
 
   wdb.getWallets().then(ids => {
@@ -140,6 +129,10 @@ function listWallet() {
 
 //格式化钱包信息，显示在指定区域。使用 select 控件列表全部钱包，选定后设为当前钱包
 function formatWallet() {
+  if(!wdiv) {
+    return false;
+  }
+
   if(!defaultWalletId) {
     defaultWalletId = 'primary';
     defaultWallet = wdb.primary;
@@ -181,161 +174,171 @@ function formatWallet() {
 }
 
 var newaddr = document.getElementById('newaddr');
-//接口使用方式之一：调用钱包对象接口，生成一个新的地址，并重新生成钱包概要内容
-newaddr.onmouseup = function() {
-  defaultWallet.createReceive().then(function() {
-    formatWallet();
-  });
-};
+if(newaddr) {
+  //接口使用方式之一：调用钱包对象接口，生成一个新的地址，并重新生成钱包概要内容
+  newaddr.onmouseup = function() {
+    defaultWallet.createReceive().then(function() {
+      formatWallet();
+    });
+  };
+}
 
 var newwallet = document.getElementById('newwallet');
-//接口使用方式之一：调用RPC接口，生成一个新的钱包，并重新生成钱包概要内容
-newwallet.onmouseup = function() {
-  wdb.rpc.execute({
-    method:'wallet.create', 
-    params: [
-      null,
-      'pubkeyhash',       //Type of wallet (pubkeyhash, multisig) (default=pubkeyhash).
-      1,                  //`m` value for multisig.
-      1,                  //`n` value for multisig.
-      null,               //mnemonic phrase to use to instantiate an hd private key for wallet
-      null,               //passphrase to encrypt wallet
-      null,               //Master HD key. If not present, it will be generated.
-      true,               //Whether to use witness programs.
-      false,              //set true to create a watch-only wallet
-      null,               //public key used for multisig wallet
-    ]
-  }, false, {options: {wid:'primary', cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(w => {
-    defaultWalletId = w.id;
-    wdb.get(defaultWalletId).then(wallet=>{
-      defaultWallet = wallet;
-      listWallet();
+if(newwallet) {
+  //接口使用方式之一：调用RPC接口，生成一个新的钱包，并重新生成钱包概要内容
+  newwallet.onmouseup = function() {
+    wdb.rpc.execute({
+      method:'wallet.create', 
+      params: [
+        null,
+        'pubkeyhash',       //Type of wallet (pubkeyhash, multisig) (default=pubkeyhash).
+        1,                  //`m` value for multisig.
+        1,                  //`n` value for multisig.
+        null,               //mnemonic phrase to use to instantiate an hd private key for wallet
+        null,               //passphrase to encrypt wallet
+        null,               //Master HD key. If not present, it will be generated.
+        true,               //Whether to use witness programs.
+        false,              //set true to create a watch-only wallet
+        null,               //public key used for multisig wallet
+      ]
+    }, false, {options: {wid:'primary', cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(w => {
+      navigator(w.id).then(wallet=>{
+        listWallet();
+        formatWallet();
+      })
+    }).catch(showObject);
+  };
+}
+
+var selwallet = document.getElementById('selwallet');
+if(selwallet) {
+  selwallet.onchange = function() {
+    navigator(selwallet.value).then(wallet=>{
       formatWallet();
     })
-  }).catch(showObject);
-};
-
-var defaultWalletId = 'primary';
-var selwallet = document.getElementById('selwallet');
-selwallet.onchange = function() {
-  defaultWalletId = selwallet.value;
-  wdb.get(defaultWalletId).then(wallet=>{
-    defaultWallet = wallet;
-    formatWallet();
-  })
-};
+  };
+}
 
 //#endregion
 
 //#region 创建交易
 var send = document.getElementById('send');
-send.onsubmit = function(ev) {
-  var value = document.getElementById('amount').value;
-  var address = document.getElementById('address').value;
-  var tx, options;
-
-  options = {
-    outputs: [{
-      address: address,
-      value: gamegold.amount.value(value)
-    }]
+if(!!send) {
+  send.onsubmit = function(ev) {
+    var value = document.getElementById('amount').value;
+    var address = document.getElementById('address').value;
+    var tx, options;
+  
+    options = {
+      rate: 10000,
+      outputs: [{
+        address: address,
+        value: gamegold.amount.value(value)
+      }]
+    };
+  
+    defaultWallet.createTX(                     //创建交易
+        options                                 //包含地址和金额的交易内容
+    ).then(function(mtx) {                    //创建交易成功
+      tx = mtx;                               //记录交易对象句柄
+      return defaultWallet.sign(tx);            //开始签名，返回了一个Promise
+    }).then(function() {                      //签名成功
+      console.log('ready to convert: ', tx);  //显示 mutable tx
+      tx = tx.toTX();                         //将 mutable tx 转化为 immutable tx
+      console.log('ready to send: ', tx);     //显示 immutable tx
+      return wdb.send(tx);               //发送交易到网络，返回了一个Promise
+    }).then(function() {                      //发送成功
+      showObject(tx);                               //显示交易内容
+    });
+  
+    ev.preventDefault();
+    ev.stopPropagation();
+  
+    return false;
   };
-
-  defaultWallet.createTX(                     //创建交易
-      options                                 //包含地址和金额的交易内容
-  ).then(function(mtx) {                    //创建交易成功
-    tx = mtx;                               //记录交易对象句柄
-    return defaultWallet.sign(tx);            //开始签名，返回了一个Promise
-  }).then(function() {                      //签名成功
-    console.log('ready to convert: ', tx);  //显示 mutable tx
-    tx = tx.toTX();                         //将 mutable tx 转化为 immutable tx
-    console.log('ready to send: ', tx);     //显示 immutable tx
-    return wdb.send(tx);               //发送交易到网络，返回了一个Promise
-  }).then(function() {                      //发送成功
-    showObject(tx);                               //显示交易内容
-  });
-
-  ev.preventDefault();
-  ev.stopPropagation();
-
-  return false;
-};
+}
 //#endregion
 
-//#region 远程命令
-var rpc = document.getElementById('rpc');
-//输入的指令字符串中，空格被当作分割符，因此即使是双引号包裹的内容也不要包含空格。
-//命令实例如下，表示通过参数数组传递了一个参数，该参数是一个复合查询数组，只包括一个查询条件 ["name","ATHENA"]:
-//cp.query.remote [[["name","ATHENA"]]]
+//#region 执行远程命令
+// 输入的指令字符串中，空格被当作分割符，因此即使是双引号包裹的内容也不要包含空格。
+// 命令实例如下，表示通过参数数组传递了一个参数，该参数是一个复合查询数组，只包括一个查询条件 ["name","ATHENA"]:
+// cp.query.remote [[["name","ATHENA"]]]
 var cmd = document.getElementById('cmd');
-
-rpc.onsubmit = function(ev) {
-  var text = cmd.value || '';
-  var argv = text.trim().split(/\s+/);
-  var method = argv.shift();
-  var params = [];
-  var i, arg, param;
-
-  cmd.value = '';
-
-  for (i = 0; i < argv.length; i++) {
-    arg = argv[i];
-    try {
-      param = JSON.parse(arg);
-    } catch (e) {
-      param = arg;
+var rpc = document.getElementById('rpc');
+if(rpc) {
+  rpc.onsubmit = function(ev) {
+    var text = cmd.value || '';
+    var argv = text.trim().split(/\s+/);
+    var method = argv.shift();
+    var params = [];
+    var i, arg, param;
+  
+    cmd.value = '';
+  
+    for (i = 0; i < argv.length; i++) {
+      arg = argv[i];
+      try {
+        param = JSON.parse(arg);
+      } catch (e) {
+        param = arg;
+      }
+      params.push(param);
     }
-    params.push(param);
-  }
-
-  //调用节点RPC接口，执行用户输入的命令
-  node.rpc.execute({ method: method, params: params }, false, {options: {wid:'primary', cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(showObject).catch(showObject);
-
-  ev.preventDefault();
-  ev.stopPropagation();
-
-  return false;
-};
+  
+    //调用节点RPC接口，执行用户输入的命令
+    node.rpc.execute({ method: method, params: params }, false, {options: {wid:'primary', cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(showObject).catch(showObject);
+  
+    ev.preventDefault();
+    ev.stopPropagation();
+  
+    return false;
+  };
+}
 //#endregion
 
-//#region SPV节点
+//#region 功能函数
 
-//构造并运行节点
-var node = new gamegold.walletnode({
-  config: true,
-  argv: true,
-  env: true,
-  logFile: false,
-  logConsole: true,
-  logLevel: 'debug',
-  db: 'leveldb',
-  persistent: true,
-  workers: false,
-  listen: true,
-  plugins: [
-    gamegold.wallet.plugin,
-  ],
-  logger: logger,
-  network: commJson.network,
-  seeds: [`${commJson.outerIP}:${commJson.tcpPort}`],
-  'http-remote-host': `${commJson.outerIP}`,
-  proxy: commJson.outerIP,
-  genesisParams: commJson.genesisParams,
-});
+//获取路径代码
+function getQueryString (name) {
+  var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)','i');
+  var r = window.location.search.slice(1).match(reg);
+  
+  if (r != null) {
+    return decodeURIComponent(r[2]);
+  }
+  
+  return null;
+}
 
-//获取钱包容器对象
-var wdb = node.require('walletdb');
-var defaultWallet = null;
+function showObject(obj) {
+  floating.innerHTML = escape(util.inspectify(obj, false));
+  floating.style.display = 'block';
+}
 
-(async () => {
-  await node.ensure();
-  await node.open();
+//创建一个DIV容器
+function createDiv(html) {
+  var el = document.createElement('div');
+  el.innerHTML = html;
+  return el.firstChild;
+}
 
-  defaultWallet = wdb.primary;
-  listWallet();
-  formatWallet();
-})().catch(err => {
-  console.error(err.stack);
-})
+//实体符号转换
+function escape(html, encode) {
+  return html
+    .replace(!encode ? /&(?!#?\w+;)/g : /&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 
+function setMouseup(el, obj) {
+  el.onmouseup = function(ev) {
+    showObject(obj);
+    ev.stopPropagation();
+    return false;
+  };
+}
+
+//#endregion
 })();
