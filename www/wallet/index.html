@@ -14,28 +14,18 @@
     margin-left: 10px;
     font: 1em monospace;
   }
-  .log {
-    padding: 5px;
-    margin-left: 10px;
-    overflow-y: scroll;
-    border: 1px solid black;
-    white-space: pre-wrap;
-    height: 55%;
-    width: 52%;
-    font: 1em monospace;
-    margin-top: 10px;
-  }
   .wallet {
     padding: 3px;
     margin-left: 5px;
     margin-top: 3px;
+    white-space: pre-wrap;
     font: 1em monospace;
   }
   .wtx {
     overflow-y: scroll;
     margin-left: 10px;
     height: 360px;
-    width: 53%;
+    width: 80%;
     font: 1em monospace;
   }
   .tx {
@@ -67,9 +57,12 @@
 <body>
 <div>
   <div>
-    <a id='page0'>首页</a> | 
+    钱包 | 
     <a id='page1'>交易</a> |
-    <a id='page2'>命令</a>
+    <a id='page4'>注册CP</a> |
+    <a id='page5'>道具管理</a> |
+    <a id='page3'>上链存证</a> |
+    <a id='page2'>通用命令</a> 
   </div>
   <table>
     <tr>
@@ -85,20 +78,8 @@
     </tr>
   </table>
 </div>
-<table>
-  <tr>
-    <td span="2">
-      <div id="wallet" class="wallet"></div>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <div id="wtx" class="wtx"></div>
-    </td>
-    <td>
-    </td>
-  </tr>
-</table>
+<div id="wallet" class="wallet"></div>
+<div id="wtx" class="wtx"></div>
 <div id="floating" class="floating"></div>
 <script src="static/view.js"></script>
 </body>

@@ -10,9 +10,6 @@
     height: 90%;
     padding: 20px;
   }
-  .cmd {
-    width: 500px;
-  }
   .floating {
     font: 1em monospace;
     white-space: pre-wrap;
@@ -39,19 +36,14 @@
     <a id='page1'>交易</a> |
     <a id='page4'>注册CP</a> |
     <a id='page5'>道具管理</a> |
-    <a id='page3'>上链存证</a> |
-    通用命令 
+    上链存证 |
+    <a id='page2'>通用命令</a> 
   </div>
-  <form id="rpc" action="#">
-    <input type="text" class="cmd" name="cmd" id="cmd" placeholder="输入指令回车执行">
+  <form id="issueForm" action="#">
+    <input type="text" name="address1" id="address1" placeholder="地址">
+    <input type="text" name="issue" id="issue" placeholder="见证内容(JSON)">
+    <input type="submit" value="上链存证">
   </form>
-  <div>
-    <div>示例命令(可黏贴执行)</div>
-    <div>按名称查询CP: cp.query.remote [[["name","ATHENA"]]]</div>
-    <div>查询钱包余额: balance.all</div>
-    <div>查询收款地址: address.receive</div>
-    <div>查询通用存证: ca.list [[["erid","49315e0921301f4585597a25c0a2936b1b2602fc02aed7adddfc38ad7a39c5f9"]]]</div>
-  </div>
 </div>
 <div id="floating" class="floating"></div>
 <script src="static/view.js"></script>

@@ -22,8 +22,10 @@ window.onunhandledrejection = function(event) {
   throw event.reason;
 };
 var body = document.getElementsByTagName('body')[0];
-body.onmouseup = function() {
-  floating.style.display = 'none';
+body.onmouseup = function(o) { //如果按下鼠标并在窗口外放开，则窗口自动隐藏
+  if('floating' != o.toElement.className) {
+    floating.style.display = 'none';
+  }
 };
 //#endregion
 
@@ -71,7 +73,7 @@ var defaultWallet = null;
 })
 
 //#region 导航条
-var page0, page1, page2;
+var page0, page1, page2, page3, page4, page5;
 function navigator(wid) {
   defaultWalletId = wid;
 
@@ -86,6 +88,18 @@ function navigator(wid) {
   page2 = document.getElementById('page2');
   if(page2) {
     page2.href = 'cmd.html?wid=' + defaultWalletId;
+  }
+  page3 = document.getElementById('page3');
+  if(page3) {
+    page3.href = 'issue.html?wid=' + defaultWalletId;
+  }
+  page4 = document.getElementById('page4');
+  if(page4) {
+    page4.href = 'cp.html?wid=' + defaultWalletId;
+  }
+  page5 = document.getElementById('page5');
+  if(page5) {
+    page5.href = 'prop.html?wid=' + defaultWalletId;
   }
 
   return wdb.get(defaultWalletId).then(wallet=>{
@@ -263,6 +277,7 @@ if(!!send) {
 // 输入的指令字符串中，空格被当作分割符，因此即使是双引号包裹的内容也不要包含空格。
 // 命令实例如下，表示通过参数数组传递了一个参数，该参数是一个复合查询数组，只包括一个查询条件 ["name","ATHENA"]:
 // cp.query.remote [[["name","ATHENA"]]]
+// ca.list [[["erid","49315e0921301f4585597a25c0a2936b1b2602fc02aed7adddfc38ad7a39c5f9"]]]
 var cmd = document.getElementById('cmd');
 var rpc = document.getElementById('rpc');
 if(rpc) {
@@ -287,6 +302,105 @@ if(rpc) {
   
     //调用节点RPC接口，执行用户输入的命令
     node.rpc.execute({ method: method, params: params }, false, {options: {wid:'primary', cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(showObject).catch(showObject);
+  
+    ev.preventDefault();
+    ev.stopPropagation();
+  
+    return false;
+  };
+}
+//#endregion
+
+//#region 通用存证, 注意提交通用存证后，要等待上链成功才能通过 ca.list 指令查询
+var issueForm = document.getElementById('issueForm');
+if(!!issueForm) {
+  issueForm.onsubmit = function(ev) {
+    var value = document.getElementById('issue').value;
+    var address = document.getElementById('address1').value;
+    var hash = gamegold.crypto.digest.hash256(Uint8Array.from(value)).toString('hex');
+
+    //调用节点RPC接口，执行用户输入的命令
+    node.rpc.execute({ method: 'ca.issue.public', params: [
+      {
+        hash,                         //存证哈希
+        height: 0,                    //有效高度
+      },
+      address,                        //见证地址
+    ] }, false, {options: {wid:'primary', cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(ret=>{
+      if(!ret.error) {
+        console.log('issue.erid:', ret.erid);
+      }
+      showObject(ret);
+    }).catch(showObject);
+  
+    ev.preventDefault();
+    ev.stopPropagation();
+  
+    return false;
+  };
+}
+//#endregion
+
+//#region 注册CP, 注意注册后，要等待上链成功才能通过 cp.byName 指令查询
+var cpForm = document.getElementById('cpForm');
+if(!!cpForm) {
+  cpForm.onsubmit = function(ev) {
+    var value = document.getElementById('cp').value;
+
+    //调用节点RPC接口，执行用户输入的命令
+    node.rpc.execute({ method: 'cp.create', params: [
+      value,
+      '127.0.0.1',
+    ] }, false, {options: {wid:'primary', cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(ret=>{
+      if(!ret.error) {
+        console.log('cp.id:', ret.cid);
+      }
+      showObject(ret);
+    }).catch(showObject);
+  
+    ev.preventDefault();
+    ev.stopPropagation();
+  
+    return false;
+  };
+}
+//#endregion
+
+//#region 道具管理, 注意注册后，要等待上链成功才能通过 prop.byid 指令查询
+var propForm = document.getElementById('propForm');
+if(!!propForm) {
+  propForm.onsubmit = function(ev) {
+    var cpid = document.getElementById('cpid').value;
+    var pid = document.getElementById('prop').value;
+
+    //调用节点RPC接口，执行用户输入的命令
+    node.rpc.execute({ method: 'prop.create', params: [
+      cpid,
+      pid,
+      10000,
+    ] }, false, {options: {wid:'primary', cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(ret=>{
+      if(!ret.error) {
+        console.log('prop.id:', ret.pid);
+      }
+      showObject(ret);
+    }).catch(showObject);
+  
+    ev.preventDefault();
+    ev.stopPropagation();
+  
+    return false;
+  };
+}
+
+var foundForm = document.getElementById('foundForm');
+if(!!foundForm) {
+  foundForm.onsubmit = function(ev) {
+    var pid = document.getElementById('foundPid').value;
+
+    //调用节点RPC接口，执行用户输入的命令
+    node.rpc.execute({ method: 'prop.found', params: [
+      pid,
+    ] }, false, {options: {wid:'primary', cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(showObject).catch(showObject);
   
     ev.preventDefault();
     ev.stopPropagation();
