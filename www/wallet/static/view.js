@@ -29,7 +29,7 @@ body.onmouseup = function(o) { //如果按下鼠标并在窗口外放开，则�
 };
 //#endregion
 
-//#region SPV节点
+//#region 钱包节点
 var util = gamegold.util; //通用函数集合
 var node = new gamegold.walletnode({
   config: true,
@@ -67,6 +67,9 @@ var defaultWallet = null;
   navigator(defaultWalletId).then(()=>{
     listWallet();
     formatWallet();
+    if(props) {
+      formatProps();
+    }
   });
 })().catch(err => {
   console.error(err.stack);
@@ -301,7 +304,7 @@ if(rpc) {
     }
   
     //调用节点RPC接口，执行用户输入的命令
-    node.rpc.execute({ method: method, params: params }, false, {options: {wid:'primary', cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(showObject).catch(showObject);
+    wdb.rpc.execute({ method: method, params: params }, false, {options: {wid:'primary', cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(showObject).catch(showObject);
   
     ev.preventDefault();
     ev.stopPropagation();
@@ -320,7 +323,7 @@ if(!!issueForm) {
     var hash = gamegold.crypto.digest.hash256(Uint8Array.from(value)).toString('hex');
 
     //调用节点RPC接口，执行用户输入的命令
-    node.rpc.execute({ method: 'ca.issue.public', params: [
+    wdb.rpc.execute({ method: 'ca.issue.public', params: [
       {
         hash,                         //存证哈希
         height: 0,                    //有效高度
@@ -341,14 +344,14 @@ if(!!issueForm) {
 }
 //#endregion
 
-//#region 注册CP, 注意注册后，要等待上链成功才能通过 cp.byName 指令查询
+//#region 管理CP, 注意注册后，要等待上链成功才能通过 cp.byName 指令查询
 var cpForm = document.getElementById('cpForm');
 if(!!cpForm) {
   cpForm.onsubmit = function(ev) {
     var value = document.getElementById('cp').value;
 
     //调用节点RPC接口，执行用户输入的命令
-    node.rpc.execute({ method: 'cp.create', params: [
+    wdb.rpc.execute({ method: 'cp.create', params: [
       value,
       '127.0.0.1',
     ] }, false, {options: {wid:'primary', cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(ret=>{
@@ -364,9 +367,28 @@ if(!!cpForm) {
     return false;
   };
 }
+var cpQuery = document.getElementById('cpQuery');
+if(cpQuery) {
+  cpQuery.onclick = function(){
+    var value = document.getElementById('cp').value;
+    if(!!value) {
+      //调用节点RPC接口，执行用户输入的命令
+      wdb.rpc.execute({ method: 'cp.query.remote', params: [
+        [['name',value]],
+      ] }, false, {options: {wid:'primary', cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(ret=>{
+        if(!ret.error) {
+          console.log('cp.id:', ret.cid);
+        }
+        showObject(ret);
+      }).catch(showObject);
+    }
+  }
+}
 //#endregion
 
 //#region 道具管理, 注意注册后，要等待上链成功才能通过 prop.byid 指令查询
+
+//铸造道具
 var propForm = document.getElementById('propForm');
 if(!!propForm) {
   propForm.onsubmit = function(ev) {
@@ -374,10 +396,11 @@ if(!!propForm) {
     var pid = document.getElementById('prop').value;
 
     //调用节点RPC接口，执行用户输入的命令
-    node.rpc.execute({ method: 'prop.create', params: [
+    wdb.rpc.execute({ method: 'prop.create', params: [
       cpid,
-      pid,
+      pid,    //暂时使用 pid 填充 oid
       10000,
+      pid,
     ] }, false, {options: {wid:'primary', cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(ret=>{
       if(!ret.error) {
         console.log('prop.id:', ret.pid);
@@ -392,13 +415,14 @@ if(!!propForm) {
   };
 }
 
+//熔铸道具
 var foundForm = document.getElementById('foundForm');
 if(!!foundForm) {
   foundForm.onsubmit = function(ev) {
     var pid = document.getElementById('foundPid').value;
 
     //调用节点RPC接口，执行用户输入的命令
-    node.rpc.execute({ method: 'prop.found', params: [
+    wdb.rpc.execute({ method: 'prop.found', params: [
       pid,
     ] }, false, {options: {wid:'primary', cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(showObject).catch(showObject);
   
@@ -407,6 +431,41 @@ if(!!foundForm) {
   
     return false;
   };
+}
+
+//道具列表
+var curPage = 1, maxPage = 1;
+var props = document.getElementById('props');
+var prop_pageup = document.getElementById('prop_pageup');
+if(prop_pageup) {
+  prop_pageup.onclick = function() {
+    curPage = ++curPage % maxPage;
+    if(curPage == 0) {
+      curPage = maxPage;
+    }
+    formatProps();
+  }
+}
+function formatProps() {
+  wdb.rpc.execute({ method: 'prop.query', params: [
+    [['page', curPage], ['pid', 'notlike', '-vallnet-boss-']],
+  ] }, false, {options: {wid:'primary', cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(ret=>{
+    props.innerHTML = '';
+    for (let i = 0; i < ret.list.length; i++) {
+      maxPage = ret.page;
+
+      var el = createDiv('<a style="display:block;" href="#' + ret.list[i].pid + '">' + ret.list[i].pid + '</a>');
+      props.appendChild(el);
+      let item = ret.list[i];
+      el.onmouseup = function(ev) {
+        document.getElementById('foundPid').value = item.pid;
+
+        showObject(JSON.stringify(item));
+        ev.stopPropagation();
+        return false;
+      };
+    }
+  }).catch(showObject);
 }
 //#endregion
 

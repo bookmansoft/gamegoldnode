@@ -95,3 +95,16 @@ new gamegold.spvnode({
   genesisParams: {"mainAddresses":"..."},   //必须和创世参数保持一致
 })
 ```
+
+## 轻钱包使用指南
+
+通过浏览器访问如下地址:
+```bash
+# 轻钱包访问地址
+http://outerIP:2009/
+
+# SPV钱包访问地址
+http://outerIP:2009/spv
+
+```
+

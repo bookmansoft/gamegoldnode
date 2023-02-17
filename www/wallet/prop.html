@@ -10,6 +10,20 @@
     height: 90%;
     padding: 20px;
   }
+  .wtx {
+    overflow-y: scroll;
+    margin-left: 10px;
+    height: 360px;
+    width: 80%;
+    font: 1em monospace;
+  }
+  .tx {
+    float: right;
+    font: 1em monospace;
+    padding: 5px;
+    border: 1px solid black;
+    margin-top: 10px;
+  }
   .floating {
     font: 1em monospace;
     white-space: pre-wrap;
@@ -34,21 +48,23 @@
   <div>
     <a id='page0'>钱包</a> | 
     <a id='page1'>交易</a> |
-    <a id='page4'>注册CP</a> |
+    <a id='page4'>管理CP</a> |
     道具管理 |
     <a id='page3'>上链存证</a> |
     <a id='page2'>通用命令</a> 
   </div>
   <form id="propForm" action="#">
-    <input type="text" name="cpid" id="cpid" placeholder="CP编码">
+    <input type="text" style="width:310px;" name="cpid" id="cpid" placeholder="CP编码">
     <input type="text" name="prop" id="prop" placeholder="道具编码(36位字符串)">
     <input type="submit" value="发行道具">
   </form>
   <form id="foundForm" action="#">
-    <input type="text" name="foundPid" id="foundPid" placeholder="道具编码(36位字符串)">
+    <input type="text" style="width:410px;" name="foundPid" id="foundPid" placeholder="道具编码(36位字符串)">
+    <input type="button" id="prop_pageup" value="列表翻页">
     <input type="submit" value="熔铸道具">
   </form>
 </div>
+<div id="props" class="wtx"></div>
 <div id="floating" class="floating"></div>
 <script src="static/view.js"></script>
 </body>
