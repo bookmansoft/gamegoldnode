@@ -68,12 +68,16 @@
     <tr>
       <td>
         <input type="button" id="newwallet" value="生成新钱包">
+        <input type="button" id="showmnemonic" value="显示助记词">
+        <input type="input" style="width:300px;" id="mnemonictext" value="">
+        <input type="button" id="importmnemonic" value="导入助记词">
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <span style="font: 1em monospace;">切换钱包</span>
         <select id="selwallet" title="切换钱包"></select>
-      </td>
-      <td>
         <input class="zone" type="button" id="newaddr" value="生成新地址">
-      </td>
-      <td>
       </td>
     </tr>
   </table>

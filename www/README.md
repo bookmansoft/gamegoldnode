@@ -103,3 +103,17 @@ http://outerIP:2009/
 http://outerIP:2009/spv
 
 ```
+
+## 单元测试
+
+1. 助记词导入导出测试
+
+在当前wallet节点上生成一个新钱包，加上primary一共两个
+为这两个节点各自转入一笔交易，使其各具备1BNC余额
+导出助记词
+删除当前wallet节点数据库，重新运行，此时该节点只有一个钱包primary
+导入助记词，此时该节点应该有三个钱包
+运行 sys.rescan 0, 此时除primary以外，另外两个钱包应该各有1BNC
+
+测试中出现的问题
+- 由于仅仅导入 mnemonic.phrase 而没有导入 mnemonic.passphrase, 导致导入失败, 修改后恢复正常

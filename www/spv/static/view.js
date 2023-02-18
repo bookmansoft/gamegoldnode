@@ -206,7 +206,7 @@ newwallet.onmouseup = function() {
       false,              //set true to create a watch-only wallet
       null,               //public key used for multisig wallet
     ]
-  }, false, {options: {wid:'primary', cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(w => {
+  }, false, {options: {wid: defaultWalletId, cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(w => {
     defaultWalletId = w.id;
     listWallet();
     formatWallet();
@@ -314,7 +314,7 @@ rpc.onsubmit = function(ev) {
   }
 
   //调用节点RPC接口，执行用户输入的命令
-  node.rpc.execute({ method: method, params: params }, false, {options: {wid:'primary', cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(showObject).catch(showObject);
+  node.rpc.execute({ method: method, params: params }, false, {options: {wid: defaultWalletId, cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(showObject).catch(showObject);
 
   ev.preventDefault();
   ev.stopPropagation();

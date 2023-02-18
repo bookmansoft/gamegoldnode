@@ -30,7 +30,12 @@ body.onmouseup = function(o) { //如果按下鼠标并在窗口外放开，则�
 //#endregion
 
 //#region 钱包节点
-var util = gamegold.util; //通用函数集合
+
+//通用函数集合
+var util = gamegold.util; 
+//加解密助手
+var cryptHelper = gamegold.hd.MnemonicHelper;
+//钱包节点
 var node = new gamegold.walletnode({
   config: true,
   argv: true,
@@ -122,25 +127,80 @@ function listWallet() {
     return false;
   }
 
+  //清空钱包选择栏信息
   selwallet.innerHTML = '';
 
   wdb.getWallets().then(ids => {
     for(let id of ids) {
-      if(id == defaultWalletId) {
-        wdb.get(id).then(wallet => {
-          wallet.removeAllListeners('balance');
-          wallet.on('balance', formatWallet);
-        })
+      wdb.get(id).then(function(w) {
+        w.removeAllListeners('balance');
 
-        selwallet.innerHTML += `<option selected>${id}</option>`;
-      } else {
-        wdb.get(id).then(wallet => {
-          wallet.removeAllListeners('balance');
-        })
-
-        selwallet.innerHTML += `<option>${id}</option>`;
-      }
+        if(w.id == defaultWalletId) {
+          w.on('balance', formatWallet);
+          //添加钱包选择栏选项，标定为选中
+          selwallet.innerHTML += `<option selected>${w.id}</option>`;
+        } else {
+          //添加钱包选择栏选项
+          selwallet.innerHTML += `<option>${w.id}</option>`;
+        }
+      })
     }
+  })
+}
+
+//导入助记词，注意导入信息包括助记词和衍生盐
+function importMnemonic() {
+  let dec = cryptHelper.decrypt({
+    password: 'helloworld',
+    body: document.getElementById('mnemonictext').value,
+  });
+
+  (async () => {
+    for(let item of JSON.parse(dec)) {
+      await wdb.rpc.execute({ method: 'wallet.importmnemonic.admin', params: [
+        cryptHelper.encrypt({
+          body: JSON.stringify(item.mnemonic),
+          password: 'helloworld',
+        }),
+        'helloworld',
+      ]}, false, {options: {wid: defaultWalletId, cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(showObject).catch(showObject);
+    }
+
+    listWallet();
+  })();
+}
+
+//显示所有钱包的助记词
+function showMnemonic() {
+  wdb.getWallets().then(ids => {
+    var pros = [];
+    for(let id of ids) {
+      pros.push(wdb.get(id).then(function(w) {
+        //记录助记词信息
+        mnemonic.push({id: w.id, mnemonic: {
+          phrase: w.master.mnemonic.getPhrase(),     //存储助记符的单词序列
+          language: w.master.mnemonic.language,      //存储助记符的语言类型
+          passphrase: w.master.mnemonic.passphrase,  //存储助记符的衍生盐
+        }});
+      }));
+    }
+
+    var mnemonic = [];
+    //并发处理所有Promise, 全部处理完成后显示助记词完整列表
+    Promise.all(pros).then(function() {
+      //对助记词数组进行加密处理后再显示，本示范程序直接使用密码'helloworld'
+      let enc = cryptHelper.encrypt({
+        password: 'helloworld',
+        body: JSON.stringify(mnemonic),
+      });
+      document.getElementById('mnemonictext').value = enc;
+      //注: 实际应用中，将enc以二维码方式呈现，后期用户可以扫码读入这个字符串，用原始密码就可以恢复助记词数组
+
+      // console.log(cryptHelper.decrypt({
+      //   password: 'helloworld',
+      //   body: enc,
+      // }));
+    });
   })
 }
 
@@ -161,7 +221,7 @@ function formatWallet() {
 
   html += `<b>[当前钱包]</b>${defaultWallet.id}/${defaultWallet.wid}<br>`;
   html += '当前地址: <b>' + defaultWallet.getAddress() + '</b><br>';
-  html += '地址私钥: <b>' + json.key.xprivkey + '</b><br>';
+  //html += '地址私钥: <b>' + json.key.xprivkey + '</b><br>';
   //这个要提示用户妥善记录和保管
   html += '助 记 词: <b>' + json.mnemonic.phrase + '</b><br>';
 
@@ -218,7 +278,7 @@ if(newwallet) {
         false,              //set true to create a watch-only wallet
         null,               //public key used for multisig wallet
       ]
-    }, false, {options: {wid:'primary', cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(w => {
+    }, false, {options: {wid: defaultWalletId, cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(w => {
       navigator(w.id).then(wallet=>{
         listWallet();
         formatWallet();
@@ -234,6 +294,15 @@ if(selwallet) {
       formatWallet();
     })
   };
+}
+
+var showmnemonic = document.getElementById('showmnemonic');
+if(showmnemonic) {
+  showmnemonic.onclick = showMnemonic;
+}
+var importmnemonic = document.getElementById('importmnemonic');
+if(importmnemonic) {
+  importmnemonic.onclick = importMnemonic;
 }
 
 //#endregion
@@ -304,7 +373,7 @@ if(rpc) {
     }
   
     //调用节点RPC接口，执行用户输入的命令
-    wdb.rpc.execute({ method: method, params: params }, false, {options: {wid:'primary', cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(showObject).catch(showObject);
+    wdb.rpc.execute({ method: method, params: params }, false, {options: {wid: defaultWalletId, cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(showObject).catch(showObject);
   
     ev.preventDefault();
     ev.stopPropagation();
@@ -329,7 +398,7 @@ if(!!issueForm) {
         height: 0,                    //有效高度
       },
       address,                        //见证地址
-    ] }, false, {options: {wid:'primary', cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(ret=>{
+    ] }, false, {options: {wid: defaultWalletId, cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(ret=>{
       if(!ret.error) {
         console.log('issue.erid:', ret.erid);
       }
@@ -354,7 +423,7 @@ if(!!cpForm) {
     wdb.rpc.execute({ method: 'cp.create', params: [
       value,
       '127.0.0.1',
-    ] }, false, {options: {wid:'primary', cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(ret=>{
+    ] }, false, {options: {wid: defaultWalletId, cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(ret=>{
       if(!ret.error) {
         console.log('cp.id:', ret.cid);
       }
@@ -375,7 +444,7 @@ if(cpQuery) {
       //调用节点RPC接口，执行用户输入的命令
       wdb.rpc.execute({ method: 'cp.query.remote', params: [
         [['name',value]],
-      ] }, false, {options: {wid:'primary', cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(ret=>{
+      ] }, false, {options: {wid: defaultWalletId, cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(ret=>{
         if(!ret.error) {
           console.log('cp.id:', ret.cid);
         }
@@ -401,7 +470,7 @@ if(!!propForm) {
       pid,    //暂时使用 pid 填充 oid
       10000,
       pid,
-    ] }, false, {options: {wid:'primary', cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(ret=>{
+    ] }, false, {options: {wid: defaultWalletId, cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(ret=>{
       if(!ret.error) {
         console.log('prop.id:', ret.pid);
       }
@@ -424,7 +493,7 @@ if(!!foundForm) {
     //调用节点RPC接口，执行用户输入的命令
     wdb.rpc.execute({ method: 'prop.found', params: [
       pid,
-    ] }, false, {options: {wid:'primary', cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(showObject).catch(showObject);
+    ] }, false, {options: {wid: defaultWalletId, cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(showObject).catch(showObject);
   
     ev.preventDefault();
     ev.stopPropagation();
@@ -449,7 +518,7 @@ if(prop_pageup) {
 function formatProps() {
   wdb.rpc.execute({ method: 'prop.query', params: [
     [['page', curPage], ['pid', 'notlike', '-vallnet-boss-']],
-  ] }, false, {options: {wid:'primary', cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(ret=>{
+  ] }, false, {options: {wid: defaultWalletId, cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(ret=>{
     props.innerHTML = '';
     for (let i = 0; i < ret.list.length; i++) {
       maxPage = ret.page;
