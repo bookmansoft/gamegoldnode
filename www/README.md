@@ -5,15 +5,17 @@
 百谷王收藏家(valletBrowserWallet)是基于百谷王链的数字资产管理软件，可以运行在浏览器上，或者集成于其它项目中。
 
 项目文件清单如下：
-- spv (SPV钱包)
--   static/gamegold.js: 通过 webpack-browser 打包的节点逻辑代码
--   static/view.js: 给出了界面操作示范代码，可按照其基本模式，将相关功能集成至基于VUE框架的应用中
--   index.html: 网站入口，可以直接从外部资源管理器中点击运行，或架设Web Server通过IP访问，适用于Chrome兼容浏览器
-- wallet (轻钱包)
+
+- wallet (轻钱包, 当前主要运用模式, 可确保私钥本地保存，具备交易自主性和一定的安全性)
 -   static/gamegold.js:
 -   static/view.js:
 -   index.html: 
--   cmd.html: 多个分功能示范页面之一
+-   cmd.html: 多个分功能示范页面之一，不一一列举
+
+- spv (SPV钱包, 安全级别总体上高于轻钱包, 但目前仅做示范，作为备用运用模式)
+-   static/gamegold.js: 通过 webpack-browser 打包的节点逻辑代码
+-   static/view.js: 给出了界面操作示范代码，可按照其基本模式，将相关功能集成至基于VUE框架的应用中
+-   index.html: 网站入口，可以直接从外部资源管理器中点击运行，或架设Web Server通过IP访问，适用于Chrome兼容浏览器
 
 SPV钱包界面说明：
 1. 界面包括功能陈列区、钱包信息区、日志区、近期交易列表等，有一个简单的弹窗用于信息查看。
@@ -39,20 +41,22 @@ wdb.primary.createReceive().then(() => {});
 
 2. 利用节点开放的RPC接口，进行各类功能调用。这个方法通用性较强，同时不需要对系统对象体系有深入了解
 ```js
-node.rpc.execute({ method: method, params: params }).then(showObject, showObject);
+wdb.rpc.execute(
+    { method: 'sys.rescan', params: [0] }, 
+    false, 
+    {options: {wid: 'primary', cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}
+).then(showObject).catch(showObject);
 ```
 
 3. 订阅系统事件，交由事件句柄做后续处理
 ```js
-node.chain.on('block', addBlock);
+wdb.primary.on('balance', ret => {}));
 ```
 
 ## 调测报告 2023.02.08
 
 1. IP.isValid
-系统为了避免闭环连接，对本地地址访问做了限制，这样就无法用WS代理连接自身了
-
-为方便单机测试，对此做了临时调整:
+系统为了避免闭环连接，对本地地址访问做了限制，这样就无法用WS代理连接自身了. 为方便单机测试，对此做了临时调整:
 ```js
 IP.isRoutable() {
     // 暂时屏蔽了如下判断
@@ -65,11 +69,7 @@ IP.isRoutable() {
 钱包对象 wallet 的属性中, id 其实是钱包的'名称'，而 wid 才是钱包的数字索引。但在接口调用时，上传的 wid 参数却必须是 wallet.id, 这个地方太容易让人迷惑了
 
 3. 关于 RPC
-通过内置对象调用RPC时，要注意有两个RPC接口对象: 
-- node.rpc: 和链库相关调用，
-- wdb.rpc: 和钥库相关调用
-
-调用方式分别为为:
+通过内置对象调用RPC时，要注意有两个RPC接口对象，调用方式示范如下:
 ```js
 let cmd_obj = {method: 'something', params: {}};
 //在通过通讯组件进行的远程调用中, req_obj 是自动构造的。直接调用时需要手工构造传递，否则将报错而无法执行命令
@@ -77,6 +77,7 @@ let req_obj = {options: {wid:'primary', cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxx
 
 //链库RPC调用，注意该模式在轻钱包中不可用
 node.rpc.execute(cmd_obj, false, req_obj);
+
 //钥库RPC调用
 wdb.rpc.execute(cmd_obj, false, req_obj);
 ```
@@ -104,16 +105,19 @@ http://outerIP:2009/spv
 
 ```
 
-## 单元测试
+## 轻钱包使用说明
 
-1. 助记词导入导出测试
+### 钱包 index.html
 
-在当前wallet节点上生成一个新钱包，加上primary一共两个
-为这两个节点各自转入一笔交易，使其各具备1BNC余额
-导出助记词
-删除当前wallet节点数据库，重新运行，此时该节点只有一个钱包primary
-导入助记词，此时该节点应该有三个钱包
-运行 sys.rescan 0, 此时除primary以外，另外两个钱包应该各有1BNC
+#### 多钱包管理
+1. 全新运行轻钱包节点，用[创建新的钱包]功能生成一个新钱包，这样算上primary一共有两个钱包。可以通过下拉框切换钱包
+2. 点击[新增地址]可以为选定钱包生成新的地址。
+3. 通过控制台，从中心节点向这两个钱包的当前地址，各自转入一笔金额(tx send address amount)，使其各具备 1BNC 余额
+4. 使用[导出备份]功能，导出加密字符串，实际应用中可形成二维码图片存储于本地
+4. 删除当前wallet节点数据库(chrome浏览器下F12 -> Application -> IndexedDb)，重新运行，此时该节点只有一个钱包primary
+5. 输入加密字符串，使用[导入备份]功能导入备份信息，此时该节点应该有三个钱包。实际应用中可通过扫码二维码录入
+6. 运行 sys.rescan 0, 此时除primary以外，新导入的两个钱包应该各有1BNC
 
 测试中出现的问题
 - 由于仅仅导入 mnemonic.phrase 而没有导入 mnemonic.passphrase, 导致导入失败, 修改后恢复正常
+

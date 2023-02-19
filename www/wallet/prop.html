@@ -54,17 +54,23 @@
     <a id='page2'>通用命令</a> 
   </div>
   <form id="propForm" action="#">
+    <div>
+      <select id="cps" title="切换CP"></select>
+      <span style="font: 1em monospace;">切换CP</span>
+    </div>
     <input type="text" style="width:310px;" name="cpid" id="cpid" placeholder="CP编码">
     <input type="text" name="prop" id="prop" placeholder="道具编码(36位字符串)">
     <input type="submit" value="发行道具">
   </form>
   <form id="foundForm" action="#">
     <input type="text" style="width:410px;" name="foundPid" id="foundPid" placeholder="道具编码(36位字符串)">
-    <input type="button" id="prop_pageup" value="列表翻页">
     <input type="submit" value="熔铸道具">
+    <input type="text" style="width:410px;" name="sendAddress" id="sendAddress" placeholder="目标地址">
+    <input type="button" name="sendProp" id="sendProp" value="转赠道具">
   </form>
 </div>
 <div id="props" class="wtx"></div>
+<input type="button" id="prop_pageup" value="列表翻页">
 <div id="floating" class="floating"></div>
 <script src="static/view.js"></script>
 </body>

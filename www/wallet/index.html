@@ -25,7 +25,7 @@
     overflow-y: scroll;
     margin-left: 10px;
     height: 360px;
-    width: 80%;
+    width: 100%;
     font: 1em monospace;
   }
   .tx {
@@ -67,23 +67,24 @@
   <table>
     <tr>
       <td>
-        <input type="button" id="newwallet" value="生成新钱包">
-        <input type="button" id="showmnemonic" value="显示助记词">
-        <input type="input" style="width:300px;" id="mnemonictext" value="">
-        <input type="button" id="importmnemonic" value="导入助记词">
+        <input type="button" id="newwallet" value="创建新的钱包">
+        <select id="selwallet" title="切换钱包"></select>
+        <span style="font: 1em monospace;">切换钱包</span>
+        <input class="zone" type="button" id="newaddr" value="新增地址">
+        <div id="wallet" class="wallet"></div>
+        <div id="wtx" class="wtx"></div>
       </td>
     </tr>
     <tr>
       <td>
-        <span style="font: 1em monospace;">切换钱包</span>
-        <select id="selwallet" title="切换钱包"></select>
-        <input class="zone" type="button" id="newaddr" value="生成新地址">
+        <input type="button" id="syncwallet" value="链同步">
+        <input type="button" id="showmnemonic" value="导出备份">
+        <input type="input" style="width:300px;" id="mnemonictext" value="">
+        <input type="button" id="importmnemonic" value="导入备份">
       </td>
     </tr>
   </table>
 </div>
-<div id="wallet" class="wallet"></div>
-<div id="wtx" class="wtx"></div>
 <div id="floating" class="floating"></div>
 <script src="static/view.js"></script>
 </body>

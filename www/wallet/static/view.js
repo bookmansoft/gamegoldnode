@@ -75,6 +75,9 @@ var defaultWallet = null;
     if(props) {
       formatProps();
     }
+    if(cps) {
+      listCps();
+    }
   });
 })().catch(err => {
   console.error(err.stack);
@@ -137,15 +140,25 @@ function listWallet() {
 
         if(w.id == defaultWalletId) {
           w.on('balance', formatWallet);
-          //添加钱包选择栏选项，标定为选中
-          selwallet.innerHTML += `<option selected>${w.id}</option>`;
+          //添加钱包选择栏选项，显示钱包名称和编号，并将默认钱包标定为选中
+          selwallet.innerHTML += `<option selected value="${w.id}">${w.id}/${w.wid}</option>`;
         } else {
           //添加钱包选择栏选项
-          selwallet.innerHTML += `<option>${w.id}</option>`;
+          selwallet.innerHTML += `<option value="${w.id}">${w.id}/${w.wid}</option>`;
         }
       })
     }
   })
+}
+
+//切换钱包
+var selwallet = document.getElementById('selwallet');
+if(selwallet) {
+  selwallet.onchange = function() {
+    navigator(selwallet.value).then(wallet=>{
+      formatWallet();
+    })
+  };
 }
 
 //导入助记词，注意导入信息包括助记词和衍生盐
@@ -216,40 +229,37 @@ function formatWallet() {
   }
 
   var html = '';
-  var json = defaultWallet.master.toJSON(true);
-  var i, tx, el;
+  var i, coin, el;
 
-  html += `<b>[当前钱包]</b>${defaultWallet.id}/${defaultWallet.wid}<br>`;
+  html += '区块高度: <b>' + wdb.state.height + '</b><br>';
   html += '当前地址: <b>' + defaultWallet.getAddress() + '</b><br>';
   //html += '地址私钥: <b>' + json.key.xprivkey + '</b><br>';
   //这个要提示用户妥善记录和保管
-  html += '助 记 词: <b>' + json.mnemonic.phrase + '</b><br>';
+  //html += '助 记 词: <b>' + json.mnemonic.phrase + '</b><br>';
 
-  defaultWallet.getBalance().then(function(balance) {
-    html += '已定余额: <b>'
-      + gamegold.amount.btc(balance.confirmed)
-      + '</b><br>';
+  let balance = {confirmed: 0.0, unconfirmed: 0.0};
 
-    html += '未定余额: <b>'
-      + gamegold.amount.btc(balance.unconfirmed)
-      + '</b><br>';
-
-    return defaultWallet.getHistory();
-  }).then(function(txs) {
-      return defaultWallet.toDetails(txs);
-  }).then(function(txs) {
-    wdiv.innerHTML = html;
-
-    wtx.innerHTML = '';
-    for (i = 0; i < txs.length; i++) {
-      tx = txs[i];
-      el = createDiv('<a style="display:block;" href="#' + tx.hash + '">' + tx.hash + '</a>');
+  wdb.rpc.execute({ method: 'coin.list', params: [0] }, false, {options: {wid: defaultWalletId, cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(function(ret) {
+    wtx.innerHTML = '<div>硬币列表:</div>';
+    for (i = 0; i < ret.length; i++) {
+      coin = ret[i];
+      balance.unconfirmed += util.fromFloat(coin.amount, 8);
+      if(coin.confirmations>0) {
+        balance.confirmed += util.fromFloat(coin.amount, 8);
+      }
+      el = createDiv('<a style="display:block;" href="#' + coin.txid + '.' + coin.vout + '">' + (coin.confirmations<=0?'(未)':'') + coin.amount + ':' + coin.txid + '.' + coin.vout + '</a>');
       wtx.appendChild(el);
-      setMouseup(el, tx.toJSON());
+      setMouseup(el, JSON.stringify(coin));
     }
-  });
+
+    html += '已定余额: <b>' + gamegold.amount.btc(balance.confirmed) + '</b><br>';
+    html += '未定余额: <b>' + gamegold.amount.btc(balance.unconfirmed) + '</b><br>';
+
+    wdiv.innerHTML = html;
+  }).catch(showObject);
 }
 
+//生成新地址
 var newaddr = document.getElementById('newaddr');
 if(newaddr) {
   //接口使用方式之一：调用钱包对象接口，生成一个新的地址，并重新生成钱包概要内容
@@ -260,6 +270,7 @@ if(newaddr) {
   };
 }
 
+//生成新钱包
 var newwallet = document.getElementById('newwallet');
 if(newwallet) {
   //接口使用方式之一：调用RPC接口，生成一个新的钱包，并重新生成钱包概要内容
@@ -287,15 +298,7 @@ if(newwallet) {
   };
 }
 
-var selwallet = document.getElementById('selwallet');
-if(selwallet) {
-  selwallet.onchange = function() {
-    navigator(selwallet.value).then(wallet=>{
-      formatWallet();
-    })
-  };
-}
-
+//导出钱包信息
 var showmnemonic = document.getElementById('showmnemonic');
 if(showmnemonic) {
   showmnemonic.onclick = showMnemonic;
@@ -305,6 +308,21 @@ if(importmnemonic) {
   importmnemonic.onclick = importMnemonic;
 }
 
+//和主链同步
+var syncwallet = document.getElementById('syncwallet');
+if(syncwallet) {
+  syncwallet.onclick = syncWallet;
+}
+function syncWallet() {
+  //调用节点RPC接口，执行用户输入的命令
+  wdb.rpc.execute({ method: 'sys.rescan', params: [0] }, false, {options: {wid: defaultWalletId, cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(function(ret){
+    //为了正确显示区块同步高度，扫码完成后延迟5秒再刷新下钱包信息
+    (async (time) => {return new Promise(resolve => {setTimeout(function() {
+      formatWallet();    
+      resolve();
+    }, time);});})(5000);
+  }).catch(showObject);
+};
 //#endregion
 
 //#region 创建交易
@@ -388,7 +406,7 @@ var issueForm = document.getElementById('issueForm');
 if(!!issueForm) {
   issueForm.onsubmit = function(ev) {
     var value = document.getElementById('issue').value;
-    var address = document.getElementById('address1').value;
+    var address = document.getElementById('addressIssue').value;
     var hash = gamegold.crypto.digest.hash256(Uint8Array.from(value)).toString('hex');
 
     //调用节点RPC接口，执行用户输入的命令
@@ -439,15 +457,12 @@ if(!!cpForm) {
 var cpQuery = document.getElementById('cpQuery');
 if(cpQuery) {
   cpQuery.onclick = function(){
-    var value = document.getElementById('cp').value;
-    if(!!value) {
+    var val = document.getElementById('cp').value;
+    if(!!val) {
       //调用节点RPC接口，执行用户输入的命令
-      wdb.rpc.execute({ method: 'cp.query.remote', params: [
-        [['name',value]],
-      ] }, false, {options: {wid: defaultWalletId, cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(ret=>{
-        if(!ret.error) {
-          console.log('cp.id:', ret.cid);
-        }
+      wdb.rpc.execute({method: 'cp.query.remote', params: [
+        [[['name', val]]],
+      ]}, false, {options: {wid: defaultWalletId, cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(ret=>{
         showObject(ret);
       }).catch(showObject);
     }
@@ -456,6 +471,33 @@ if(cpQuery) {
 //#endregion
 
 //#region 道具管理, 注意注册后，要等待上链成功才能通过 prop.byid 指令查询
+
+//列表所有本地CP
+function listCps() {
+  console.log('current wallet', defaultWallet.id);
+  if(!cps) {
+    return false;
+  }
+
+  //清空钱包选择栏信息
+  cps.innerHTML = '';
+
+  wdb.rpc.execute({ method: 'cp.query', params: [] }, false, {options: {wid: defaultWalletId, cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(ret => {
+    for(let item of ret.list) {
+      if(item.owned) {
+        cps.innerHTML += `<option value="${item.cid}">${item.name} / ${item.cid}</option>`;
+      }
+    }
+  })
+}
+
+//切换CP
+var cps = document.getElementById('cps');
+if(cps) {
+  cps.onchange = function() {
+    document.getElementById('cpid').value = cps.value;
+  };
+}
 
 //铸造道具
 var propForm = document.getElementById('propForm');
@@ -497,6 +539,23 @@ if(!!foundForm) {
   
     ev.preventDefault();
     ev.stopPropagation();
+  
+    return false;
+  };
+}
+
+//转赠道具
+var sendProp = document.getElementById('sendProp');
+if(!!sendProp) {
+  sendProp.onclick = function() {
+    var pid = document.getElementById('foundPid').value;
+    var address = document.getElementById('sendAddress').value;
+
+    //调用节点RPC接口，执行用户输入的命令
+    wdb.rpc.execute({ method: 'prop.send', params: [
+      address,
+      pid,
+    ] }, false, {options: {wid: defaultWalletId, cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(showObject).catch(showObject);
   
     return false;
   };
