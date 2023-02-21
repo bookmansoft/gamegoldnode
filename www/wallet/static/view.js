@@ -646,7 +646,9 @@ function setMouseup(el, obj) {
 }
 //#endregion
 
-//#region 模糊匹配
+//#region 支持模糊匹配的问答功能, 可以根据用户任意输入智能匹配Faq列表中的问题项，从而展示最佳答案
+
+//预设的问题和答案列表
 const Faq = {
   '如何注销登录？':'注销登录：为用户账户使用和安全考虑，用户可注销当前登录账户。下次登录时需要重新登录。',
   '如何反馈意见？':'意见反馈：用户在系统使用中有任何意见或建议均可在意见反馈中提，工作人员会依据用户的有效反馈加以采纳以便后期系统完善工作。',
@@ -655,11 +657,41 @@ const Faq = {
   '关于系统bug问题':'可在个人中心---意见反馈中提交意见反馈。',
 };
 
+var faq = document.getElementById('faq');
+var answer = document.getElementById('answer');
+if(faq) {
+  faq.onsubmit = function(ev) {
+    var text = answer.value || '';
+    answer.value = '';
+
+    //获取可能的答案排序, 最多显示三条
+    let list = GetAnswer(text.replace('?', '？').trim());
+    console.log(list);
+    let recy = 0, ret = [];
+    for (let item of list) {
+      if (recy == 0) {
+        ret.push(`【最佳】${item.k}【解答】${Faq[item.k]}`);
+      } else if (recy < 3 && item.v > 0) {
+        ret.push(`【其它】${item.k}【解答】${Faq[item.k]}`);
+      } else {
+        break;
+      }
+      recy++;
+    }
+  
+    showObject(ret);
+  
+    ev.preventDefault();
+    ev.stopPropagation();
+  
+    return false;
+  };
+}
+
 /**
  * 匹配最合适的问题，并返回对应的回答
  * @param question
- * @returns {*}
- * @constructor
+ * @returns {Array[Object]}
  */
 function GetAnswer(question) {
   if (question == null || question.length == 0) {
@@ -714,37 +746,5 @@ function GetRelation(word1, word2) {
   let l2 = word1.match(new RegExp(word2, "g"));
   return (l1 == null ? 0 : l1.length * word1.length) + (l2 == null ? 0 : l2.length * word2.length);
 }
-
-var faq = document.getElementById('faq');
-var answer = document.getElementById('answer');
-if(faq) {
-  faq.onsubmit = function(ev) {
-    var text = answer.value || '';
-    answer.value = '';
-
-    //获取可能的答案排序, 最多显示三条
-    let list = GetAnswer(text.replace('?', '？').trim());
-    console.log(list);
-    let recy = 0, ret = [];
-    for (let item of list) {
-      if (recy == 0) {
-        ret.push(`【最佳】${item.k}【解答】${Faq[item.k]}`);
-      } else if (recy < 3 && item.v > 0) {
-        ret.push(`【其它】${item.k}【解答】${Faq[item.k]}`);
-      } else {
-        break;
-      }
-      recy++;
-    }
-  
-    showObject(ret);
-  
-    ev.preventDefault();
-    ev.stopPropagation();
-  
-    return false;
-  };
-}
-
 //#endregion
 })();
