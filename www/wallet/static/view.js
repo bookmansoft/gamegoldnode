@@ -84,7 +84,7 @@ var defaultWallet = null;
 })
 
 //#region 导航条
-var page0, page1, page2, page3, page4, page5;
+var page0, page1, page2, page3, page4, page5, page6;
 function navigator(wid) {
   defaultWalletId = wid;
 
@@ -111,6 +111,10 @@ function navigator(wid) {
   page5 = document.getElementById('page5');
   if(page5) {
     page5.href = 'prop.html?wid=' + defaultWalletId;
+  }
+  page6 = document.getElementById('page6');
+  if(page6) {
+    page6.href = 'faq.html?wid=' + defaultWalletId;
   }
 
   return wdb.get(defaultWalletId).then(wallet=>{
@@ -637,6 +641,107 @@ function setMouseup(el, obj) {
   el.onmouseup = function(ev) {
     showObject(obj);
     ev.stopPropagation();
+    return false;
+  };
+}
+//#endregion
+
+//#region 模糊匹配
+const Faq = {
+  '如何注销登录？':'注销登录：为用户账户使用和安全考虑，用户可注销当前登录账户。下次登录时需要重新登录。',
+  '如何反馈意见？':'意见反馈：用户在系统使用中有任何意见或建议均可在意见反馈中提，工作人员会依据用户的有效反馈加以采纳以便后期系统完善工作。',
+  '如何修改密码？':'密码修改：用于用户对当前密码不认可，从而可以进行新密码的设定。更有利于账户的安全。修改密码时，输入旧密码、输入两次新密码，提交修改即新密码设定成功。',
+  '获取不到验证码?':'1.验证码获取次数太频繁，会导致收取验证码不及时或者收不到。可联系客服咨询是否有发送验证码。并告知验证码，发送的验证码都是5分钟内有效的。2.有些原因回事运营商的问题，需要用户电话联系运营商确认。',
+  '关于系统bug问题':'可在个人中心---意见反馈中提交意见反馈。',
+};
+
+/**
+ * 匹配最合适的问题，并返回对应的回答
+ * @param question
+ * @returns {*}
+ * @constructor
+ */
+function GetAnswer(question) {
+  if (question == null || question.length == 0) {
+    return [];
+  }
+
+  if (Object.keys(Faq).includes(question)) {
+    return [{k: question, v: 100}];
+  }
+
+  let list = [];
+  let maxValue = 0;
+  for (let key of Object.keys(Faq)) {
+    let cur = {v: 0, k: key};
+
+    let temp = question;
+    while (temp.length > 0) {
+      let str = '';
+      for (let word of temp) {
+        str += word;
+
+        cur.v += GetRelation(str, key);
+        if (cur.v > maxValue) {
+          maxValue = cur.v;
+        }
+      }
+      if (temp.codePointAt(0) > 0xFFFF) {
+        temp = temp.substring(2);
+      }
+      else {
+        temp = temp.substring(1);
+      }
+    }
+    list.push(cur);
+  }
+
+  list.sort((a, b) => {
+    return b.v - a.v;
+  });
+
+  return list;
+}
+
+/**
+ * 返回两个词之间的熵值
+ * @param word1
+ * @param word2
+ * @returns {number}
+ */
+function GetRelation(word1, word2) {
+  let l1 = word2.match(new RegExp(word1, "g"));
+  let l2 = word1.match(new RegExp(word2, "g"));
+  return (l1 == null ? 0 : l1.length * word1.length) + (l2 == null ? 0 : l2.length * word2.length);
+}
+
+var faq = document.getElementById('faq');
+var answer = document.getElementById('answer');
+if(faq) {
+  faq.onsubmit = function(ev) {
+    var text = answer.value || '';
+    answer.value = '';
+
+    //获取可能的答案排序, 最多显示三条
+    let list = GetAnswer(text.replace('?', '？').trim());
+    console.log(list);
+    let recy = 0, ret = [];
+    for (let item of list) {
+      if (recy == 0) {
+        ret.push(`【最佳】${item.k}【解答】${Faq[item.k]}`);
+      } else if (recy < 3 && item.v > 0) {
+        ret.push(`【其它】${item.k}【解答】${Faq[item.k]}`);
+      } else {
+        break;
+      }
+      recy++;
+    }
+  
+    showObject(ret);
+  
+    ev.preventDefault();
+    ev.stopPropagation();
+  
     return false;
   };
 }

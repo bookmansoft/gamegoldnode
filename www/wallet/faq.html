@@ -10,6 +10,9 @@
     height: 90%;
     padding: 20px;
   }
+  .cmd {
+    width: 500px;
+  }
   .floating {
     font: 1em monospace;
     white-space: pre-wrap;
@@ -34,16 +37,14 @@
   <div>
     <a id='page0'>钱包</a> | 
     <a id='page1'>交易</a> |
-    管理CP |
+    <a id='page4'>管理CP</a> |
     <a id='page5'>道具管理</a> |
     <a id='page3'>上链存证</a> |
-    <a id='page2'>通用命令</a> 
-    <a id='page6'>模糊问答</a> |
+    <a id='page2'>通用命令</a> |
+    模糊问答 
   </div>
-  <form id="cpForm" action="#">
-    <input type="text" name="cp" id="cp" placeholder="CP名称">
-    <input type="submit" value="注册作者">
-    <input type="button" name="cpQuery" id="cpQuery" value="全局查询作者">
+  <form id="faq" action="#">
+    <input type="text" class="cmd" name="answer" id="answer" placeholder="输入问题回车">
   </form>
 </div>
 <div id="floating" class="floating"></div>
