@@ -33,6 +33,8 @@ body.onmouseup = function(o) { //如果按下鼠标并在窗口外放开，则�
 
 //通用函数集合
 var util = gamegold.util; 
+//密钥对象
+const KeyRing = gamegold.keyring;
 //加解密助手
 var cryptHelper = gamegold.hd.MnemonicHelper;
 //钱包节点
@@ -70,6 +72,27 @@ var defaultWallet = null;
   await node.open();
 
   navigator(defaultWalletId).then(()=>{
+    //罗列游戏列表
+    defaultWallet.getAddress()
+    if(!!document.getElementById('CoreOfChick')) {
+      let src = {
+          cid: 'CoreOfChickIOS',  //配置目标服务器类型
+          time: true,             //自动添加时间戳
+      };
+
+      //生成密钥管理对象
+      defaultWallet.getKey(defaultWallet.getAddress()).then(key => {
+        let ring = KeyRing.fromPrivate(key.privateKey);
+        //设为隔离见证类型，这是因为 verifyData 中默认校验 bench32 类型的地址
+        ring.witness = true; 
+        //对数据对象进行签名，返回签名对象：打包了数据对象、公钥、地址和签名
+        let signedData = ring.signData(src); 
+        //序列化签名对象，生成可登录链接
+        signedData.data.sig = signedData.sig;
+        document.getElementById('CoreOfChick').href = "http://127.0.0.1:5033/index.html?openid=authgg." + signedData.data.addr + "&auth=" + JSON.stringify(signedData.data);
+      });
+    }
+
     listWallet();
     formatWallet();
     if(props) {
@@ -237,9 +260,6 @@ function formatWallet() {
 
   html += '区块高度: <b>' + wdb.state.height + '</b><br>';
   html += '当前地址: <b>' + defaultWallet.getAddress() + '</b><br>';
-  //html += '地址私钥: <b>' + json.key.xprivkey + '</b><br>';
-  //这个要提示用户妥善记录和保管
-  //html += '助 记 词: <b>' + json.mnemonic.phrase + '</b><br>';
 
   let balance = {confirmed: 0.0, unconfirmed: 0.0};
 
