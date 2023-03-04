@@ -59,13 +59,28 @@ var node = new gamegold.walletnode({
   genesisParams: commJson.genesisParams,
 });
 
-//获取钱包容器对象
+//获取指定的钱包编号
+var defaultWallet = null;
 var defaultWalletId = getQueryString('wid');
 if(defaultWalletId == 'undefined' || !defaultWalletId) {
   defaultWalletId = 'primary';
 }
+
+//获取路由信息
+var path = decodeURIComponent(getQueryString('path'));
+console.log('path', path);
+if(path != "null" && path != 'undefined') {
+  var send = document.getElementById('send');
+  if(!send) { 
+    //进行订单支付
+    window.location.href = 'trans.html?wid=' + defaultWalletId + '&path=' + getQueryString('path');
+  } else {
+    //已经在交易页面了，不要再循环跳转了
+  }
+}
+
+//获取钱包容器对象
 var wdb = node.require('walletdb');
-var defaultWallet = null;
 
 (async () => {
   await node.ensure();
@@ -73,7 +88,6 @@ var defaultWallet = null;
 
   navigator(defaultWalletId).then(()=>{
     //罗列游戏列表
-    defaultWallet.getAddress()
     if(!!document.getElementById('CoreOfChick')) {
       let src = {
           cid: 'CoreOfChickIOS',  //配置目标服务器类型
@@ -92,6 +106,50 @@ var defaultWallet = null;
         document.getElementById('CoreOfChick').href = "http://127.0.0.1:5033/index.html?openid=authgg." + signedData.data.addr + "&auth=" + JSON.stringify(signedData.data);
       });
     }
+
+    if(!!document.getElementById('send')) {
+      if(path != "null" && path != 'undefined') {
+        let order = JSON.parse(path.split('/')[1]);
+        // {
+        //   cid: data["cid"],
+        //   sn: data["sn"],
+        //   price: data["price"],
+        // };
+    
+        if(!!order) {
+          console.log('order', order);
+          defaultWallet.getKey(defaultWallet.getAddress()).then(key => {
+            //取得CP地址
+            wdb.rpc.execute({ method: 'cp.query.remote', params: [[[['name',order.cid]]]] }, false, {options: {wid: defaultWalletId, cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(ret=>{
+              console.log('cp', ret);
+
+              //填充地址，准备支付
+              document.getElementById('amount').value = gamegold.amount.btc(order.price);
+              document.getElementById('address').value = ret.list[0].current.address;
+              document.getElementById('orderInfo').value = ret.list[0].name + "/" + order.sn;
+  
+              transComment = {alice: defaultWallet.getAddress().toString(), bob: ret.list[0].current.address, amount: parseInt(order.price), body: {alice: defaultWallet.getAddress().toString(), sn: order.sn}};
+
+              //构造参数，以便支付完成后，跳转回游戏
+              let src = {
+                cid: 'CoreOfChickIOS',  //配置目标服务器类型
+                time: true,             //自动添加时间戳
+              };
+  
+              let ring = KeyRing.fromPrivate(key.privateKey);
+              //设为隔离见证类型，这是因为 verifyData 中默认校验 bench32 类型的地址
+              ring.witness = true; 
+              //对数据对象进行签名，返回签名对象：打包了数据对象、公钥、地址和签名
+              let signedData = ring.signData(src); 
+              //序列化签名对象，生成可登录链接
+              signedData.data.sig = signedData.sig;
+              returnUrl = "http://127.0.0.1:5033/index.html?openid=authgg." + signedData.data.addr + "&auth=" + JSON.stringify(signedData.data);
+            }).catch(showObject);
+          });
+        }
+      }
+    }
+  
 
     listWallet();
     formatWallet();
@@ -350,38 +408,52 @@ function syncWallet() {
 //#endregion
 
 //#region 创建交易
+let returnUrl = '', transComment = null;
 var send = document.getElementById('send');
 if(!!send) {
   send.onsubmit = function(ev) {
     var value = document.getElementById('amount').value;
     var address = document.getElementById('address').value;
     var tx, options;
-  
-    options = {
-      rate: 10000,
-      outputs: [{
-        address: address,
-        value: gamegold.amount.value(value)
-      }]
-    };
-  
-    defaultWallet.createTX(                     //创建交易
-        options                                 //包含地址和金额的交易内容
-    ).then(function(mtx) {                    //创建交易成功
-      tx = mtx;                               //记录交易对象句柄
-      return defaultWallet.sign(tx);            //开始签名，返回了一个Promise
-    }).then(function() {                      //签名成功
-      console.log('ready to convert: ', tx);  //显示 mutable tx
-      tx = tx.toTX();                         //将 mutable tx 转化为 immutable tx
-      console.log('ready to send: ', tx);     //显示 immutable tx
-      return wdb.send(tx);               //发送交易到网络，返回了一个Promise
-    }).then(function() {                      //发送成功
-      showObject(tx);                               //显示交易内容
-    });
+
+    if(transComment) {
+      console.log('transComment', transComment);
+      wdb.rpc.execute({ method: 'comm.comment', params: [transComment]}, false, {options: {wid: defaultWalletId, cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(()=>{
+        if(!!returnUrl) {
+          window.location.href = returnUrl;
+        }
+      }).catch(showObject);
+    } else {
+      options = {
+        rate: 10000,
+        comment: transComment,
+        outputs: [{
+          address: address,
+          value: gamegold.amount.value(value)
+        }]
+      };
+    
+      navigator(defaultWalletId).then(wallet=>{
+        defaultWallet = wallet;
+        defaultWallet.createTX(                     //创建交易
+            options                                 //包含地址和金额的交易内容
+        ).then(function(mtx) {                    //创建交易成功
+          tx = mtx;                               //记录交易对象句柄
+          return defaultWallet.sign(tx);            //开始签名，返回了一个Promise
+        }).then(function() {                      //签名成功
+          console.log('ready to convert: ', tx);  //显示 mutable tx
+          tx = tx.toTX();                         //将 mutable tx 转化为 immutable tx
+          console.log('ready to send: ', tx);     //显示 immutable tx
+          return wdb.send(tx);               //发送交易到网络，返回了一个Promise
+        }).then(function() {                      //发送成功
+          showObject(tx);                         //显示交易内容
+        });
+      });
+    }
   
     ev.preventDefault();
     ev.stopPropagation();
-  
+
     return false;
   };
 }
