@@ -1,6 +1,6 @@
 {
   "name": "gamegoldnode",
-  "version": "5.0.9",
+  "version": "5.0.10",
   "description": "Vallnet Node",
   "main": "index.js",
   "scripts": {
@@ -30,7 +30,7 @@
     "body-parser": "1.20.1",
     "cross-env": "5.1.3",
     "express": "4.18.2",
-    "gamegold": "^5.0.9",
+    "gamegold": "^5.0.10",
     "gamerpc": "^7.0.0",
     "n64": "0.2.10",
     "node-fetch": "^2.6.9",
