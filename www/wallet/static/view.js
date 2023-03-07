@@ -89,7 +89,7 @@ var wdb = node.require('walletdb');
   navigator(defaultWalletId).then(()=>{
     //罗列游戏列表
     if(!!document.getElementById('CoreOfChick')) {
-      getGameUrl('d42b47d0-bc82-11ed-a623-8f62383d516b').then(url=>{
+      getGameUrl(null, 'CoreOfChickIOS').then(url=>{
         document.getElementById('CoreOfChick').href = url;
       })
     }
@@ -138,7 +138,12 @@ var wdb = node.require('walletdb');
   console.error(err.stack);
 })
 
-async function getGameUrl(cid) {
+async function getGameUrl(cid, cname) {
+  if(!cid) {
+    let ret = await wdb.rpc.execute({ method: 'cp.query.remote', params: [[[["name", cname]]]]}, false, {options: {wid: defaultWalletId, cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}});
+    cid = ret.list[0].cid;
+  }
+
   let ret = await defaultWallet.ensureAccount({
     name: cid,
     witness: true,
