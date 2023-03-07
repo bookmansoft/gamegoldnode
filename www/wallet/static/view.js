@@ -13,7 +13,7 @@ var commJson = {
   //对等网络类型
   network: 'testnet',
   //创世参数
-  genesisParams: {"testnetAddresses":"tb1qraxs23kt2e25vqda75ar7tu74spgp79uydp8h6,tb1q9jwv284q4s6v53w2elw376mv9vhywxcalvvy6d,tb1qx5rfdglg2s5xgzfcle0w92qmxfc2va40962c7u,tb1q87n5y76g20z8ch3tpvg2lddv4utp0tqk0fg6lh,tb1qdhjuwnrgfx37f6g0f79dhhakkhgu5sr2je9e6n,tb1q0sg06l6fjz8kgqmgkl3ep3flk6v848z5zqfgjj,tb1qjle37mptvmpgpt4rjtzgp0k4scjxdqdjjnd9pv,tb1qh6m8nk24535p9uznjpj22nhhe9mtrzaxe9pnyd,tb1qetv22rl9hhv5c9qzfn8rukp67a3a0n39hy43nl,tb1q63xh7684y5n8c2nywtxndw9crjs5awh4v0e2ek,tb1qa9sg9r0zwf4x6dxy8kyt3wzqq7ehj0aq64hgl8","coinbaseAddress":"tb1q9jwv284q4s6v53w2elw376mv9vhywxcalvvy6d","notifyAddress":"tb1qcjx9y0h27zs86mjd8a4syphyaq0njtwpxvk3sc"},
+  genesisParams: {"testnetAddresses":"tb1qdq9wlc7uaq99f5tkw8cnnnzw9nd2rzf0hr5ld8,tb1qw2t0aqu5alar48aywmf9zsw0d97jwahyuslu05,tb1q3mwmzr8ltjzjp976mpjnfckffslrwawg0w7xca,tb1qnvudkvxv9kk79c6pe7kcqfr2w5tr3e8y9s2ux9,tb1qn433zcp0a2j45t78surpc0md5yj2awmglzmek3,tb1qn7em8hzx3jdmx6kn5wk82wt5xtjz6cnnldvkyv,tb1q4pup2tc2lfu7w5qzs2m06xx4k4aga0xnu84l8v,tb1q42ycywhp09a59avg72n5kyld4cwn8syd0pcjvc,tb1qcpryx2ynccp7wl6ez3v4zz8spu7rj7xqwkxht4,tb1q7ug03rm57t2kk02nsvk6lv9q0zn5yryzq3dq8s,tb1qlytf95aetkpc3nktkz7ek0e4j0qsd3ndfjh7rk"},
 }
 //#endregion
 
@@ -89,22 +89,9 @@ var wdb = node.require('walletdb');
   navigator(defaultWalletId).then(()=>{
     //罗列游戏列表
     if(!!document.getElementById('CoreOfChick')) {
-      let src = {
-          cid: 'CoreOfChickIOS',  //配置目标服务器类型
-          time: true,             //自动添加时间戳
-      };
-
-      //生成密钥管理对象
-      defaultWallet.getKey(defaultWallet.getAddress()).then(key => {
-        let ring = KeyRing.fromPrivate(key.privateKey);
-        //设为隔离见证类型，这是因为 verifyData 中默认校验 bench32 类型的地址
-        ring.witness = true; 
-        //对数据对象进行签名，返回签名对象：打包了数据对象、公钥、地址和签名
-        let signedData = ring.signData(src); 
-        //序列化签名对象，生成可登录链接
-        signedData.data.sig = signedData.sig;
-        document.getElementById('CoreOfChick').href = "http://127.0.0.1:5033/index.html?openid=authgg." + signedData.data.addr + "&auth=" + JSON.stringify(signedData.data);
-      });
+      getGameUrl('d42b47d0-bc82-11ed-a623-8f62383d516b').then(url=>{
+        document.getElementById('CoreOfChick').href = url;
+      })
     }
 
     if(!!document.getElementById('send')) {
@@ -118,39 +105,26 @@ var wdb = node.require('walletdb');
     
         if(!!order) {
           console.log('order', order);
-          defaultWallet.getKey(defaultWallet.getAddress()).then(key => {
-            //取得CP地址
-            wdb.rpc.execute({ method: 'cp.query.remote', params: [[[['name',order.cid]]]] }, false, {options: {wid: defaultWalletId, cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(ret=>{
-              console.log('cp', ret);
 
-              //填充地址，准备支付
-              document.getElementById('amount').value = gamegold.amount.btc(order.price);
-              document.getElementById('address').value = ret.list[0].current.address;
-              document.getElementById('orderInfo').value = ret.list[0].name + "/" + order.sn;
-  
-              transComment = {alice: defaultWallet.getAddress().toString(), bob: ret.list[0].current.address, amount: parseInt(order.price), body: {alice: defaultWallet.getAddress().toString(), sn: order.sn}};
+          //取得CP地址
+          wdb.rpc.execute({ method: 'cp.query.remote', params: [[[['cid',order.cid]]]] }, false, {options: {wid: defaultWalletId, cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(ret => {
+            console.log('cp', ret);
 
-              //构造参数，以便支付完成后，跳转回游戏
-              let src = {
-                cid: 'CoreOfChickIOS',  //配置目标服务器类型
-                time: true,             //自动添加时间戳
-              };
-  
-              let ring = KeyRing.fromPrivate(key.privateKey);
-              //设为隔离见证类型，这是因为 verifyData 中默认校验 bench32 类型的地址
-              ring.witness = true; 
-              //对数据对象进行签名，返回签名对象：打包了数据对象、公钥、地址和签名
-              let signedData = ring.signData(src); 
-              //序列化签名对象，生成可登录链接
-              signedData.data.sig = signedData.sig;
-              returnUrl = "http://127.0.0.1:5033/index.html?openid=authgg." + signedData.data.addr + "&auth=" + JSON.stringify(signedData.data);
-            }).catch(showObject);
-          });
+            //填充地址，准备支付
+            document.getElementById('amount').value = gamegold.amount.btc(order.price);
+            document.getElementById('address').value = ret.list[0].current.address;
+            document.getElementById('orderInfo').value = ret.list[0].name + "/" + order.sn;
+
+            transComment = {alice: defaultWallet.getAddress().toString(), bob: ret.list[0].current.address, amount: parseInt(order.price), body: {alice: defaultWallet.getAddress().toString(), sn: order.sn}};
+
+            getGameUrl(order.cid).then(url=>{
+              returnUrl = url;
+            });
+          }).catch(showObject);
         }
       }
     }
   
-
     listWallet();
     formatWallet();
     if(props) {
@@ -163,6 +137,32 @@ var wdb = node.require('walletdb');
 })().catch(err => {
   console.error(err.stack);
 })
+
+async function getGameUrl(cid) {
+  let ret = await defaultWallet.ensureAccount({
+    name: cid,
+    witness: true,
+  });
+
+  //为游戏生成专用地址
+  let key = await defaultWallet.deriveKey(ret.accountIndex, 0, 1, defaultWallet.master);
+
+  //构造参数，以便支付完成后，跳转回游戏
+  let src = {
+    cid,
+    time: true,                                   //自动添加时间戳
+  };
+
+  let ring = KeyRing.fromPrivate(key.privateKey);
+  //设为隔离见证类型，这是因为 verifyData 中默认校验 bench32 类型的地址
+  ring.witness = true; 
+  //对数据对象进行签名，返回签名对象：打包了数据对象、公钥、地址和签名
+  let signedData = ring.signData(src); 
+  //序列化签名对象，生成可登录链接
+  signedData.data.sig = signedData.sig;
+
+  return "http://127.0.0.1:5033/index.html?openid=authgg." + signedData.data.addr + "&auth=" + JSON.stringify(signedData.data);
+}
 
 //#region 导航条
 var page0, page1, page2, page3, page4, page5, page6;
@@ -579,9 +579,14 @@ function listCps() {
   cps.innerHTML = '';
 
   wdb.rpc.execute({ method: 'cp.query', params: [] }, false, {options: {wid: defaultWalletId, cid: 'xxxxxxxx-vallnet-root-xxxxxxxxxxxxxx'}}).then(ret => {
+    let selected = true;
     for(let item of ret.list) {
       if(item.owned) {
-        cps.innerHTML += `<option value="${item.cid}">${item.name} / ${item.cid}</option>`;
+        cps.innerHTML += `<option value="${item.cid}" ${selected?"selected":""}>${item.name} / ${item.cid}</option>`;
+        if(selected) selected = false;
+        if(document.getElementById('cpid').value == '') {
+          document.getElementById('cpid').value = cps.value;
+        }
       }
     }
   })
